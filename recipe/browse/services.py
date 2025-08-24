@@ -13,7 +13,8 @@ def get_recipe(repo: AbstractRepository):
         recipe_dict = {
             'id': recipe.id,
             'name': recipe.name,
-            'author': recipe.author.name
+            'author': recipe.author.name,
+            'images': recipe.images
         }
         recipe_dicts.append(recipe_dict)
     return recipe_dicts
