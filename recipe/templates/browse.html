@@ -7,14 +7,25 @@
 <body>
     <h1>Browse Recipes</h1>
     <p>Total Recipes: {{ num_recipe }}</p>
-    <div class="recipe-list">
-        {% for recipe in recipes %}
-        <div class="recipe-item">
+    <ul>
+        {% for recipe in recipes_on_page %}
+        <li>
             <h3>{{ recipe.name }}</h3>
             <p>ID: {{ recipe.id }}</p>
             <p>Author: {{ recipe.author }}</p>
-        </div>
+        </li>
         {% endfor %}
-    </div>
+    </ul>
+
+    {% if page > 1 %}
+    <a href="{{ url_for('browse_bp.browse_recipe', page=page - 1) }}">Previous</a>
+
+    {% endif %}
+    <span>Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('browse_bp.browse_recipe', page=page + 1) }}">Next</a>
+    {% endif %}
+
 </body>
 </html>
