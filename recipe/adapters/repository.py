@@ -11,12 +11,12 @@ class RepositoryException(Exception):
 class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def add_recipe(self, recipe: Recipe):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_recipe(self) -> List[Recipe]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def get_number_of_recipes(self) -> List[int]:
-        raise NotImplementedError()
+    def get_number_of_recipe(self):
+        raise NotImplementedError

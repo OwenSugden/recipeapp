@@ -7,7 +7,7 @@ from recipe.adapters.repository import AbstractRepository
 from recipe.adapters.datareader.csvdatareader import CSVDataReader
 
 class MemoryRepository(AbstractRepository):
-    def __init__(self, path: str):
+    def __init__(self):
         self.__recipe = list()
 
     def add_recipe(self, recipe: Recipe):
@@ -24,7 +24,10 @@ def populate(repo: AbstractRepository):
     dir_name = os.path.dirname(os.path.abspath(__file__))
     recipe_file_name = os.path.join(dir_name, "data/recipes.csv")
     reader = CSVDataReader(recipe_file_name)
+    reader.read_csv_file()
+
     recipes = reader.get_recipes()
 
     for recipe in recipes:
         repo.add_recipe(recipe)
+
