@@ -130,6 +130,3 @@ class Nutrition:
         if value < 0.0:
             raise ValueError("Sugar cannot be negative")
         self.__sugar = float(value)
-
-
-
