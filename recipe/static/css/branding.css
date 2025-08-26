@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@font-face {
+    font-family: 'Daydream';
+    src: url('../fonts/Daydream DEMO.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    /* Color Palette */
+    --primary-color: #354F52;       /* light green */
+    --secondary-color: #52796F;     /* olive green */
+    --accent-color: #FF8000;        /* orange like egg yolk */
+    --background-color: #A7E8BD;    /* dark green */
+    --text-color: #333333;          /* Dark gray */
+    --light-text: #f8f1e5;          /* Light cream for dark backgrounds */
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+h1 {
+    font-family: 'Daydream', sans-serif;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+p {
+    text-align: center;
+    max-width: 800px;
+    margin: 10px auto;
+}
+
+.homepage-main-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    display: block;
+    width: 30%;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+    img {
+        max-width: 80%;
+    }
+}
+
+@media (min-width: 1024px) {
+    img {
+        max-width: 60%;
+        max-height: 500px;
+    }
+}
+
+.navbar {
+    background-color: var(--primary-color);
+    padding: 10px 0;
+    margin: 30px auto 0;
+    max-width: 800px;
+    border-radius: 8px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0
+}
+
+.navbar {
+    background-color: var(--primary-color);
+    padding: 10px 0;
+    margin: 30px auto 0;
+    max-width: 800px;
+    border-radius: 8px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.navbar li a {
+    color: var(--light-text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.navbar li a:hover {
+    background-color: var(--accent-color);
+}
