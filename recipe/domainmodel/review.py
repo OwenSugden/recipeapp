@@ -1,5 +1,5 @@
 class Review:
-    def __init__(self, review_id: int, recipe_id: int, user_id: int, rating: int, comment: str):
+    def __init__(self, review_id: int, recipe_id: int, user_id: int, rating: int, comment: str = None):
         if rating < 1 or rating > 5:
             raise ValueError("Rating must be between 1 and 5")
         if not isinstance(review_id, int) or review_id <= 0:
