@@ -6,7 +6,7 @@ def get_number_of_recipes(repo: AbstractRepository):
     return repo.get_number_of_recipe()
 
 def get_recipe(repo: AbstractRepository):
-    recipes = repo.get_recipe()
+    recipes = repo.get_all_recipes()
     recipe_dicts = []
 
     for recipe in recipes:

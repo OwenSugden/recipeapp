@@ -32,6 +32,8 @@ def create_app():
     with app.app_context():
         from .browse import browse
         app.register_blueprint(browse.browse_blueprint)
+        from .recipe_detail import recipe_detail
+        app.register_blueprint(recipe_detail.recipe_detail_blueprint)
 
     repo.repo_instance = MemoryRepository()
 
