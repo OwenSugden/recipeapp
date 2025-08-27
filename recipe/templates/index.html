@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME - wochacooking.com</title>
+    <link rel="stylesheet" href="../static/css/branding.css"/>
+</head>
+<body>
+    {% include 'navbar.html'%}
+    <img src="../static/images/logos/wocha_logo_rectangle.png" class="logo" alt="wocha logo">
+    <!--<h1>WOCHA</h1>-->
+    <h2>Recipes for every occasion.</h2>
+    <img src="../static/images/handDrawnFoodForHomePageNotFinal.jpg" class="homepage-main-image" alt="Food Image">
+    <h2>Explore our collection of delicious recipes.</h2>
+
+    <h1>Featured Recipes</h1>
+    <ul>
+        {% for recipe in recipes_on_page %}
+        <li>
+            <a href="/browse/{{ recipe.id }}"><h3>{{ recipe.name }}</h3></a>
+            <p>Author: {{ recipe.author }}</p>
+            <img src="{{ recipe.images[0] }} " class="browse-image" alt="recipe image">
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

@@ -6,7 +6,7 @@ import recipe.browse.services as services
 browse_blueprint = Blueprint('browse_bp', __name__)
 
 @browse_blueprint.route('/browse', methods=['GET'])
-def browse_recipe():
+def browse():
     num_recipe = services.get_number_of_recipes(repo.repo_instance)
     all_recipe = services.get_recipe(repo.repo_instance)
 
