@@ -10,8 +10,10 @@ def browse():
     num_recipe = services.get_number_of_recipes(repo.repo_instance)
     all_recipe = services.get_recipe(repo.repo_instance)
 
+    all_recipe = sorted(all_recipe, key=lambda r: (r["name"] or "").lower())
+
     page = request.args.get('page', 1, type=int)
-    per_page = 100
+    per_page = 25
     start = (page - 1) * per_page
     end = start + per_page
     total_pages = (num_recipe + per_page - 1) // per_page
