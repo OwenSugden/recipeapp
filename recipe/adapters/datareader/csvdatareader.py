@@ -111,7 +111,7 @@ class CSVDataReader:
         return list(self.__authors.values())
 
 if __name__ == "__main__":
-    csv_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'recipes.csv')
+    csv_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'recipe_detail.csv')
     reader = CSVDataReader(csv_file_path)
     reader.read_csv_file()
     recipes = reader.get_recipes()

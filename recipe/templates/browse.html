@@ -11,7 +11,7 @@
         {% for recipe in recipes_on_page %}
         <li>
             <h3>{{ recipe.name }}</h3>
-            <p>ID: {{ recipe.id }}</p>
+            <a href="/browse/{{ recipe.id }}"><p>ID: {{ recipe.id }}</p></a>
             <p>Author: {{ recipe.author }}</p>
             <img src="{{ recipe.images[0] }} " alt="recipe image">
         </li>

@@ -14,11 +14,17 @@ class MemoryRepository(AbstractRepository):
         if isinstance(recipe, Recipe):
             insort_left(self.__recipe, recipe)
 
-    def get_recipe(self) -> List[Recipe]:
+    def get_all_recipes(self) -> List[Recipe]:
         return self.__recipe
 
     def get_number_of_recipe(self):
         return len(self.__recipe)
+
+    def get_recipe_by_id(self, recipe_id):
+        for recipe in self.__recipe:
+            if recipe.id == recipe_id:
+                return recipe
+        return None
 
 def populate(repo: AbstractRepository):
     dir_name = os.path.dirname(os.path.abspath(__file__))

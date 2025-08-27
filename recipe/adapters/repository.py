@@ -14,9 +14,13 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe(self) -> List[Recipe]:
+    def get_all_recipes(self) -> List[Recipe]:
         raise NotImplementedError
 
     @abc.abstractmethod
     def get_number_of_recipe(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_recipe_by_id(self, recipe_id) -> Recipe:
         raise NotImplementedError
