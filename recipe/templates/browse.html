@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+    <h1>Browse Recipes</h1>
+    <p>Total Recipes: {{ num_recipe }}</p>
+    <ul>
+        {% for recipe in recipes_on_page %}
+        <li>
+            <h3>{{ recipe.name }}</h3>
+            <p>ID: {{ recipe.id }}</p>
+            <p>Author: {{ recipe.author }}</p>
+            <img src="{{ recipe.images[0] }} " alt="recipe image">
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if page > 1 %}
+    <a href="{{ url_for('browse_bp.browse_recipe', page=page - 1) }}">Previous</a>
+
+    {% endif %}
+    <span>Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('browse_bp.browse_recipe', page=page + 1) }}">Next</a>
+    {% endif %}
+
+</body>
+</html>

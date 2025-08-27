@@ -1,6 +1,9 @@
 """Initialize Flask app."""
 from datetime import datetime
 from flask import Flask, render_template
+import recipe.adapters.repository as repo
+from recipe.adapters.memory_repository import populate
+from recipe.adapters.memory_repository import MemoryRepository
 
 # TODO: Access to the recipe should be implemented via the repository pattern and using blueprints, so this can not
 #  stay here!
@@ -25,6 +28,14 @@ def create_app():
 
     # Create the Flask app object.
     app = Flask(__name__)
+
+    with app.app_context():
+        from .browse import browse
+        app.register_blueprint(browse.browse_blueprint)
+
+    repo.repo_instance = MemoryRepository()
+
+    populate(repo.repo_instance)
 
     @app.route('/')
     def home():
