@@ -34,10 +34,18 @@ h1 {
     font-weight: bold;
 }
 
-p {
+h2 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-color);
     text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+p {
+    text-align: left;
     max-width: 800px;
-    margin: 10px auto;
+    margin: 10px 0;
 }
 
 .homepage-main-image {
@@ -55,6 +63,15 @@ p {
     height: auto;
     margin: 20px auto;
     border-radius: 8px;
+}
+
+.browse-image {
+    display: block;
+    max-width: 60%;
+    height: auto;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -112,4 +129,12 @@ p {
 
 .navbar li a:hover {
     background-color: var(--accent-color);
+}
+
+ul li a {
+    color: var(--primary-color);
+}
+ul li a:hover {
+    background-color: var(--accent-color);
+    color: var(--accent-color);
 }
