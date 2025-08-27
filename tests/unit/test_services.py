@@ -6,6 +6,7 @@ from recipe.domainmodel.category import Category
 from recipe.browse.services import get_number_of_recipes, get_recipe
 from recipe.adapters.memory_repository import MemoryRepository
 from recipe.domainmodel.user import User
+from recipe.recipe_detail.services import get_recipe as get_recipe_id
 
 
 @pytest.fixture
@@ -79,3 +80,15 @@ def test_get_recipe_with_single_recipe(memory_repository, sample_recipe):
     }]
 
     assert result == expected
+
+#tests for get_recipe by ID
+def test_get_recipe_by_id_empty_repository(memory_repository):
+    result = get_recipe_id(memory_repository, 1)
+    assert result is None
+
+
+def test_get_recipe_by_id_single_recipe(memory_repository, sample_recipe):
+    memory_repository.add_recipe(sample_recipe)
+    result = get_recipe_id(memory_repository, 1)
+    assert result is sample_recipe
+
