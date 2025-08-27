@@ -7,27 +7,36 @@
 </head>
 <body>
     {% include 'navbar.html'%}
-    <h1>Browse Recipes</h1>
-    <h2>Total Recipes: {{ num_recipe }}</h2>
-    <ul>
-        {% for recipe in recipes_on_page %}
-        <li>
-            <a href="/browse/{{ recipe.id }}"><h3>{{ recipe.name }}</h3></a>
-            <p>Author: {{ recipe.author }}</p>
-            <img src="{{ recipe.images[0] }} " class="browse-image" alt="recipe image">
-        </li>
-        {% endfor %}
-    </ul>
+    <div>
+        <h1>Browse Recipes</h1>
+        <h2>Total Recipes: {{ num_recipe }}</h2>
+        <div class="recipes">
+            <ul>
+                {% for recipe in recipes_on_page %}
+                <li>
+                    <a href="{{ url_for('recipe_detail_bp.recipe_detail',
+                             recipe_id=recipe.id,
+                             return_to=request.full_path) }}">
+                        <h3>{{ recipe.name }}</h3>
+                    </a>
+                    <p>Author: {{ recipe.author }}</p>
+                    <img src="{{ recipe.images[0] }} " class="browse-image" alt="recipe image">
+                </li>
+                {% endfor %}
+            </ul>
 
-    {% if page > 1 %}
-    <a href="{{ url_for('browse_bp.browse', page=page - 1) }}">Previous</a>
+            {% if page > 1 %}
+            <a href="{{ url_for('browse_bp.browse', page=page - 1) }}">Previous</a>
 
-    {% endif %}
-    <span>Page {{ page }} of {{ total_pages }}</span>
+            {% endif %}
+            <span>Page {{ page }} of {{ total_pages }}</span>
 
-    {% if page < total_pages %}
-    <a href="{{ url_for('browse_bp.browse', page=page + 1) }}">Next</a>
-    {% endif %}
+            {% if page < total_pages %}
+            <a href="{{ url_for('browse_bp.browse', page=page + 1) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
 
 </body>
 </html>

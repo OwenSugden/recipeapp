@@ -1,25 +1,19 @@
-#header {
-  padding: 20px;
-  background: 	#E6E6FA;
-  border-bottom: 1px solid #e0e4e8;
-  font-size: 25px;
-  font-weight: bold;
-  text-align: center;
+.recipe-info h2 {
+    text-align: left;
 }
 
-.copyright {
-  color: black;
-  font-size: 0.9em;
+.recipe-info h2.centered-heading {
+    text-align: center;
+}
+.nutritional-info {
+    text-align: center;
 }
 
-.description p i {
-    font-family: 'Gill Sans';
-    font-weight: bold;
-    font-size: 18px;
-    text-transform: uppercase;
-    color:darkslateblue
-    }
+.nutritional-info table {
+    display: inline-block;
+    width: auto;
+}
 
-.description img {
-        vertical-align: top;
-    }
+.nutritional-info td {
+    padding: 12px 50px;
+}
