@@ -5,6 +5,9 @@ from recipe.domainmodel.user import User
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.nutrition import Nutrition
+from recipe.domainmodel.favourite import Favourite
+from recipe.domainmodel.review import Review
 
 # Fixtures
 @pytest.fixture
@@ -43,6 +46,18 @@ def my_recipe(my_author, my_category):
         instructions=["Boil pasta", "Cook bacon", "Mix with eggs"]
     )
 
+@pytest.fixture
+def my_nutrition():
+    return Nutrition(100.1, 10.1, 20.1, 30.2, 40.3,
+                     50.4, 60.5, 70.6, 80.7)
+
+@pytest.fixture
+def my_favourite():
+    return Favourite(1, 1)
+
+@pytest.fixture
+def my_review():
+    return Review(1, 1, 1, 1, "Food is good")
 
 # User tests
 def test_user_construction():
@@ -231,4 +246,93 @@ def test_author_set_recipe(my_author):
 def test_author_set_recipe_invalid_type(my_author):
     with pytest.raises(TypeError):
         my_author.add_recipe("not a recipe")
+
+# Nutrition tests
+def test_nutrition_construction():
+    nutrition = Nutrition(100.0, 10.0, 3.0, 20.0,
+                          200.0,15.0, 5.0, 7.0,
+                          8.0)
+    assert nutrition.calories == 100.0
+    assert nutrition.fat == 10.0
+    assert nutrition.carbohydrates == 3.0
+    assert nutrition.protein == 20.0
+
+
+def test_nutrition_equality():
+    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    n2 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    n3 = Nutrition(120.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    assert n1 == n2
+    assert n1 != n3
+
+def test_nutrition_less_than():
+    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    n2 = Nutrition(150.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    assert n1 < n2
+
+def test_nutrition_hash():
+    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    n2 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
+                   15.0, 5.0, 7.0, 8.0)
+    nutrition_set = {n1, n2}
+    assert len(nutrition_set) == 1
+
+
+# Favourite test
+def test_favourite_construction(my_user, my_recipe):
+    fav = Favourite(my_user.id, my_recipe.id)
+    assert fav.user_id == my_user.id
+    assert fav.recipe_id == my_recipe.id
+
+def test_favourite_equality():
+    fav1 = Favourite(1, 2)
+    fav2 = Favourite(1, 2)
+    fav3 = Favourite(1, 3)
+    assert fav1 == fav2
+    assert fav1 != fav3
+
+def test_favourite_less_than():
+    fav1 = Favourite(1, 2)
+    fav2 = Favourite(2, 1)
+    assert fav1 < fav2
+
+def test_favourite_hash():
+    fav1 = Favourite(1, 2)
+    fav2 = Favourite(1, 2)
+    fav_set = {fav1, fav2}
+    assert len(fav_set) == 1
+
+# Review test
+def test_review_construction(my_recipe, my_user):
+    review = Review(1, my_recipe.id, my_user.id, 5, "Excellent!")
+    assert review.id == 1
+    assert review.recipe_id == my_recipe.id
+    assert review.user_id == my_user.id
+
+
+def test_review_equality():
+    r1 = Review(1, 7, 3, 5, "A")
+    r2 = Review(1, 8, 4, 3, "B")
+    r3 = Review(2, 7, 3, 5, "A")
+    assert r1 == r2
+    assert r1 != r3
+
+def test_review_less_than():
+    r1 = Review(1, 7, 3, 2, "apple")
+    r2 = Review(2, 7, 3, 3, "banana")
+    r3 = Review(3, 7, 3, 3, "zebra")
+    assert r1 < r2        # lower rating
+    assert r2 < r3        # same rating, compare comment
+
+def test_review_hash():
+    r1 = Review(1, 7, 3, 5, "nice")
+    r2 = Review(1, 8, 4, 2, "different")
+    review_set = {r1, r2}
+    assert len(review_set) == 1
 
