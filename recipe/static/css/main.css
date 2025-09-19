@@ -1,19 +1,43 @@
-.recipe-info h2 {
-    text-align: left;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@font-face {
+    font-family: 'Daydream';
+    src: url('../fonts/Daydream DEMO.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-.recipe-info h2.centered-heading {
-    text-align: center;
-}
-.nutritional-info {
-    text-align: center;
-}
-
-.nutritional-info table {
-    display: inline-block;
-    width: auto;
+:root {
+    /* Color Palette */
+    --primary-color: #354F52;       /* light green */
+    --secondary-color: #52796F;     /* olive green */
+    --accent-color: #FF8000;        /* orange like egg yolk */
+    --background-color: #A7E8BD;    /* dark green */
+    --text-color: #333333;          /* Dark gray */
+    --light-text: #f8f1e5;          /* Light cream for dark backgrounds */
 }
 
-.nutritional-info td {
-    padding: 12px 50px;
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+h1 {
+    font-family: 'Daydream', sans-serif;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+h2 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+p {
+    max-width: 800px;
+    margin: 10px 0;
 }
