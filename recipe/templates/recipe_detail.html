@@ -11,15 +11,11 @@
     {% include 'navbar.html'%}
 
     <div class="recipe-detail-page">
+        {% if return_to %}
+              <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
+        {% endif %}
+        <h1>{{ recipe.name }}</h1>
 
-      {% if return_to %}
-          <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
-      {% endif %}
-      <h1>{{ recipe.name }}</h1>
-
-
-        <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
-        <h1 class="recipe-title">{{ recipe.name }}</h1>
         <h2 class="centered-heading">
                 Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
         </h2>
