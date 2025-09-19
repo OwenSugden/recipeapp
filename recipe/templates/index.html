@@ -23,7 +23,7 @@
             <ul class="recipes-grid">
                 {% for recipe in recipes_on_page %}
                 <li class="recipe-card">
-                    <a class="card-link" href="/browse/{{ recipe.id }}" style="text-decoration: none">
+                    <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id) }}" style="text-decoration: none">
                         <div class="card-img">
                             <img src="{{ recipe.images[0] }}" alt="recipe image">
                         </div>
