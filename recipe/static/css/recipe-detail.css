@@ -1,0 +1,19 @@
+.recipe-info h2 {
+    text-align: left;
+}
+
+.recipe-info h2.centered-heading {
+    text-align: center;
+}
+.nutritional-info {
+    text-align: center;
+}
+
+.nutritional-info table {
+    display: inline-block;
+    width: auto;
+}
+
+.nutritional-info td {
+    padding: 12px 50px;
+}

@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe</title>
-    <link rel="stylesheet" href="../static/css/branding.css"/>
     <link rel="stylesheet" href="../static/css/main.css"/>
+    <link rel="stylesheet" href="../static/css/recipe-detail.css"/>
 </head>
 <body>
     {% include 'navbar.html'%}
-    <a href="{{ return_to }}">← Back to previous browse page</a>
+    {% if return_to %}
+        <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
+    {% endif %}
     <h1>{{ recipe.name }}</h1>
 
     <div class="recipe-info">

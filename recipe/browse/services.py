@@ -1,7 +1,5 @@
 from recipe.adapters.repository import AbstractRepository
 
-
-
 def get_number_of_recipes(repo: AbstractRepository):
     return repo.get_number_of_recipe()
 

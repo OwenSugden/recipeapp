@@ -3,40 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
-  <link rel="stylesheet" href="../static/css/branding.css"/>
+  <link rel="stylesheet" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/css/browse.css"/>
 </head>
 <body>
     {% include 'navbar.html'%}
-    <div>
+    <div class="browse-page">
         <h1>Browse Recipes</h1>
         <h2>Total Recipes: {{ num_recipe }}</h2>
-        <div class="recipes">
-            <ul>
-                {% for recipe in recipes_on_page %}
-                <li>
-                    <a href="{{ url_for('recipe_detail_bp.recipe_detail',
-                             recipe_id=recipe.id,
-                             return_to=request.full_path) }}">
-                        <h3>{{ recipe.name }}</h3>
-                    </a>
-                    <p>Author: {{ recipe.author }}</p>
-                    <img src="{{ recipe.images[0] }} " class="browse-image" alt="recipe image">
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="search-container">
+          <form role="search" action="{{ url_for('browse_bp.browse') }}" method="get" class="search-form">
+              <input id="q" name="q" type="search" placeholder="Search…"
+                     class="search-input" value="{{ q or '' }}" />
+              <button type="submit" class="search-btn" aria-label="Search">
+                <img src="{{ url_for('static', filename='images/search.svg') }}" alt="" aria-hidden="true" class="search-icon" />
+              </button>
+          </form>
 
-            {% if page > 1 %}
-            <a href="{{ url_for('browse_bp.browse', page=page - 1) }}">Previous</a>
+          <div class="dropdown-menu">
+              <button>Category</button>
+              <div class="dropdown-content">
 
-            {% endif %}
-            <span>Page {{ page }} of {{ total_pages }}</span>
-
-            {% if page < total_pages %}
-            <a href="{{ url_for('browse_bp.browse', page=page + 1) }}">Next</a>
-            {% endif %}
+              </div>
+              <button>Author</button>
+          </div>
         </div>
-    </div>
 
+        <div class="browse-recipes">
+            <ul class="recipes-grid">
+              {% for recipe in recipes_on_page %}
+              <li class="recipe-card">
+                <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail',
+                    recipe_id=recipe.id,
+                    return_to=request.full_path) }}" style="text-decoration: none">
+                  <div class="card-img">
+                    <img src="{{ recipe.images[0] }}" alt="recipe image">
+                  </div>
+
+                  <div class="card-body">
+                    <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
+                    <p class="card-author" style="margin: 0">Author: {{ recipe.author }}</p>
+                  </div>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+        </div>
+        <nav class="pager">
+          {% if page > 1 %}
+            <a class="page-btn" href="{{ url_for('browse_bp.browse', page=page-1, q=q) }}">Previous</a>
+          {% endif %}
+
+          <span>Page {{ page }} of {{ total_pages }}</span>
+
+          {% if page < total_pages %}
+            <a class="page-btn" href="{{ url_for('browse_bp.browse', page=page+1, q=q) }}">Next</a>
+          {% endif %}
+        </nav>
+    </div>
 
 </body>
 </html>

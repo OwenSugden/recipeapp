@@ -1,0 +1,29 @@
+.navbar {
+    background-color: var(--primary-color);
+    padding: 10px 0;
+    margin: 30px auto 20px;
+    max-width: 800px;
+    border-radius: 8px;
+}
+
+.navbar-btn {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.navbar-btn li a {
+    color: var(--light-text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.navbar-btn li a:hover {
+    background-color: var(--accent-color);
+}
