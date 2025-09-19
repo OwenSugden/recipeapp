@@ -9,7 +9,9 @@
 </head>
 <body>
     {% include 'navbar.html'%}
-    <a href="{{ return_to }}">← Back to previous browse page</a>
+    {% if return_to %}
+        <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
+    {% endif %}
     <h1>{{ recipe.name }}</h1>
 
     <div class="recipe-info">
