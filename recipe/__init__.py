@@ -18,6 +18,8 @@ def create_app():
         app.register_blueprint(browse.browse_blueprint)
         from .recipe_detail import recipe_detail
         app.register_blueprint(recipe_detail.recipe_detail_blueprint)
+        from .search import search
+        app.register_blueprint(search.search_blueprint)
 
     repo.repo_instance = MemoryRepository()
 
