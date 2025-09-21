@@ -41,6 +41,23 @@ class Nutrition:
         return hash((self.calories, self.fat, self.carbohydrates, self.protein, self.saturated_fat, self.cholesterol,
                      self.sodium, self.fiber, self.sugar))
 
+    def health_star(self):
+        if (self.calories is None or self.saturated_fat is None or self.sugar is None or self.sodium is None
+                or self.protein is None or self.fiber is None):
+            return "Health star rating unavailable"
+
+        else:
+            neg = 30 * min(self.calories / 700.0, 1.5) \
+                  + 25 * min(self.saturated_fat / 10.0, 1.5) \
+                  + 25 * min(self.sugar / 25.0, 1.5) \
+                  + 20 * min(self.sodium / 1000.0, 1.5)
+
+            pos = 20 * min(self.protein / 25.0, 1.0) \
+                  + 20 * min(self.fiber / 8.0, 1.0)
+
+            raw = max(0.0, min(100.0, 100 - neg + pos))
+            return round((raw / 20.0) * 2) / 2.0
+
     @property
     def calories(self) -> float:
         return self.__calories

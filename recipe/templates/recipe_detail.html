@@ -12,12 +12,19 @@
 
     <div class="recipe-detail-page">
         {% if return_to %}
-              <a href="{{ return_to }}" class="back-link">← Back to previous browse page</a>
+            {% if 'browse' in return_to %}
+                <a href="{{ url_for('browse_bp.browse') }}" class="back-link">← Back to browse</a>
+            {% else %}
+                <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back to home</a>
+            {% endif %}
         {% endif %}
         <h1>{{ recipe.name }}</h1>
 
         <h2 class="centered-heading">
                 Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
+        </h2>
+        <h2>
+            Health Star Rating: {{ recipe.nutrition.health_star() }} Stars
         </h2>
         <div class="recipe-intro">
             <img
