@@ -125,6 +125,10 @@
   object-fit: cover;
 }
 
+.card-link {
+    color: var(--text-color);
+    text-decoration: none;
+}
 
 .card-body {
   padding: 12px 14px;

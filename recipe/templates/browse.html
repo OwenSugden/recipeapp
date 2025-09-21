@@ -299,6 +299,7 @@
                   <div class="card-body">
                     <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
                     <p class="card-author" style="margin: 0">Author: {{ recipe.author }}</p>
+                    <p class="card-health-star"> Health Star rating: {{ recipe.nutrition.health_star() }}</p>
                   </div>
                 </a>
               </li>

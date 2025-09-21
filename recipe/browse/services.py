@@ -15,6 +15,7 @@ def get_recipe(repo: AbstractRepository):
             'images': recipe.images,
             'category': recipe.category.name,
             'time': recipe.cook_time + recipe.preparation_time,
+            'nutrition': recipe.nutrition,
             'calories': recipe.nutrition.calories,
             'protein': recipe.nutrition.protein,
             'fat': recipe.nutrition.fat,
