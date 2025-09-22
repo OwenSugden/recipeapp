@@ -3,12 +3,21 @@ from typing import List
 import os
 
 from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.user import User
 from recipe.adapters.repository import AbstractRepository
 from recipe.adapters.datareader.csvdatareader import CSVDataReader
+
+### just added
+import csv
+from pathlib import Path
+from datetime import date, datetime
+from werkzeug.security import generate_password_hash
+###
 
 class MemoryRepository(AbstractRepository):
     def __init__(self):
         self.__recipe = list()
+        self.__users = list()
 
     def add_recipe(self, recipe: Recipe):
         if isinstance(recipe, Recipe):
@@ -25,6 +34,13 @@ class MemoryRepository(AbstractRepository):
             if recipe.id == recipe_id:
                 return recipe
         return None
+
+    def add_user(self, user: User):
+        self.__users.append(user)
+
+    def get_user(self, user_name) -> User:
+        return next((user for user in self.__users if user.user_name == user_name), None)
+
 
 def populate(repo: AbstractRepository):
     dir_name = os.path.dirname(os.path.abspath(__file__))
