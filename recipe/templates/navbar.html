@@ -1,6 +1,11 @@
 <div class="navbar">
+    <h2 id="nav-header">
+    {% if 'user_name' in session %} Hello, {{ session['user_name'] }} {%
+    endif %}
+    </h2>
     <ul>
         <li><a href="{{ url_for('home_bp.home') }}">Home</a></li>
         <li><a href="{{ url_for('browse_bp.browse') }}">Browse</a></li>
+        <li><a href="{{ url_for('authentication_bp.login')}}">Login</a> </li>
     </ul>
 </div>

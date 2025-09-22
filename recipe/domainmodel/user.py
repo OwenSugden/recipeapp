@@ -2,15 +2,15 @@ from recipe.domainmodel.favourite import Favourite
 from recipe.domainmodel.review import Review
 
 class User:
-    def __init__(self, username: str, password: str, user_id: int = None):
+    def __init__(self, user_name: str, password: str, user_id: int = None):
         self.__id = user_id
-        self.__username = username
+        self.__user_name = user_name
         self.__password = password
         self.__favourite_recipes = []
         self.__reviews = []
 
     def __repr__(self) -> str:
-        return f"<User {self.id}: {self.username}>"
+        return f"<User {self.id}: {self.user_name}>"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, User):
@@ -30,8 +30,8 @@ class User:
         return self.__id
 
     @property
-    def username(self) -> str:
-        return self.__username
+    def user_name(self) -> str:
+        return self.__user_name
 
     @property
     def password(self) -> str:
