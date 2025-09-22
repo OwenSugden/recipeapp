@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOME - wochacooking.com</title>
-    <link rel="stylesheet" href="../static/css/branding.css"/>
+    <link rel="stylesheet" href="../static/css/main.css"/>
+    <link rel="stylesheet" href="../static/css/home.css"/>
 </head>
 <body>
     {% include 'navbar.html'%}
@@ -13,7 +14,6 @@
     <!--<h1>WOCHA</h1>-->
     <h2>Recipes for every occasion.</h2>
     <h2>Explore our collection of delicious recipes.</h2>
-    <div class="hero-content">
     <h1>Featured Recipes</h1>
     <ul>
         {% for recipe in recipes_on_page %}
@@ -24,6 +24,33 @@
         </li>
         {% endfor %}
     </ul>
+    <div class="home-page">
+        <img src="../static/images/logos/wocha_logo_rectangle.png" class="logo" alt="wocha logo" style="margin-top: 0">
+        <div class="intro-block">
+            <h2 style="margin: 0">Recipes for every occasion.</h2>
+            <img src="../static/images/handDrawnFoodForHomePageNotFinal.jpg" class="homepage-main-image" alt="Food Image">
+            <h2 style="margin: 0">Explore our collection of delicious recipes.</h2>
+        </div>
+
+        <div class="featured-recipes">
+            <h1>Featured Recipes</h1>
+            <ul class="recipes-grid">
+                {% for recipe in recipes_on_page %}
+                <li class="recipe-card">
+                    <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id, return_to=request.full_path) }}" style="text-decoration: none">
+                        <div class="card-img">
+                            <img src="{{ recipe.images[0] }}" alt="recipe image">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
+                            <p class="card-author" style="margin: 0">Author: {{ recipe.author }}</p>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
 
 </html>

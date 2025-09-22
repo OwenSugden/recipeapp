@@ -30,6 +30,8 @@ def create_app(test_config = None):
         app.register_blueprint(recipe_detail.recipe_detail_blueprint)
         from .authentication import authentication
         app.register_blueprint(authentication.authentication_blueprint)
+        from .search import search
+        app.register_blueprint(search.search_blueprint)
 
     repo.repo_instance = MemoryRepository()
 

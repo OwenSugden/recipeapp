@@ -4,86 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe</title>
-    <link rel="stylesheet" href="../static/css/branding.css"/>
     <link rel="stylesheet" href="../static/css/main.css"/>
+    <link rel="stylesheet" href="../static/css/recipe-detail.css"/>
 </head>
 <body>
     {% include 'navbar.html'%}
-    <a href="{{ return_to }}">← Back to previous browse page</a>
-    <h1>{{ recipe.name }}</h1>
 
-    <div class="recipe-info">
-      <div class="recipe-description">
-        <h3>Made By:</h3>
-        <p>Author: {{ recipe.author.name }}</p>
+    <div class="recipe-detail-page">
+        {% if return_to %}
+            {% if 'browse' in return_to %}
+                <a href="{{ url_for('browse_bp.browse') }}" class="back-link">← Back to browse</a>
+            {% else %}
+                <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back to home</a>
+            {% endif %}
+        {% endif %}
+        <h1>{{ recipe.name }}</h1>
+
         <h2 class="centered-heading">
-            Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
+                Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
         </h2>
-        <h2>Description</h2>
-        <p>{{ recipe.description }}</p>
-        <img src="{{ recipe.images[0] }}" alt="recipe photo">
+        <h2>
+            Health Star Rating: {{ recipe.nutrition.health_star() }} Stars
+        </h2>
+        <div class="recipe-intro">
+            <img
+              src="{{ recipe.images[0] if recipe.images and recipe.images[0] else url_for('static', filename='images/placeholder.jpg') }}"
+              alt="Photo of {{ recipe.name }}"
+            >
+            <h3>Made By:</h3>
+            <p>Author: {{ recipe.author.name }}</p>
+        </div>
+
+      <div class="recipe-details">
+        <div>
+            <div class="recipe-ingredients">
+              <h2>Ingredients</h2>
+              <ul>
+                {% for item in recipe.ingredients %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="recipe-instructions">
+              <h2>Instructions</h2>
+              <ol>
+                {% for step in recipe.instructions %}
+                  <li>{{ step }}</li>
+                {% endfor %}
+              </ol>
+            </div>
+        </div>
+
+        <div class="nutritional-info">
+          <h2 class="centered-heading">Nutritional Information</h2>
+          <table>
+            <tbody>
+              <tr><td>Calories</td><td>{{ recipe.nutrition.calories }}</td></tr>
+              <tr><td>Fat</td><td>{{ recipe.nutrition.fat }}g</td></tr>
+              <tr><td>Carbohydrates</td><td>{{ recipe.nutrition.carbohydrates }}g</td></tr>
+              <tr><td>Protein</td><td>{{ recipe.nutrition.protein }}g</td></tr>
+              <tr><td>Saturated Fat</td><td>{{ recipe.nutrition.saturated_fat }}g</td></tr>
+              <tr><td>Cholesterol</td><td>{{ recipe.nutrition.cholesterol }}g</td></tr>
+              <tr><td>Sodium</td><td>{{ recipe.nutrition.sodium }}g</td></tr>
+              <tr><td>Fiber</td><td>{{ recipe.nutrition.fiber }}g</td></tr>
+              <tr><td>Sugar</td><td>{{ recipe.nutrition.sugar }}g</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="recipe-ingredients">
-        <h2>Ingredients</h2>
-        <ul>
-          {% for item in recipe.ingredients %}
-            <li>{{ item }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <div class="recipe-instructions">
-        <h2>Instructions</h2>
-        <ol>
-          {% for step in recipe.instructions %}
-            <li>{{ step }}</li>
-          {% endfor %}
-        </ol>
-      </div>
-
-      <div class="nutritional-info">
-        <h2 class="centered-heading">Nutritional Information</h2>
-        <table>
-          <tr>
-            <td>Calories</td>
-            <td>{{ recipe.nutrition.calories }}</td>
-          </tr>
-          <tr>
-            <td>Fat</td>
-            <td>{{ recipe.nutrition.fat }}g</td>
-          </tr>
-          <tr>
-            <td>Carbohydrates</td>
-            <td>{{ recipe.nutrition.carbohydrates }}g</td>
-          </tr>
-          <tr>
-            <td>Protein</td>
-            <td>{{ recipe.nutrition.protein }}g</td>
-          </tr>
-          <tr>
-            <td>Saturated Fat</td>
-            <td>{{ recipe.nutrition.saturated_fat }}g</td>
-          </tr>
-          <tr>
-            <td>Cholesterol</td>
-            <td>{{ recipe.nutrition.cholesterol }}g</td>
-          </tr>
-          <tr>
-            <td>Sodium</td>
-            <td>{{ recipe.nutrition.sodium }}g</td>
-          </tr>
-          <tr>
-            <td>Fiber</td>
-            <td>{{ recipe.nutrition.fiber }}g</td>
-          </tr>
-          <tr>
-            <td>Sugar</td>
-            <td>{{ recipe.nutrition.sugar }}g</td>
-          </tr>
-        </table>
-      </div>
     </div>
+
 
 </body>
 </html>

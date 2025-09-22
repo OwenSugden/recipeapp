@@ -3,40 +3,337 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
-  <link rel="stylesheet" href="../static/css/branding.css"/>
+  <link rel="stylesheet" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/css/browse.css"/>
 </head>
 <body>
-    {% include 'navbar.html'%}
-    <div>
-        <h1>Browse Recipes</h1>
-        <h2>Total Recipes: {{ num_recipe }}</h2>
-        <div class="recipes">
-            <ul>
-                {% for recipe in recipes_on_page %}
-                <li>
-                    <a href="{{ url_for('recipe_detail_bp.recipe_detail',
-                             recipe_id=recipe.id,
-                             return_to=request.full_path) }}">
-                        <h3>{{ recipe.name }}</h3>
-                    </a>
-                    <p>Author: {{ recipe.author }}</p>
-                    <img src="{{ recipe.images[0] }} " class="browse-image" alt="recipe image">
-                </li>
-                {% endfor %}
-            </ul>
+  {% include 'navbar.html'%}
+  <div class="browse-page">
+    <h1>Browse Recipes</h1>
+    <h2>Total Recipes: {{ num_recipe }}</h2>
 
-            {% if page > 1 %}
-            <a href="{{ url_for('browse_bp.browse', page=page - 1) }}">Previous</a>
-
-            {% endif %}
-            <span>Page {{ page }} of {{ total_pages }}</span>
-
-            {% if page < total_pages %}
-            <a href="{{ url_for('browse_bp.browse', page=page + 1) }}">Next</a>
-            {% endif %}
-        </div>
+    <div class="search-container">
+      <form id="browse-form"
+            role="search"
+            action="{{ url_for('browse_bp.browse') }}"
+            method="get"
+            class="search-form">
+        <input id="q" name="q" type="search" placeholder="Search…" class="search-input" value="{{ q or '' }}" />
+        <button type="submit" class="search-btn" aria-label="Search">
+          <img src="{{ url_for('static', filename='images/search.svg') }}" alt="" aria-hidden="true" class="search-icon" />
+        </button>
+      </form>
     </div>
 
+    <div class="browse-content">
+      <aside class="filter-container">
+        <strong>Filters</strong>
+        <hr class="browse-hr">
 
+        <details class="dropdown">
+          <summary class="dropdown-btn">Category</summary>
+          <div class="dropdown-menu category-menu">
+            <button type="submit"
+                    form="browse-form"
+                    name="filter"
+                    value="all"
+                    class="filter-btn {% if (filter or 'all') == 'all' %}selected{% endif %}"
+                    formaction="{{ url_for('browse_bp.browse',
+                      q=q, sort=sort_option,
+                      time_op=time_op, time=time,
+                      calories_op=calories_op, calories=calories,
+                      fat_op=fat_op, fat=fat,
+                      carbs_op=carbs_op, carbs=carbs) }}">
+              All
+            </button>
+
+            {% for cat in categories %}
+              <button type="submit"
+                      form="browse-form"
+                      name="filter"
+                      value="{{ cat }}"
+                      class="filter-btn {% if filter == cat %}selected{% endif %}"
+                      formaction="{{ url_for('browse_bp.browse',
+                        q=q, sort=sort_option,
+                        time_op=time_op, time=time,
+                        calories_op=calories_op, calories=calories,
+                        fat_op=fat_op, fat=fat,
+                        carbs_op=carbs_op, carbs=carbs) }}">
+                {{ cat }}
+              </button>
+            {% endfor %}
+          </div>
+        </details>
+
+        <hr class="browse-hr">
+
+        <details class="dropdown">
+          <summary class="dropdown-btn">Time</summary>
+          <div class="dropdown-menu">
+            <div class="time-row">
+              <label for="time-op" class="sr-only">Compare</label>
+              <select id="time-op" name="time_op" form="browse-form">
+                <option value="lt" {{ 'selected' if time_op == 'lt' else '' }}>&lt; (less than)</option>
+                <option value="gt" {{ 'selected' if time_op == 'gt' else '' }}>&gt; (greater than)</option>
+              </select>
+
+              <label for="time-mins" class="sr-only">Minutes</label>
+              <input id="time-mins"
+                     type="number"
+                     min="0"
+                     step="1"
+                     name="time"
+                     form="browse-form"
+                     placeholder="minutes"
+                     value="{{ time if time is not none else '' }}">
+
+              <button type="submit"
+                      form="browse-form"
+                      class="apply-btn"
+                      formaction="{{ url_for('browse_bp.browse',
+                        q=q, filter=filter, sort=sort_option,
+                        time_op=time_op, time=time,
+                        calories_op=calories_op, calories=calories,
+                        fat_op=fat_op, fat=fat,
+                        carbs_op=carbs_op, carbs=carbs) }}">
+                Apply
+              </button>
+
+              <a class="clear-link"
+                 href="{{ url_for('browse_bp.browse',
+                   q=q, filter=filter, sort=sort_option,
+                   calories_op=calories_op, calories=calories,
+                   fat_op=fat_op, fat=fat,
+                   carbs_op=carbs_op, carbs=carbs) }}">
+                Clear
+              </a>
+            </div>
+
+            <small class="hint">Tip: “&lt; 30” = under 30 minutes.</small>
+          </div>
+        </details>
+
+        <hr class="browse-hr">
+
+        <details class="dropdown">
+          <summary class="dropdown-btn">Nutrition</summary>
+          <div class="dropdown-menu nutrition-menu">
+
+            <details class="subdropdown">
+              <summary class="subdropdown-btn">Calories</summary>
+              <div class="subdropdown-body time-row">
+                <label for="calories-op" class="sr-only">Calories operator</label>
+                <select id="calories-op" name="calories_op" form="browse-form">
+                  <option value="lt" {{ 'selected' if calories_op == 'lt' else '' }}>&lt; (less than)</option>
+                  <option value="gt" {{ 'selected' if calories_op == 'gt' else '' }}>&gt; (greater than)</option>
+                </select>
+
+                <label for="calories" class="sr-only">Calories</label>
+                <input id="calories" type="number" min="0" step="1"
+                       name="calories" form="browse-form"
+                       placeholder="kcal"
+                       value="{{ calories if calories is not none else '' }}">
+
+                <button type="submit"
+                        form="browse-form"
+                        class="apply-btn"
+                        formaction="{{ url_for('browse_bp.browse',
+                          q=q, filter=filter, sort=sort_option,
+                          time_op=time_op, time=time,
+                          protein_op=protein_op, protein=protein,
+                          fat_op=fat_op, fat=fat,
+                          carbs_op=carbs_op, carbs=carbs) }}">
+                  Apply
+                </button>
+
+                <a class="clear-link"
+                   href="{{ url_for('browse_bp.browse',
+                     q=q, filter=filter, sort=sort_option,
+                     time_op=time_op, time=time,
+                     protein_op=protein_op, protein=protein,
+                     fat_op=fat_op, fat=fat,
+                     carbs_op=carbs_op, carbs=carbs) }}">
+                  Clear
+                </a>
+              </div>
+            </details>
+
+            <details class="subdropdown">
+              <summary class="subdropdown-btn">Protein</summary>
+              <div class="subdropdown-body time-row">
+                <label for="protein-op" class="sr-only">Protein operator</label>
+                <select id="protein-op" name="protein_op" form="browse-form">
+                  <option value="lt" {{ 'selected' if protein_op == 'lt' else '' }}>&lt; (less than)</option>
+                  <option value="gt" {{ 'selected' if protein_op == 'gt' else '' }}>&gt; (greater than)</option>
+                </select>
+
+                <label for="protein" class="sr-only">Protein (g)</label>
+                <input id="protein" type="number" min="0" step="1"
+                       name="protein" form="browse-form"
+                       placeholder="g"
+                       value="{{ protein if protein is not none else '' }}">
+
+                <button type="submit"
+                        form="browse-form"
+                        class="apply-btn"
+                        formaction="{{ url_for('browse_bp.browse',
+                          q=q, filter=filter, sort=sort_option,
+                          time_op=time_op, time=time,
+                          calories_op=calories_op, calories=calories,
+                          fat_op=fat_op, fat=fat,
+                          carbs_op=carbs_op, carbs=carbs) }}">
+                  Apply
+                </button>
+
+                <a class="clear-link"
+                   href="{{ url_for('browse_bp.browse',
+                     q=q, filter=filter, sort=sort_option,
+                     time_op=time_op, time=time,
+                     calories_op=calories_op, calories=calories,
+                     fat_op=fat_op, fat=fat,
+                     carbs_op=carbs_op, carbs=carbs) }}">
+                  Clear
+                </a>
+              </div>
+            </details>
+
+            <details class="subdropdown">
+              <summary class="subdropdown-btn">Fat</summary>
+              <div class="subdropdown-body time-row">
+                <label for="fat-op" class="sr-only">Fat operator</label>
+                <select id="fat-op" name="fat_op" form="browse-form">
+                  <option value="lt" {{ 'selected' if fat_op == 'lt' else '' }}>&lt; (less than)</option>
+                  <option value="gt" {{ 'selected' if fat_op == 'gt' else '' }}>&gt; (greater than)</option>
+                </select>
+
+                <label for="fat" class="sr-only">Fat (g)</label>
+                <input id="fat" type="number" min="0" step="1"
+                       name="fat" form="browse-form"
+                       placeholder="g"
+                       value="{{ fat if fat is not none else '' }}">
+
+                <button type="submit"
+                        form="browse-form"
+                        class="apply-btn"
+                        formaction="{{ url_for('browse_bp.browse',
+                          q=q, filter=filter, sort=sort_option,
+                          time_op=time_op, time=time,
+                          calories_op=calories_op, calories=calories,
+                          protein_op=protein_op, protein=protein,
+                          carbs_op=carbs_op, carbs=carbs) }}">
+                  Apply
+                </button>
+
+                <a class="clear-link"
+                   href="{{ url_for('browse_bp.browse',
+                     q=q, filter=filter, sort=sort_option,
+                     time_op=time_op, time=time,
+                     calories_op=calories_op, calories=calories,
+                     protein_op=protein_op, protein=protein,
+                     carbs_op=carbs_op, carbs=carbs) }}">
+                  Clear
+                </a>
+              </div>
+            </details>
+
+            <details class="subdropdown">
+              <summary class="subdropdown-btn">Carbohydrates</summary>
+              <div class="subdropdown-body time-row">
+                <label for="carbs-op" class="sr-only">Carbs operator</label>
+                <select id="carbs-op" name="carbs_op" form="browse-form">
+                  <option value="lt" {{ 'selected' if carbs_op == 'lt' else '' }}>&lt; (less than)</option>
+                  <option value="gt" {{ 'selected' if carbs_op == 'gt' else '' }}>&gt; (greater than)</option>
+                </select>
+
+                <label for="carbs" class="sr-only">Carbohydrates (g)</label>
+                <input id="carbs" type="number" min="0" step="1"
+                       name="carbs" form="browse-form"
+                       placeholder="g"
+                       value="{{ carbs if carbs is not none else '' }}">
+
+                <button type="submit"
+                        form="browse-form"
+                        class="apply-btn"
+                        formaction="{{ url_for('browse_bp.browse',
+                          q=q, filter=filter, sort=sort_option,
+                          time_op=time_op, time=time,
+                          calories_op=calories_op, calories=calories,
+                          protein_op=protein_op, protein=protein,
+                          fat_op=fat_op, fat=fat) }}">
+                  Apply
+                </button>
+
+                <a class="clear-link"
+                   href="{{ url_for('browse_bp.browse',
+                     q=q, filter=filter, sort=sort_option,
+                     time_op=time_op, time=time,
+                     calories_op=calories_op, calories=calories,
+                     protein_op=protein_op, protein=protein,
+                     fat_op=fat_op, fat=fat) }}">
+                  Clear
+                </a>
+              </div>
+            </details>
+
+          </div>
+        </details>
+
+        <hr class="browse-hr">
+
+        <a class="reset-link" href="{{ url_for('browse_bp.browse') }}">Reset all</a>
+      </aside>
+
+      <main class="browse-recipes">
+        <div class="browse-recipes-content">
+          <ul class="recipes-grid">
+            {% for recipe in recipes_on_page %}
+              <li class="recipe-card">
+                <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail',
+                                                       recipe_id=recipe.id,
+                                                       return_to=request.full_path) }}">
+                  <div class="card-img">
+                    <img
+                      src="{{ recipe.images[0] if recipe.images and recipe.images[0] else url_for('static', filename='images/placeholder.jpg') }}"
+                      alt="Preview of {{ recipe.name }}">
+                  </div>
+                  <div class="card-body">
+                    <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
+                    <p class="card-author" style="margin: 0">Author: {{ recipe.author }}</p>
+                    <p class="card-health-star"> Health Star rating: {{ recipe.nutrition.health_star() }}</p>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <nav class="pager">
+          {% if page > 1 %}
+            <a class="page-btn" href="{{ url_for('browse_bp.browse',
+              page=page-1, q=q, filter=filter, sort=sort_option,
+              time_op=time_op, time=time,
+              calories_op=calories_op, calories=calories,
+              fat_op=fat_op, fat=fat,
+              carbs_op=carbs_op, carbs=carbs) }}">
+              Previous
+            </a>
+          {% endif %}
+
+          <span>Page {{ page }} of {{ total_pages }}</span>
+
+          {% if page < total_pages %}
+            <a class="page-btn" href="{{ url_for('browse_bp.browse',
+              page=page+1, q=q, filter=filter, sort=sort_option,
+              time_op=time_op, time=time,
+              calories_op=calories_op, calories=calories,
+              fat_op=fat_op, fat=fat,
+              carbs_op=carbs_op, carbs=carbs) }}">
+              Next
+            </a>
+          {% endif %}
+        </nav>
+      </main>
+    </div>
+  </div>
 </body>
 </html>
