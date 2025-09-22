@@ -6,7 +6,6 @@
     {% if 'user_name' in session %} Hello, {{ session['user_name'] }} {%
     endif %}
     </h2>
-    <ul>
     <ul class="navbar-btn">
         <li><a href="{{ url_for('home_bp.home') }}">Home</a></li>
         <li><a href="{{ url_for('browse_bp.browse') }}">Browse</a></li>
