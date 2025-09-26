@@ -49,6 +49,7 @@
 }
 
 .pager {
+    margin: 20px;
     display: flex;
     gap: 0.75rem;
     align-items: center;
@@ -58,9 +59,9 @@
 .page-btn {
     padding: 0.5rem 0.8rem;
     border-radius: 0.5rem;
-    background: transparent;
+    background: var(--secondary-color);
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--light-text);
 }
 
 .page-btn:hover {
@@ -88,7 +89,7 @@
            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 
-/* your two-column main layout stays the same */
+/* two-column main layout */
 .browse-content {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
@@ -97,15 +98,26 @@
   margin-inline: auto;
   align-items: start;
 }
-.filter-container { position: sticky; top: 16px; align-self: start; }
+.filter-container { position: sticky; top: 40vh; align-self: start; padding: 10px}
 .browse-recipes { min-width: 0; }
+
+.reset-link{
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-color);
+    padding: 12px;
+}
+
+.reset-link:hover{
+    font-family: 'Outfit', sans-serif;
+    color: var(--accent-color);
+}
 
 
 .recipes-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
-  margin: 0;
+  margin: 1rem;
   padding: 0;
   list-style: none;
 }
@@ -116,6 +128,12 @@
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
+    transition: 0.3s;
+}
+
+.recipe-card:hover {
+    transform: rotate(0.3deg) scale(1.02);
+    box-shadow: 3px 3px 5px;
 }
 
 .card-img { aspect-ratio: 4 / 3; }

@@ -20,7 +20,6 @@ class Recipe:
                  category: "Category" = None,
                  ingredient_quantities: list[str] = None,
                  ingredients: list[str] = None,
-                 rating: float | None = None,
                  nutrition: "Nutrition" = None,
                  servings: str | None = None,
                  recipe_yield: str | None = None,
@@ -44,7 +43,6 @@ class Recipe:
         self.__category = category
         self.__ingredient_quantities = ingredient_quantities if ingredient_quantities else []
         self.__ingredients = ingredients if ingredients else []
-        self.__rating = rating
         self.__nutrition = nutrition
         self.__servings = servings if servings else "Not specified"
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
@@ -145,16 +143,6 @@ class Recipe:
         return self.__ingredients
 
     @property
-    def rating(self) -> float | None:
-        return self.__rating
-
-    @rating.setter
-    def rating(self, value: float):
-        if value is not None and (value < 0 or value > 5):
-            raise ValueError("Rating must be between 0 and 5.")
-        self.__rating = value
-
-    @property
     def nutrition(self) -> "Nutrition":
         return self.__nutrition
 
@@ -195,25 +183,13 @@ class Recipe:
     def add_review(self, review: Review) -> None:
         if isinstance(review, Review):
             self.__reviews.append(review)
-            self.__update_rating()
         else:
             raise TypeError("Expected a Review instance")
 
     def remove_review(self, review: Review) -> None:
         if review in self.__reviews:
             self.__reviews.remove(review)
-            self.__update_rating()
         else:
             raise ValueError("Review not found in recipe's reviews")
 
-    def __update_rating(self) -> None:
-        if self.__reviews:
-            ratings = [r.rating for r in self.__reviews if
-                       hasattr(r, "rating") and r.rating is not None]
-            if ratings:
-                average_rating = sum(ratings) / len(ratings)
-                self.__rating = round(average_rating, 1)
-            else:
-                self.__rating = None
-        else:
-            self.__rating = None
+

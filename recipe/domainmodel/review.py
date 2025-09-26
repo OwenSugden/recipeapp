@@ -1,5 +1,8 @@
+from datetime import datetime
+
+
 class Review:
-    def __init__(self, review_id: int, recipe_id: int, user_id: int, rating: int, comment: str = None):
+    def __init__(self, review_id: int, recipe_id: int, user_id: int, rating: int, comment: str = None, created_at: datetime = None):
         if rating < 1 or rating > 5:
             raise ValueError("Rating must be between 1 and 5")
         if not isinstance(review_id, int) or review_id <= 0:
@@ -10,6 +13,7 @@ class Review:
         self.__user_id = user_id
         self.__rating = rating
         self.__comment = comment
+        self.__created_at = created_at
 
     def __repr__(self) -> str:
         return (f"<Review with id: {self.id} from recipe_id: {self.recipe_id} was made by user_id: {self.user_id}, "
@@ -60,3 +64,7 @@ class Review:
     @comment.setter
     def comment(self, value: str):
         self.__comment = value.strip()
+
+    @property
+    def created_at(self) -> datetime:
+        return self.__created_at

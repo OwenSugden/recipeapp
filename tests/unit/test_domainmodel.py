@@ -12,8 +12,7 @@ from recipe.domainmodel.review import Review
 # Fixtures
 @pytest.fixture
 def my_user():
-    return User("test user", "password123", 1)
-
+    return User("tests user", "password123", 1)
 
 @pytest.fixture
 def my_author():
@@ -76,25 +75,42 @@ def test_user_construction_without_id():
 
 
 def test_user_equality():
-    user1 = User("test", "pass", 1)
-    user2 = User("test", "pass", 1)
-    user3 = User("test", "pass", 2)
+    user1 = User("tests", "pass", 1)
+    user2 = User("tests", "pass", 1)
+    user3 = User("tests", "pass", 2)
     assert user1 == user2
     assert user1 != user3
 
 
 def test_user_less_than():
-    user1 = User("test", "pass", 1)
-    user2 = User("test", "pass", 2)
+    user1 = User("tests", "pass", 1)
+    user2 = User("tests", "pass", 2)
     assert user1 < user2
 
 
 def test_user_hash():
-    user1 = User("test", "pass", 1)
-    user2 = User("test", "pass", 1)
+    user1 = User("tests", "pass", 1)
+    user2 = User("tests", "pass", 1)
     user_set = {user1, user2}
     assert len(user_set) == 1
 
+def test_user_add_favourite_recipe(my_user, my_favourite):
+    my_user.add_favourite_recipe(my_favourite)
+    assert my_favourite in my_user.favourite_recipes
+
+def test_user_remove_favourite_recipe(my_user, my_favourite):
+    my_user.add_favourite_recipe(my_favourite)
+    my_user.remove_favourite_recipe(my_favourite)
+    assert my_favourite not in my_user.favourite_recipes
+
+def test_user_add_review(my_user, my_review):
+    my_user.add_review(my_review)
+    assert my_review in my_user.reviews
+
+def test_user_remove_review(my_user, my_review):
+    my_user.add_review(my_review)
+    my_user.remove_review(my_review)
+    assert my_review not in my_user.reviews
 
 # Author tests
 def test_author_construction():
@@ -182,7 +198,7 @@ def test_category_add_invalid_recipe(my_category):
 
 
 # Recipe tests
-def test_recipe_construction(my_author, my_category):
+def test_recipe_construction(my_author, my_category, my_review):
     recipe = Recipe(
         recipe_id=1,
         name="Test Recipe",
@@ -191,11 +207,10 @@ def test_recipe_construction(my_author, my_category):
         preparation_time=15,
         created_date=datetime(2024, 1, 1),
         description="Test description",
-        images=["test.jpg"],
+        images=["tests.jpg"],
         category=my_category,
         ingredient_quantities=["1 cup flour"],
         ingredients=["flour"],
-        rating=4.0,
         nutrition=None,
         servings="2",
         recipe_yield="2 portions",
@@ -247,6 +262,15 @@ def test_author_set_recipe_invalid_type(my_author):
     with pytest.raises(TypeError):
         my_author.add_recipe("not a recipe")
 
+def test_recipe_add_review(my_recipe, my_review):
+    my_recipe.add_review(my_review)
+    assert my_review in my_recipe.reviews
+
+def test_recipe_remove_review(my_recipe, my_review):
+    my_recipe.add_review(my_review)
+    my_recipe.remove_review(my_review)
+    assert my_review not in my_recipe.reviews
+
 # Nutrition tests
 def test_nutrition_construction():
     nutrition = Nutrition(100.0, 10.0, 3.0, 20.0,
@@ -283,8 +307,21 @@ def test_nutrition_hash():
     nutrition_set = {n1, n2}
     assert len(nutrition_set) == 1
 
+def test_health_star():
+    nutrition = Nutrition(100.0, 10.0, 3.0, 20.0,
+                          200.0, 15.0, 5.0, 7.0,
+                          8.0)
+    rating = nutrition.health_star()
+    expected = 4.0
+    assert rating == expected
 
-# Favourite test
+
+def test_health_star_with_missing_data():
+    n = Nutrition(None, 10, 3, 20, 200, 15, 5, 7, 8)
+    assert n.health_star() == "Health star rating unavailable"
+
+
+# Favourite tests
 def test_favourite_construction(my_user, my_recipe):
     fav = Favourite(my_user.id, my_recipe.id)
     assert fav.user_id == my_user.id
@@ -308,7 +345,7 @@ def test_favourite_hash():
     fav_set = {fav1, fav2}
     assert len(fav_set) == 1
 
-# Review test
+# Review tests
 def test_review_construction(my_recipe, my_user):
     review = Review(1, my_recipe.id, my_user.id, 5, "Excellent!")
     assert review.id == 1

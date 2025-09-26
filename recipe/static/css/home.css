@@ -5,30 +5,53 @@
     text-align: center;
 }
 
-.homepage-main-image {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.hero {
+    position: relative;
+    width: 100%;
+    height: 60vh; /* adjust height of banner */
+    background-image: url('../images/homePagePhoto.jpg');
+    background-size: cover;
+    background-position: center 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px; /* adjust to navbar height */
+    padding-bottom: 40px;
 }
 
 .logo {
     display: block;
-    width: 30%;
+    width: 35%;
     height: auto;
-    margin: 20px auto;
+    margin-top: 60px;
     border-radius: 8px;
+    transition: 0.3s;
 }
 
-.browse-image {
-    display: block;
-    max-width: 60%;
-    height: auto;
-    margin: 20px 0;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.logo:hover{
+    transform: rotate(4deg) scale(1.05);
+}
+
+.tagline {
+    font-family: 'Daydream', sans-serif;
+    font-size: medium;
+    color: var(--primary-color);
+    font-weight: bold;
+    justify-content: center;
+    margin-top: 4px;
+    transition: 0.1s;
+}
+
+.tagline:hover {
+    transform: rotate(-1deg) scale(1.05);
+}
+
+.intro-block {
+    text-align: center;          /* centre the text horizontally */
+    margin-top: 14px;            /* space below logo */
+    max-width: 600px;            /* keeps lines from being too wide */
+    transition: 0.1s;
 }
 
 @media (min-width: 1024px) {
@@ -50,10 +73,10 @@
 
 .recipes-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    width: 100%;
-    margin: 0;
+    grid-template-columns: repeat(3, 300px); /* 3 cards, fixed width */
+    gap: 40px;
+    justify-content: center;  /* centres grid horizontally */
+    margin: 0 auto;           /* centre grid block */
     padding: 0;
     list-style: none;
 }
@@ -68,6 +91,12 @@
     border-radius: 12px;
     overflow: hidden;
     background: #fff;
+    transition: 0.3s;
+}
+
+.recipe-card:hover{
+    transform: scale(1.02);
+    box-shadow: 3px 3px 5px;
 }
 
 .card-link {
@@ -94,5 +123,3 @@
     flex-direction: column;
     justify-content: center;
 }
-
-
