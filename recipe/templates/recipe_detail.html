@@ -61,7 +61,7 @@
           <table>
             <tbody>
               <tr><td>Calories</td><td>{{ recipe.nutrition.calories }}</td></tr>
-              <tr><td>Fat</td><td>{{ recipe.nutrition.fat }}g</td></tr>
+              <tr><tfd>Fat</tfd><td>{{ recipe.nutrition.fat }}g</td></tr>
               <tr><td>Carbohydrates</td><td>{{ recipe.nutrition.carbohydrates }}g</td></tr>
               <tr><td>Protein</td><td>{{ recipe.nutrition.protein }}g</td></tr>
               <tr><td>Saturated Fat</td><td>{{ recipe.nutrition.saturated_fat }}g</td></tr>
@@ -73,8 +73,20 @@
           </table>
         </div>
       </div>
-
     </div>
+
+    <h2>Comments</h2>
+
+    <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
+        <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
+        <button type="submit">Post Comment</button>
+    </form>
+
+    <ul>
+        {% for c in comments %}
+            <li><strong>User {{ c.user_name }}:</strong> {{ c.text }} {{ c.timestamp }}</li>
+        {% endfor %}
+    </ul>
 
 
 </body>

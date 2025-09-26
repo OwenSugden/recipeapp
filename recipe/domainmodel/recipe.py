@@ -50,6 +50,7 @@ class Recipe:
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
         self.__instructions = instructions if instructions else []
         self.__reviews = []
+        self.__ratings = []
 
     def __repr__(self) -> str:
         return (f"<Recipe {self.__name} with id: {self.id} was created by {self.__author.name} "
@@ -217,3 +218,4 @@ class Recipe:
                 self.__rating = None
         else:
             self.__rating = None
+

@@ -32,6 +32,8 @@ def create_app(test_config = None):
         app.register_blueprint(authentication.authentication_blueprint)
         from .search import search
         app.register_blueprint(search.search_blueprint)
+        from .comments import comments
+        app.register_blueprint(comments.comments_blueprint)
 
     repo.repo_instance = MemoryRepository()
 
