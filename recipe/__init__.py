@@ -6,6 +6,7 @@ from recipe.adapters.memory_repository import MemoryRepository, populate
 def create_app(test_config = None):
     app = Flask(__name__)
 
+
     app.config.from_object('config.Config')
     data_path = Path('recipe') / 'adapters' / 'data'
 
@@ -27,7 +28,5 @@ def create_app(test_config = None):
         app.register_blueprint(authentication.authentication_blueprint)
         from .user_profile import user_profile
         app.register_blueprint(user_profile.user_profile_blueprint)
-
-    repo.repo_instance = MemoryRepository()
 
     return app
