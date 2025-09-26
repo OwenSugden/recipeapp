@@ -3,6 +3,7 @@ from typing import List
 import os
 
 from recipe.domainmodel.comment import Comment
+from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.user import User
 from recipe.adapters.repository import AbstractRepository
@@ -20,6 +21,7 @@ class MemoryRepository(AbstractRepository):
         self.__recipe = list()
         self.__users = list()
         self.__comments = list()
+        self.__ratings = list()
 
     def add_recipe(self, recipe: Recipe):
         if isinstance(recipe, Recipe):
@@ -54,6 +56,16 @@ class MemoryRepository(AbstractRepository):
 
     def get_comments_for_recipe(self, recipe_id: int) -> List[Comment]:
         return [c for c in self.__comments if c.recipe_id == recipe_id]
+
+    # In MemoryRepository
+    def add_rating(self, rating: Rating):
+        # Remove previous rating from same user for this recipe
+        self.__ratings = [r for r in self.__ratings
+                         if not (r.user_name == rating.user_name and r.recipe_id == rating.recipe_id)]
+        self.__ratings.append(rating)
+
+    def get_ratings_for_recipe(self, recipe_id: int):
+        return [r for r in self.__ratings if r.recipe_id == recipe_id]
 
 def populate(repo: AbstractRepository):
     dir_name = os.path.dirname(os.path.abspath(__file__))
