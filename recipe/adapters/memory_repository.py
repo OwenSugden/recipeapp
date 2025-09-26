@@ -126,7 +126,6 @@ def create_object(line, authors, categories) -> Recipe:
         category_obj,
         ingredient_quantities,
         ingredients,
-        None,
         nutrition,
         servings,
         recipe_yield,

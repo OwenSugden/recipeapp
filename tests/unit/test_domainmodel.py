@@ -198,7 +198,7 @@ def test_category_add_invalid_recipe(my_category):
 
 
 # Recipe tests
-def test_recipe_construction(my_author, my_category):
+def test_recipe_construction(my_author, my_category, my_review):
     recipe = Recipe(
         recipe_id=1,
         name="Test Recipe",
@@ -211,7 +211,6 @@ def test_recipe_construction(my_author, my_category):
         category=my_category,
         ingredient_quantities=["1 cup flour"],
         ingredients=["flour"],
-        rating=4.0,
         nutrition=None,
         servings="2",
         recipe_yield="2 portions",

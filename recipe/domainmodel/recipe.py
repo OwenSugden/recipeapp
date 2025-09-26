@@ -20,7 +20,6 @@ class Recipe:
                  category: "Category" = None,
                  ingredient_quantities: list[str] = None,
                  ingredients: list[str] = None,
-                 rating: float | None = None,
                  nutrition: "Nutrition" = None,
                  servings: str | None = None,
                  recipe_yield: str | None = None,
@@ -44,7 +43,6 @@ class Recipe:
         self.__category = category
         self.__ingredient_quantities = ingredient_quantities if ingredient_quantities else []
         self.__ingredients = ingredients if ingredients else []
-        self.__rating = rating
         self.__nutrition = nutrition
         self.__servings = servings if servings else "Not specified"
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
@@ -143,16 +141,6 @@ class Recipe:
     @property
     def ingredients(self) -> list[str]:
         return self.__ingredients
-
-    @property
-    def rating(self) -> float | None:
-        return self.__rating
-
-    @rating.setter
-    def rating(self, value: float):
-        if value is not None and (value < 0 or value > 5):
-            raise ValueError("Rating must be between 0 and 5.")
-        self.__rating = value
 
     @property
     def nutrition(self) -> "Nutrition":
