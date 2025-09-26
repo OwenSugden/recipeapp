@@ -11,7 +11,7 @@ def test_new_user_register(client):
     status_code = client.get('/authentication/register').status_code
     assert status_code == 200
 
-    # Check that a new user can register.
+    # Check that a new user_profile can register.
     user_name = 'new_user'
     password = 'new_password'
     response = client.post(
@@ -21,7 +21,7 @@ def test_new_user_register(client):
     assert response.headers['Location'] == 'http://localhost/homepage'
 
 def test_existing_user_register(client):
-    # Check that a user cannot register with an existing user name.
+    # Check that a user_profile cannot register with an existing user_profile name.
     message = b'User name already registered. Please try another.'
     response = client.post(
         '/authentication/register',
@@ -29,7 +29,7 @@ def test_existing_user_register(client):
     )
     assert message in response.data
 
-    # Check that a user cannot register without a user name.
+    # Check that a user_profile cannot register without a user_profile name.
     user_name = ''
     message = b'User name is required.'
     response = client.post(
@@ -38,7 +38,7 @@ def test_existing_user_register(client):
     )
     assert message in response.data
 
-    # Check that a user cannot register without a password.
+    # Check that a user_profile cannot register without a password.
     user_name = 'new_user2'
     password = ''
     message = b'Password is required.'

@@ -20,8 +20,8 @@
 body {
     font-family: 'Outfit', sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: var(--background-color);
+    padding: 0px;
+    background-color: var(--light-text);
     color: var(--text-color);
 }
 
@@ -29,6 +29,7 @@ h1 {
     font-family: 'Daydream', sans-serif;
     color: var(--primary-color);
     font-weight: bold;
+    text-align: center;
 }
 
 h2 {
@@ -37,7 +38,24 @@ h2 {
     font-weight: bold;
 }
 
+h3 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+h4 {
+    font-family: 'Daydream', sans-serif;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
 p {
     max-width: 800px;
     margin: 10px 0;
 }
+
+.formwrapper {
+    padding: 2rem;
+}
+

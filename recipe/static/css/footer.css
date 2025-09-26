@@ -1,0 +1,70 @@
+.footer {
+    position: relative;
+    margin-top: 25px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
+    background: var(--primary-color);
+    display: flex;
+    flex-direction: column;   /* stack vertically */
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    box-sizing: border-box;
+    gap: 10px;
+}
+
+.footer-logo-box {
+    position: relative;
+    margin-top: 10px;
+    bottom: 0;
+    left: 0;
+    width: 105%;
+    height: 70px;
+    box-shadow: 0px 5px 5px;
+    background: lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 40px;
+    box-sizing: border-box;
+    gap: 10px;
+}
+
+.footer-logo{
+    height: 50px;
+    width: auto;
+}
+
+.footer p {
+    text-align: center;
+    margin: 0;
+}
+.name-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 20px;
+    justify-items: center;  /* centre each cell */
+    margin: 20px auto;
+    text-align: center;
+}
+
+.footer-person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer-person .name {
+    font-weight: 600;
+    color: var(--light-text);
+    margin: 0;
+}
+
+.footer-person .upi {
+    font-weight: 400;
+    color: var(--light-text);
+    margin: 0;
+    font-size: 0.9em;
+}

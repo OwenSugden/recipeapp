@@ -51,13 +51,13 @@ class User:
         if recipe not in self.__favourite_recipes:
             self.__favourite_recipes.append(recipe)
         else:
-            raise ValueError("Recipe already in user's favourites")
+            raise ValueError("Recipe already in user_profile's favourites")
 
     def remove_favourite_recipe(self, recipe: "Favourite") -> None:
         if recipe in self.__favourite_recipes:
             self.__favourite_recipes.remove(recipe)
         else:
-            raise ValueError("Recipe not found in user's favourites")
+            raise ValueError("Recipe not found in user_profile's favourites")
 
     def add_review(self, review: "Review") -> None:
         if not isinstance(review, Review):
@@ -68,7 +68,7 @@ class User:
         if review in self.__reviews:
             self.__reviews.remove(review)
         else:
-            raise ValueError("Review not found in user's reviews")
+            raise ValueError("Review not found in user_profile's reviews")
 
     def check_password(self, password: str) -> bool:
         from werkzeug.security import check_password_hash

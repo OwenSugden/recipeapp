@@ -22,15 +22,15 @@ def register():
     user_name_not_unique = None
 
     if form.validate_on_submit():
-        # Successful POST, i.e. the user name and password have passed validation checking.
-        # Use the service layer to attempt to add the new user.
+        # Successful POST, i.e. the user_profile name and password have passed validation checking.
+        # Use the service layer to attempt to add the new user_profile.
         try:
             services.add_user(form.user_name.data, form.password.data, repo.repo_instance)
 
-            # All is well, redirect the user to the login page.
+            # All is well, redirect the user_profile to the login page.
             return redirect(url_for('authentication_bp.login'))
         except services.NameNotUniqueException:
-            user_name_not_unique = 'Your user name is already taken - please supply another'
+            user_name_not_unique = 'Your user_profile name is already taken - please supply another'
 
     # For a GET or a failed POST request, return the Registration Web page.
     return render_template(
@@ -49,15 +49,15 @@ def login():
     password_does_not_match_user_name = None
 
     if form.validate_on_submit():
-        # Successful POST, i.e. the user name and password have passed validation checking.
-        # Use the service layer to lookup the user.
+        # Successful POST, i.e. the user_profile name and password have passed validation checking.
+        # Use the service layer to lookup the user_profile.
         try:
             user = services.get_user(form.user_name.data, repo.repo_instance)
 
-            # Authenticate user.
+            # Authenticate user_profile.
             services.authenticate_user(user['user_name'], form.password.data, repo.repo_instance)
 
-            # Initialise session and redirect the user to the home page.
+            # Initialise session and redirect the user_profile to the home page.
             session.clear()
             session['user_name'] = user['user_name']
             return redirect(url_for('home_bp.home'))
@@ -68,7 +68,7 @@ def login():
 
         except services.AuthenticationException:
             # Authentication failed, set a suitable error message.
-            password_does_not_match_user_name = 'Password does not match supplied user name - please check and try again'
+            password_does_not_match_user_name = 'Password does not match supplied user_profile name - please check and try again'
 
     # For a GET or a failed POST, return the Login Web page.
     return render_template(
@@ -115,8 +115,8 @@ class PasswordValid:
 
 class RegistrationForm(FlaskForm):
     user_name = StringField('Username', [
-        DataRequired(message='Your user name is required'),
-        Length(min=3, message='Your user name is too short')])
+        DataRequired(message='Your user_profile name is required'),
+        Length(min=3, message='Your user_profile name is too short')])
     password = PasswordField('Password', [
         DataRequired(message='Your password is required'),
         PasswordValid()])
