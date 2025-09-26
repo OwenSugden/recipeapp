@@ -2,6 +2,7 @@ from bisect import insort_left
 from typing import List
 import os
 
+from recipe.domainmodel.comment import Comment
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.user import User
 from recipe.adapters.repository import AbstractRepository
@@ -18,6 +19,7 @@ class MemoryRepository(AbstractRepository):
     def __init__(self):
         self.__recipe = list()
         self.__users = list()
+        self.__comments = list()
 
     def add_recipe(self, recipe: Recipe):
         if isinstance(recipe, Recipe):
@@ -41,6 +43,17 @@ class MemoryRepository(AbstractRepository):
     def get_user(self, user_name) -> User:
         return next((user for user in self.__users if user.user_name == user_name), None)
 
+    def add_comment(self, comment: Comment):
+        if isinstance(comment, Comment):
+            self.__comments.append(comment)
+        else:
+            raise TypeError("Expected a Comment instance")
+
+    def get_comments(self) -> List[Comment]:
+        return list(self.__comments)
+
+    def get_comments_for_recipe(self, recipe_id: int) -> List[Comment]:
+        return [c for c in self.__comments if c.recipe_id == recipe_id]
 
 def populate(repo: AbstractRepository):
     dir_name = os.path.dirname(os.path.abspath(__file__))

@@ -1,5 +1,7 @@
 import abc
 from typing import List
+
+from recipe.domainmodel.comment import Comment
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.user import User
 
@@ -21,6 +23,18 @@ class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
     def get_number_of_recipe(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_comment(self, comment: Comment):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_comments(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_comments_for_recipe(self, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
