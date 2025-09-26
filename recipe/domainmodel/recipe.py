@@ -195,25 +195,13 @@ class Recipe:
     def add_review(self, review: Review) -> None:
         if isinstance(review, Review):
             self.__reviews.append(review)
-            self.__update_rating()
         else:
             raise TypeError("Expected a Review instance")
 
     def remove_review(self, review: Review) -> None:
         if review in self.__reviews:
             self.__reviews.remove(review)
-            self.__update_rating()
         else:
             raise ValueError("Review not found in recipe's reviews")
 
-    def __update_rating(self) -> None:
-        if self.__reviews:
-            ratings = [r.rating for r in self.__reviews if
-                       hasattr(r, "rating") and r.rating is not None]
-            if ratings:
-                average_rating = sum(ratings) / len(ratings)
-                self.__rating = round(average_rating, 1)
-            else:
-                self.__rating = None
-        else:
-            self.__rating = None
+
