@@ -12,7 +12,7 @@ from recipe.domainmodel.review import Review
 # Fixtures
 @pytest.fixture
 def my_user():
-    return User("test user", "password123", 1)
+    return User("test user_profile", "password123", 1)
 
 
 @pytest.fixture

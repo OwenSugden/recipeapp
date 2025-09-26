@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ session['user_name'] }} Profile</title>
+    <link rel="stylesheet" href="../static/css/main.css"/>
+    <link rel="stylesheet" href="../static/css/user_profile.css"/>
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<div class="profile-page">
+<div class="profile-menu">
+        <ul>
+            <li><a href="{{ url_for('user_profile_bp.profile', section='profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('user_profile_bp.profile', section='favourites') }}">Favourites</a></li>
+            <li><a href="#">Reviews (coming soon)</a></li>
+            <li><a href="#">Ratings (coming soon)</a></li>
+        </ul>
+    </div>
+    <!-- Left: Content -->
+    <div class="profile-content">
+        {% if section == 'profile' %}
+            <h2>Edit Profile</h2>
+            <form method="POST" action="{{ url_for('user_profile_bp.edit_profile') }}">
+                <label for="username">New Username</label>
+                <input type="text" name="username" id="username" required>
+                <label for="password">Confirm Current Password</label>
+                <input type="password" name="password" id="password" required>
+                <button type="submit">Update Username</button>
+            </form>
+
+            <form method="POST" action="{{ url_for('user_profile_bp.change_password') }}">
+                <label for="old_password">Current Password</label>
+                <input type="password" name="old_password" id="old_password" required>
+                <label for="new_password">New Password</label>
+                <input type="password" name="new_password" id="new_password" required>
+                <button type="submit">Change Password</button>
+            </form>
+        {% elif section == 'favourites' %}
+            <h2>Favourite Recipes</h2>
+            <ul class="favourites-list">
+                {% for fav in favourites %}
+                    <li>
+                        <a href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=fav.recipe.id) }}">
+                            {{ fav.recipe.name }}
+                        </a>
+                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=fav.recipe.id) }}">
+                            <button type="submit">Remove</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <p>No favourites yet.</p>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <!-- Right: Menu -->
+
+</div>
+
+{% include 'footer.html' %}
+</body>
+</html>

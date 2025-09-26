@@ -17,7 +17,7 @@ class AuthenticationException(Exception):
 
 
 def add_user(user_name: str, password: str, repo: AbstractRepository):
-    # Check that the given user name is available.
+    # Check that the given user_profile name is available.
     user = repo.get_user(user_name)
     if user is not None:
         raise NameNotUniqueException
