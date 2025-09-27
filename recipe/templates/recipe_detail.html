@@ -63,7 +63,7 @@
           <table>
             <tbody>
               <tr><td>Calories</td><td>{{ recipe.nutrition.calories }}</td></tr>
-              <tr><tfd>Fat</tfd><td>{{ recipe.nutrition.fat }}g</td></tr>
+              <tr><td>Fat</td><td>{{ recipe.nutrition.fat }}g</td></tr>
               <tr><td>Carbohydrates</td><td>{{ recipe.nutrition.carbohydrates }}g</td></tr>
               <tr><td>Protein</td><td>{{ recipe.nutrition.protein }}g</td></tr>
               <tr><td>Saturated Fat</td><td>{{ recipe.nutrition.saturated_fat }}g</td></tr>
@@ -75,25 +75,41 @@
           </table>
         </div>
       </div>
+        <div class="reviews">
+            <h2>Leave a Review</h2>
+            {% if not comments %}
+                <p>No reviews have been made</p>
+            {% endif %}
+            <div class="ratings">
+                <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id) }}" method="post">
+                {% for i in range(1, 6) %}
+                    <input type="radio" name="rating" value="{{ i }}"> {{ i }}
+                {% endfor %}
+                <button type="submit">Rate</button>
+                </form>
+            </div>
 
-    <h2>Comments</h2>
-    <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
-        <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
-        <button type="submit">Post Comment</button>
-    </form>
+            <div class="comments">
+                <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
+                    <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
+                    <button type="submit">Post Comment</button>
+                </form>
+            </div>
 
-    <ul>
-        {% for c in comments %}
-            <li><strong>User {{ c.user_name }}:</strong> {{ c.text }} {{ c.timestamp }}</li>
-        {% endfor %}
-    </ul>
-
-    <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id) }}" method="post">
-    {% for i in range(1, 6) %}
-        <input type="radio" name="rating" value="{{ i }}"> {{ i }}
-    {% endfor %}
-    <button type="submit">Rate</button>
-    </form>
+            {% if comments %}
+                <h2>Previous Reviews:</h2>
+                <div class="comments-list">
+                    <ul>
+                        {% for c in comments %}
+                            <li>
+                                <strong>{{ c.user_name }} at {{ c.timestamp }} said:</strong>
+                                <p>{{ c.text }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

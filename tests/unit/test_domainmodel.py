@@ -1,6 +1,8 @@
 import pytest
 from datetime import datetime
 
+from recipe.domainmodel.comment import Comment
+from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.user import User
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
@@ -38,7 +40,6 @@ def my_recipe(my_author, my_category):
         category=my_category,
         ingredient_quantities=["200g pasta", "100g bacon"],
         ingredients=["pasta", "bacon", "eggs", "cheese"],
-        rating=4.5,
         nutrition=None,
         servings="4",
         recipe_yield="4 portions",
@@ -373,3 +374,60 @@ def test_review_hash():
     review_set = {r1, r2}
     assert len(review_set) == 1
 
+# Comment tests
+def test_comment_construction(my_recipe, my_user):
+    c = Comment(
+        user_name="alice",
+        comment_id=1,
+        recipe_id=my_recipe.id,
+        user_id=my_user.id,
+        text="  Nice recipe!  "
+    )
+    assert c.id == 1
+    assert c.recipe_id == my_recipe.id
+    assert c.user_id == my_user.id
+    assert c.user_name == "alice"
+    # text should be stripped on init
+    assert c.text == "Nice recipe!"
+    # timestamp should auto-populate
+    assert isinstance(c.timestamp, datetime)
+
+def test_comment_text_setter_strips():
+    c = Comment("bob", 2, 10, 20, "hello")
+    c.text = "   updated text   "
+    assert c.text == "updated text"
+
+def test_comment_timestamp_custom():
+    ts = datetime(2024, 1, 1, 12, 0, 0)
+    c = Comment("carol", 3, 11, 21, "fixed time", timestamp=ts)
+    assert c.timestamp == ts
+
+# Rating tests
+def test_rating_construction(my_recipe, my_user):
+    r = Rating(
+        rating_id=1,
+        recipe_id=my_recipe.id,
+        user_id=my_user.id,
+        value=5,
+        user_name="dave"
+    )
+    assert r.id == 1
+    assert r.recipe_id == my_recipe.id
+    assert r.user_id == my_user.id
+    assert r.user_name == "dave"
+    assert r.value == 5
+
+def test_rating_invalid_value_raises_on_init():
+    with pytest.raises(ValueError):
+        Rating(2, 10, 20, 0, "erin")
+    with pytest.raises(ValueError):
+        Rating(3, 10, 20, 6, "frank")
+
+def test_rating_setter_validation_and_update():
+    r = Rating(4, 10, 20, 3, "gina")
+    r.value = 4
+    assert r.value == 4
+    with pytest.raises(ValueError):
+        r.value = 0
+    with pytest.raises(ValueError):
+        r.value = 6
