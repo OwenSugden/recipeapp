@@ -14,7 +14,7 @@ def memory_repository():
 
 @pytest.fixture
 def my_user():
-    return User("test user", "password123", 1)
+    return User("tests user", "password123", 1)
 
 
 @pytest.fixture
@@ -77,3 +77,60 @@ def test_get_recipe_by_id_found(memory_repository, sample_recipe):
     assert result == sample_recipe
     assert result.name == "Spaghetti Carbonara"
     assert result.author.name == "Gordon Ramsay"
+
+def test_get_recipe_by_id_not_found(memory_repository):
+    assert memory_repository.get_recipe_by_id(9999) is None
+
+def test_add_multiple_recipes(memory_repository, sample_recipe):
+    memory_repository.add_recipe(sample_recipe)
+    r2 = Recipe(
+        recipe_id=2,
+        name="Pesto",
+        author=sample_recipe.author,
+        cook_time=10,
+        preparation_time=5,
+        created_date=sample_recipe.date,
+        description="Basil pesto",
+        images=[],
+        category=sample_recipe.category,
+        ingredient_quantities=[],
+        ingredients=[],
+        rating=None,
+        nutrition=None,
+        servings="2",
+        recipe_yield="2 portions",
+        instructions=[]
+    )
+    memory_repository.add_recipe(r2)
+
+    assert memory_repository.get_number_of_recipe() == 2
+    assert memory_repository.get_recipe_by_id(1) is sample_recipe
+    assert memory_repository.get_recipe_by_id(2) is r2
+
+def test_recipes_are_kept_sorted(memory_repository, sample_recipe):
+    r_high = Recipe(
+        recipe_id=10, name="Z", author=sample_recipe.author,
+        cook_time=0, preparation_time=0, created_date=sample_recipe.date,
+        description="", images=[], category=sample_recipe.category,
+        ingredient_quantities=[], ingredients=[], rating=None,
+        nutrition=None, servings="", recipe_yield="", instructions=[]
+    )
+    memory_repository.add_recipe(r_high)
+    memory_repository.add_recipe(sample_recipe)
+
+    recipes = memory_repository.get_all_recipes()
+    assert recipes[0].id < recipes[1].id
+
+def test_add_and_get_user(memory_repository, my_user):
+    memory_repository.add_user(my_user)
+    found = memory_repository.get_user("tests user")
+    assert found is my_user
+
+def test_get_user_not_found(memory_repository):
+    assert memory_repository.get_user("no such user") is None
+
+def test_add_invalid_then_valid_keeps_repo_consistent(memory_repository, sample_recipe):
+    memory_repository.add_recipe("not a recipe")
+    memory_repository.add_recipe(sample_recipe)
+    assert memory_repository.get_number_of_recipe() == 1
+    assert memory_repository.get_all_recipes()[0] is sample_recipe

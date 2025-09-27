@@ -1,3 +1,4 @@
+from recipe.adapters.repository import AbstractRepository
 from recipe.domainmodel.comment import Comment
 
 def get_recipe(repo, recipe_id):
@@ -18,3 +19,7 @@ def add_comment(repo, recipe_id, user_name, text):
     comment = Comment(user_name, next_id, recipe_id, user.id, text)
     repo.add_comment(comment)
     return comment
+
+def get_recipe_by_id(repo: AbstractRepository, recipe_id: int) :
+    return repo.get_recipe_by_id(recipe_id)
+

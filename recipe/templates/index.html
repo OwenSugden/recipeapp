@@ -4,19 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME - wochacooking.com</title>
+    <title>Home - wochacooking.com</title>
     <link rel="stylesheet" href="../static/css/main.css"/>
     <link rel="stylesheet" href="../static/css/home.css"/>
 </head>
+
 <body>
-    {% include 'navbar.html'%}
-    <div class="home-page">
-        <img src="../static/images/logos/wocha_logo_rectangle.png" class="logo" alt="wocha logo" style="margin-top: 0">
+{% include 'navbar.html' %}
+    <div class="hero">
+
+    <img src="../static/images/logos/wocha_logo_rectangle.png" class="logo" alt="wocha logo">
+        <h4 class = tagline>The Recipe for Connection</h4>
         <div class="intro-block">
-            <h2 style="margin: 0">Recipes for every occasion.</h2>
-            <img src="../static/images/handDrawnFoodForHomePageNotFinal.jpg" class="homepage-main-image" alt="Food Image">
-            <h2 style="margin: 0">Explore our collection of delicious recipes.</h2>
+            <h3>Find the answer to the question by exploring<br>
+                our collection of delicious recipes.</h3>
         </div>
+    </div>
 
         <div class="featured-recipes">
             <h1>Featured Recipes</h1>
@@ -38,5 +41,5 @@
         </div>
     </div>
 </body>
-
+{% include 'footer.html' %}
 </html>

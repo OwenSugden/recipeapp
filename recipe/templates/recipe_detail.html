@@ -75,10 +75,7 @@
           </table>
         </div>
       </div>
-    </div>
-
     <h2>Comments</h2>
-
     <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
         <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
         <button type="submit">Post Comment</button>
@@ -96,12 +93,7 @@
     {% endfor %}
     <button type="submit">Rate</button>
     </form>
-
-
-
-
-
-
+    </div>
 </body>
 </html>
 

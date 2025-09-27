@@ -1,28 +1,23 @@
 import pytest
-import os
 
-from flask import session
 from recipe import create_app
-from recipe.adapters import memory_repository
-from recipe.adapters.memory_repository import MemoryRepository
+from recipe.adapters.memory_repository import MemoryRepository, populate
 from utils import get_project_root
-
 
 TEST_DATA_PATH = get_project_root() / "tests" / "data"
 
 @pytest.fixture
-def in_memory_repo():
+def memory_repo():
     repo = MemoryRepository()
-    memory_repository.populate(TEST_DATA_PATH, repo)
+    populate(TEST_DATA_PATH, repo)
     return repo
-
 
 @pytest.fixture
 def client():
     my_app = create_app({
-        'TESTING': False,                                # Set to True during testing.
-        'TEST_DATA_PATH': TEST_DATA_PATH,               # Path for loading test data into the repository.
-        'WTF_CSRF_ENABLED': False                       # test_client will not send a CSRF token, so disable validation.
+        'TESTING': True,
+        'TEST_DATA_PATH': TEST_DATA_PATH,
+        'WTF_CSRF_ENABLED': False
     })
 
     return my_app.test_client()
@@ -34,8 +29,8 @@ class AuthenticationManager:
 
     def login(self, user_name='thorke', password='cLQ^C#oFXloS'):
         return self.__client.post(
-            'authentication/login',
-            data={'user_name': user_name, 'password': password}
+            '/authentication/login',
+            data={'username': user_name, 'password': password}
         )
 
     def logout(self):
@@ -45,3 +40,4 @@ class AuthenticationManager:
 @pytest.fixture
 def auth(client):
     return AuthenticationManager(client)
+
