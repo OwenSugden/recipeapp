@@ -1,6 +1,7 @@
-from flask import render_template, Blueprint, request, url_for
+from flask import render_template, Blueprint, request, url_for, session
 import recipe.recipe_detail.services as services
 import recipe.adapters.repository as repo
+import recipe.favourites.services as fav_services
 
 recipe_detail_blueprint = Blueprint('recipe_detail_bp', __name__)
 
@@ -9,8 +10,18 @@ def recipe_detail(recipe_id):
     recipe_object = services.get_recipe_by_id(repo.repo_instance, recipe_id)
     return_to = request.args.get("return_to")
 
-    return render_template('recipe_detail.html', recipe=recipe_object,
-                           return_to=return_to)
+    favourites = []
+    if 'user_name' in session:
+        user_name = session['user_name']
+        favourites = fav_services.get_user_favourites(repo.repo_instance, user_name)  # list of recipe_ids
+
+    return render_template(
+        'recipe_detail.html',
+        recipe=recipe_object,
+        return_to=return_to,
+        favourites=favourites
+    )
+
 
 
 

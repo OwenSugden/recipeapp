@@ -20,12 +20,29 @@
         {% endif %}
         <h1>{{ recipe.name }}</h1>
 
+
+
         <h2 class="centered-heading">
                 Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
         </h2>
         <h2>
             Health Star Rating: {{ recipe.nutrition.health_star() }} Stars
         </h2>
+
+       {% if recipe.id in favourites %}
+            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
+                <button type="submit">Remove from favourites</button>
+            </form>
+        {% else %}
+            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id) }}">
+                <button type="submit">Add to favourites</button>
+            </form>
+        {% endif %}
+
+
+
+
+
         <div class="recipe-intro">
             <img
               src="{{ recipe.images[0] if recipe.images and recipe.images[0] else url_for('static', filename='images/placeholder.jpg') }}"
