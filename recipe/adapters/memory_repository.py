@@ -7,6 +7,9 @@ from bisect import insort_left
 from typing import List
 from pathlib import Path
 
+
+from recipe.domainmodel.comment import Comment
+from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.nutrition import Nutrition
@@ -20,6 +23,8 @@ class MemoryRepository(AbstractRepository):
         self.__recipe = list()
         self.__recipes_index = dict()
         self.__users = list()
+        self.__comments = list()
+        self.__ratings = list()
 
     def add_recipe(self, recipe: Recipe):
         if isinstance(recipe, Recipe):
@@ -43,6 +48,28 @@ class MemoryRepository(AbstractRepository):
 
     def get_user(self, username) -> User:
         return next((user for user in self.__users if user.username == username), None)
+    
+    def add_comment(self, comment: Comment):
+        if isinstance(comment, Comment):
+            self.__comments.append(comment)
+        else:
+            raise TypeError("Expected a Comment instance")
+
+    def get_comments(self) -> List[Comment]:
+        return list(self.__comments)
+
+    def get_comments_for_recipe(self, recipe_id: int) -> List[Comment]:
+        return [c for c in self.__comments if c.recipe_id == recipe_id]
+
+    # In MemoryRepository
+    def add_rating(self, rating: Rating):
+        # Remove previous rating from same user for this recipe
+        self.__ratings = [r for r in self.__ratings
+                         if not (r.user_name == rating.user_name and r.recipe_id == rating.recipe_id)]
+        self.__ratings.append(rating)
+
+    def get_ratings_for_recipe(self, recipe_id: int):
+        return [r for r in self.__ratings if r.recipe_id == recipe_id]
 
 def read_csv_file(filename: str, authors, categories) -> List[Recipe]:
     recipes: List[Recipe] = []
@@ -131,7 +158,7 @@ def create_object(line, authors, categories) -> Recipe:
         recipe_yield,
         instructions,
     )
-
+    
     return recipe
 
 def load_recipe(data_path: Path, repo: MemoryRepository) -> None:
