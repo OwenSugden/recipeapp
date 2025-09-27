@@ -1,6 +1,8 @@
 import abc
 from typing import List
 
+from recipe.domainmodel.comment import Comment
+from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.user import User
@@ -40,6 +42,29 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_user(self, user_name) -> User:
         """ Returns the User named user_name from the repository.
-
-        If there is no User with the given user_name, this method returns None. """
+        If there is no User with the given user_name, this method returns None.
+        """
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def add_comment(self, comment: Comment):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_comments(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_comments_for_recipe(self, recipe_id: int):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    # In AbstractRepository
+    def add_rating(self, rating: Rating):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_ratings_for_recipe(self, recipe_id: int) -> list[Rating]:
+        """ If there is no User with the given user_name, this method returns None. """
+        raise NotImplementedError
+    

@@ -48,6 +48,7 @@ class Recipe:
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
         self.__instructions = instructions if instructions else []
         self.__reviews = []
+        self.__ratings = []
 
     def __repr__(self) -> str:
         return (f"<Recipe {self.__name} with id: {self.id} was created by {self.__author.name} "
@@ -192,4 +193,16 @@ class Recipe:
         else:
             raise ValueError("Review not found in recipe's reviews")
 
+
+    def __update_rating(self) -> None:
+        if self.__reviews:
+            ratings = [r.rating for r in self.__reviews if
+                       hasattr(r, "rating") and r.rating is not None]
+            if ratings:
+                average_rating = sum(ratings) / len(ratings)
+                self.__rating = round(average_rating, 1)
+            else:
+                self.__rating = None
+        else:
+            self.__rating = None
 

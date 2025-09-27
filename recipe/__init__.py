@@ -20,12 +20,22 @@ def create_app(test_config = None):
     with app.app_context():
         from .home import home
         app.register_blueprint(home.home_blueprint)
+        
         from .browse import browse
         app.register_blueprint(browse.browse_blueprint)
+        
         from .recipe_detail import recipe_detail
         app.register_blueprint(recipe_detail.recipe_detail_blueprint)
+        
         from .authentication import authentication
         app.register_blueprint(authentication.authentication_blueprint)
+        
+        from .comments import comments
+        app.register_blueprint(comments.comments_blueprint)
+        
+        from .ratings import ratings
+        app.register_blueprint(ratings.ratings_blueprint)
+        
         from .user_profile import user_profile
         app.register_blueprint(user_profile.user_profile_blueprint)
 
