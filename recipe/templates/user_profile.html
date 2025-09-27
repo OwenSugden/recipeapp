@@ -40,12 +40,12 @@
         {% elif section == 'favourites' %}
             <h2>Favourite Recipes</h2>
             <ul class="favourites-list">
-                {% for fav in favourites %}
+                {% for recipe in favourites %}
                     <li>
-                        <a href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=fav.recipe.id) }}">
-                            {{ fav.recipe.name }}
+                        <a href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id) }}">
+                            {{ recipe.name }}
                         </a>
-                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=fav.recipe.id) }}">
+                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
                             <button type="submit">Remove</button>
                         </form>
                     </li>
