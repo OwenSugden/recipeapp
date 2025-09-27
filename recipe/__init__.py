@@ -28,6 +28,6 @@ def create_app(test_config = None):
         from .user_profile import user_profile
         app.register_blueprint(user_profile.user_profile_blueprint)
 
-    repo.repo_instance = MemoryRepository()
+
 
     return app
