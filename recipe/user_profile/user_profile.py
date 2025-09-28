@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 import recipe.adapters.repository as repo
 import recipe.user_profile.services as services
+from recipe.authentication.authentication import login_required
 
 user_profile_blueprint = Blueprint('user_profile_bp', __name__)
 
@@ -24,37 +25,25 @@ def profile():
     )
 
 @user_profile_blueprint.route('/user_profile/add_favourite/<int:recipe_id>', methods=['POST'])
+@login_required
 def add_favourite(recipe_id):
-    if 'user_name' not in session:
-        return redirect(url_for('authentication_bp.login'))
-
-
     user_name = session['user_name']
     services.add_favourite(repo.repo_instance, user_name, recipe_id)
-
     return_to = request.args.get("return_to")
-    if return_to:
-        return redirect(return_to)
 
-    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id))
+    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
 
 
 
 @user_profile_blueprint.route('/user_profile/remove_favourite/<int:recipe_id>', methods=['POST'])
+@login_required
 def remove_favourite(recipe_id):
-    if 'user_name' not in session:
-        return redirect(url_for('authentication_bp.login'))
-
-
-
     user_name = session['user_name']
     services.remove_favourite(repo.repo_instance, user_name, recipe_id)
 
     return_to = request.args.get("return_to")
-    if return_to:
-        return redirect(return_to)
 
-    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id))
+    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
 
 
 @user_profile_blueprint.route('/user_profile/edit_profile', methods=['POST'])
