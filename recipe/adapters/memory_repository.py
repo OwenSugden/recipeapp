@@ -12,6 +12,7 @@ from recipe.domainmodel.comment import Comment
 from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
+from recipe.domainmodel.favourite import Favourite
 from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.user import User
@@ -23,6 +24,7 @@ class MemoryRepository(AbstractRepository):
         self.__recipe = list()
         self.__recipes_index = dict()
         self.__users = list()
+        self.__favourites = list()
         self.__comments = list()
         self.__ratings = list()
 
@@ -70,6 +72,21 @@ class MemoryRepository(AbstractRepository):
 
     def get_ratings_for_recipe(self, recipe_id: int):
         return [r for r in self.__ratings if r.recipe_id == recipe_id]
+
+    def add_favourite(self, favourite: Favourite):
+        if favourite not in self.__favourites:
+            self.__favourites.append(favourite)
+
+    def remove_favourite(self, favourite: Favourite):
+        if favourite in self.__favourites:
+            self.__favourites.remove(favourite)
+
+    def get_favourites_for_user(self, user_name: str):
+        return [f.recipe_id for f in self.__favourites if f.user_name == user_name]
+
+    def is_favourite(self, user_name: str, recipe_id: int):
+        return Favourite(user_name, recipe_id) in self.__favourites
+
 
 def read_csv_file(filename: str, authors, categories) -> List[Recipe]:
     recipes: List[Recipe] = []

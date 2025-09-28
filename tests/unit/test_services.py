@@ -7,6 +7,8 @@ from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.user import User
+from recipe.recipe_detail.services import get_recipe_by_id as get_recipe_id
+
 
 from recipe.adapters.memory_repository import MemoryRepository
 from recipe.authentication import services as auth_services

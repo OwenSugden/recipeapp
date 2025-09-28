@@ -5,6 +5,7 @@
     <title>{{ session['user_name'] }} Profile</title>
     <link rel="stylesheet" href="../static/css/main.css"/>
     <link rel="stylesheet" href="../static/css/user_profile.css"/>
+    <link rel="stylesheet" href="../static/css/home.css"/>
 </head>
 <body>
 {% include 'navbar.html' %}
@@ -38,22 +39,35 @@
                 <button type="submit">Change Password</button>
             </form>
         {% elif section == 'favourites' %}
-            <h2>Favourite Recipes</h2>
-            <ul class="favourites-list">
-                {% for fav in favourites %}
-                    <li>
-                        <a href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=fav.recipe.id) }}">
-                            {{ fav.recipe.name }}
-                        </a>
-                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=fav.recipe.id) }}">
+    <h2>Favourite Recipes</h2>
+
+    {% if favourites %}
+        <ul class="recipes-grid">
+            {% for recipe in favourites %}
+                <li class="recipe-card">
+                    <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id) }}" style="text-decoration: none">
+                        <div class="card-img">
+                            <img src="{{ recipe.images[0] }}" alt="recipe image">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
+                            <p class="card-author" style="margin: 0">Author: {{ recipe.author.name}}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
                             <button type="submit">Remove</button>
                         </form>
-                    </li>
-                {% else %}
-                    <p>No favourites yet.</p>
-                {% endfor %}
-            </ul>
-        {% endif %}
+                    </a>
+
+                    <!-- Remove button under each card -->
+
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No favourites yet.</p>
+    {% endif %}
+{% endif %}
+
     </div>
 
     <!-- Right: Menu -->
