@@ -22,7 +22,7 @@
     <!-- Left: Content -->
     <div class="profile-content">
         {% if section == 'profile' %}
-            <h2>Edit Profile</h2>
+            <h2>Edit Profile (under construction, not for marking)</h2>
             <form method="POST" action="{{ url_for('user_profile_bp.edit_profile') }}">
                 <label for="username">New Username</label>
                 <input type="text" name="username" id="username" required>
@@ -53,12 +53,12 @@
                             <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
                             <p class="card-author" style="margin: 0">Author: {{ recipe.author.name}}</p>
                         </div>
-                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
-                            <button type="submit">Remove</button>
+                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
+                            <button type="submit" class="fav-btn active">
+                                <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Remove from favourites">
+                            </button>
                         </form>
                     </a>
-
-                    <!-- Remove button under each card -->
 
                 </li>
             {% endfor %}

@@ -30,7 +30,7 @@ def register():
             # All is well, redirect the user_profile to the login page.
             return redirect(url_for('authentication_bp.login'))
         except services.NameNotUniqueException:
-            user_name_not_unique = 'Your user_profile name is already taken - please supply another'
+            user_name_not_unique = 'Your username is already taken - please supply another'
 
     # For a GET or a failed POST request, return the Registration Web page.
     return render_template(
@@ -64,11 +64,11 @@ def login():
 
         except services.UnknownUserException:
             # User name not known to the system, set a suitable error message.
-            user_name_not_recognised = 'User name not recognised. Make a new account here'
+            user_name_not_recognised = 'Username not recognised. Make a new account here'
 
         except services.AuthenticationException:
             # Authentication failed, set a suitable error message.
-            password_does_not_match_user_name = 'Password does not match supplied user_profile name - please check and try again'
+            password_does_not_match_user_name = 'Password does not match supplied username - please check and try again'
 
     # For a GET or a failed POST, return the Login Web page.
     return render_template(
@@ -115,8 +115,8 @@ class PasswordValid:
 
 class RegistrationForm(FlaskForm):
     user_name = StringField('Username', [
-        DataRequired(message='Your user_profile name is required'),
-        Length(min=3, message='Your user_profile name is too short')])
+        DataRequired(message='Your username is required'),
+        Length(min=3, message='Your username is too short')])
     password = PasswordField('Password', [
         DataRequired(message='Your password is required'),
         PasswordValid()])

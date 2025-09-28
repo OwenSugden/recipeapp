@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe</title>
+    <title>{{ recipe.name }}</title>
     <link rel="stylesheet" href="../static/css/main.css"/>
     <link rel="stylesheet" href="../static/css/recipe-detail.css"/>
 </head>
@@ -11,6 +11,7 @@
     {% include 'navbar.html'%}
 
     <div class="recipe-detail-page">
+    <div class="back-button">
         {% if return_to %}
             {% if 'browse' in return_to %}
                 <a href="{{ url_for('browse_bp.browse') }}" class="back-link">← Back to browse</a>
@@ -18,6 +19,7 @@
                 <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back to home</a>
             {% endif %}
         {% endif %}
+    </div>
         <h1>{{ recipe.name }}</h1>
 
 
@@ -29,20 +31,6 @@
         <h2>
             Health Star Rating: {{ recipe.nutrition.health_star() }} Stars
         </h2>
-
-       {% if recipe.id in favourites %}
-            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
-                <button type="submit">Remove from favourites</button>
-            </form>
-        {% else %}
-            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
-                <button type="submit">Add to favourites</button>
-            </form>
-        {% endif %}
-
-
-
-
 
         <div class="recipe-intro">
             <img
@@ -75,6 +63,21 @@
         </div>
 
         <div class="nutritional-info">
+            {% if recipe.id in favourites %}
+            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
+                <button type="submit" class="fav-btn active">
+                    <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Remove from favourites">
+                </button>
+            </form>
+                <p class="fav-btn">Remove from Favourites</p>
+            {% else %}
+            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
+                <button type="submit" class="fav-btn">
+                    <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Add to favourites">
+                </button>
+            </form>
+                <p class="fav-btn">Add to Favourites</p>
+            {% endif %}
           <h2 class="centered-heading">Nutritional Information</h2>
           <table>
             <tbody>
