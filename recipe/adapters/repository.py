@@ -1,6 +1,8 @@
 import abc
 from typing import List
 
+from recipe.domainmodel.comment import Comment
+from recipe.domainmodel.rating import Rating
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.favourite import Favourite
 from recipe.domainmodel.recipe import Recipe
@@ -41,8 +43,30 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_user(self, user_name) -> User:
         """ Returns the User named user_name from the repository.
+        If there is no User with the given user_name, this method returns None.
+        """
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def add_comment(self, comment: Comment):
+        raise NotImplementedError
 
-        If there is no User with the given user_name, this method returns None. """
+    @abc.abstractmethod
+    def get_comments(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_comments_for_recipe(self, recipe_id: int):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    # In AbstractRepository
+    def add_rating(self, rating: Rating):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_ratings_for_recipe(self, recipe_id: int) -> list[Rating]:
+        """ If there is no User with the given user_name, this method returns None. """
         raise NotImplementedError
 
     def add_favourite(self, favourite: Favourite):
@@ -56,3 +80,4 @@ class AbstractRepository(abc.ABC):
 
     def is_favourite(self, user_name: str, recipe_id: int):
         raise NotImplementedError
+    

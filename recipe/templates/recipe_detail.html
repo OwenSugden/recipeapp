@@ -21,6 +21,7 @@
         <h1>{{ recipe.name }}</h1>
 
 
+        <h2>Average Rating: {{ avg_rating }} / 5</h2>
 
         <h2 class="centered-heading">
                 Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
@@ -90,10 +91,42 @@
           </table>
         </div>
       </div>
+        <div class="reviews">
+            <h2>Leave a Review</h2>
+            {% if not comments %}
+                <p>No reviews have been made</p>
+            {% endif %}
+            <div class="ratings">
+                <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id) }}" method="post">
+                {% for i in range(1, 6) %}
+                    <input type="radio" name="rating" value="{{ i }}"> {{ i }}
+                {% endfor %}
+                <button type="submit">Rate</button>
+                </form>
+            </div>
 
+            <div class="comments">
+                <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
+                    <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
+                    <button type="submit">Post Comment</button>
+                </form>
+            </div>
+
+            {% if comments %}
+                <h2>Previous Reviews:</h2>
+                <div class="comments-list">
+                    <ul>
+                        {% for c in comments %}
+                            <li>
+                                <strong>{{ c.user_name }} at {{ c.timestamp }} said:</strong>
+                                <p>{{ c.text }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
     </div>
-
-
 </body>
 </html>
 
