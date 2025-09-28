@@ -1,7 +1,7 @@
-from flask import render_template, Blueprint, request, url_for, session
+from flask import render_template, Blueprint, request, session
 import recipe.recipe_detail.services as services
 import recipe.adapters.repository as repo
-import recipe.favourites.services as fav_services
+import recipe.user_profile.services as fav_services
 
 recipe_detail_blueprint = Blueprint('recipe_detail_bp', __name__)
 
