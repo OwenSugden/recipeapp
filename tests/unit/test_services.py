@@ -6,7 +6,7 @@ from recipe.domainmodel.category import Category
 from recipe.browse.services import get_number_of_recipes, get_recipe
 from recipe.adapters.memory_repository import MemoryRepository
 from recipe.domainmodel.user import User
-from recipe.recipe_detail.services import get_recipe as get_recipe_id
+from recipe.recipe_detail.services import get_recipe_by_id as get_recipe_id
 
 
 @pytest.fixture
