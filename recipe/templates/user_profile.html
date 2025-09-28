@@ -53,12 +53,13 @@
                             <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
                             <p class="card-author" style="margin: 0">Author: {{ recipe.author.name}}</p>
                         </div>
+                        <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
+                            <button type="submit">Remove</button>
+                        </form>
                     </a>
 
                     <!-- Remove button under each card -->
-                    <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
-                        <button type="submit">Remove</button>
-                    </form>
+
                 </li>
             {% endfor %}
         </ul>
