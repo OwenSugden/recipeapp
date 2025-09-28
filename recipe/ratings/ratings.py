@@ -10,8 +10,10 @@ ratings_blueprint = Blueprint('ratings_bp', __name__)
 def rate_recipe(recipe_id):
     user_name = session['user_name']
     value = request.form.get('rating')
+    return_to = request.args.get("return_to")
+
 
     if value:
         services.add_rating(repo.repo_instance, recipe_id, user_name, int(value))
 
-    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id))
+    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
