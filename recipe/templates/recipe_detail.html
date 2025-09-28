@@ -97,7 +97,7 @@
                 <p>No reviews have been made</p>
             {% endif %}
             <div class="ratings">
-                <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id) }}" method="post">
+                <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id,  return_to=request.full_path) }}" method="post">
                 {% for i in range(1, 6) %}
                     <input type="radio" name="rating" value="{{ i }}"> {{ i }}
                 {% endfor %}
@@ -106,7 +106,7 @@
             </div>
 
             <div class="comments">
-                <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id) }}">
+                <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id, return_to=request.full_path) }}">
                     <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
                     <button type="submit">Post Comment</button>
                 </form>

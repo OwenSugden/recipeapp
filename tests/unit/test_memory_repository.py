@@ -8,6 +8,7 @@ from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.adapters.memory_repository import MemoryRepository
 from recipe.domainmodel.user import User
+from recipe.domainmodel.favourite import Favourite
 
 
 # Fixtures
@@ -186,3 +187,36 @@ def test_get_ratings_filters_by_recipe(memory_repo, my_recipe, my_user):
     result = memory_repo.get_ratings_for_recipe(my_recipe.id)
     assert r_ok in result
     assert all(r.recipe_id == my_recipe.id for r in result)
+
+
+def test_add_and_get_favourites(memory_repository, my_user, my_recipe):
+    fav = Favourite(my_user.username, my_recipe.id)
+    memory_repository.add_favourite(fav)
+
+    favourites = memory_repository.get_favourites_for_user(my_user.username)
+    assert favourites == [my_recipe.id]
+    assert memory_repository.is_favourite(my_user.username, my_recipe.id)
+
+def test_add_duplicate_favourite_only_once(memory_repository, my_user, my_recipe):
+    fav = Favourite(my_user.username, my_recipe.id)
+    memory_repository.add_favourite(fav)
+    memory_repository.add_favourite(fav)  # attempt duplicate
+
+    favourites = memory_repository.get_favourites_for_user(my_user.username)
+    assert favourites == [my_recipe.id]
+    assert len(favourites) == 1
+
+def test_remove_favourite(memory_repository, my_user, my_recipe):
+    fav = Favourite(my_user.username, my_recipe.id)
+    memory_repository.add_favourite(fav)
+
+    memory_repository.remove_favourite(fav)
+    assert memory_repository.get_favourites_for_user(my_user.username) == []
+    assert not memory_repository.is_favourite(my_user.username, my_recipe.id)
+
+def test_get_favourites_for_user_empty(memory_repository, my_user):
+    favourites = memory_repository.get_favourites_for_user(my_user.username)
+    assert favourites == []
+
+def test_is_favourite_false_for_nonexistent(memory_repository, my_user, my_recipe):
+    assert not memory_repository.is_favourite(my_user.username, my_recipe.id)

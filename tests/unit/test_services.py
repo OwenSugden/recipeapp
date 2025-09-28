@@ -16,6 +16,7 @@ from recipe.browse import services as browse_services
 from recipe.recipe_detail import services as recipe_detail_services
 from recipe.comments import services as comments_services
 from recipe.ratings import services as ratings_services
+from recipe.user_profile import services as fav_services
 
 @pytest.fixture
 def memory_repository():
@@ -345,3 +346,14 @@ def test_add_rating_returns_none_for_missing_user(memory_repo, my_recipe):
     result = ratings_services.add_rating(memory_repo, my_recipe.id, "__no_such_user__", value=4)
     assert result is None
     assert ratings_services.get_average_rating(memory_repo, my_recipe.id) == 0
+
+
+def test_add_favourite_for_missing_user(memory_repository, my_user, my_recipe):
+    result = fav_services.add_favourite(memory_repository, "__no_such_user__", my_recipe.id)
+    assert result is None
+
+
+def test_remove_favourite_for_missing_user(memory_repository, my_user, my_recipe):
+    result = fav_services.remove_favourite(memory_repository, "__no_such_user__", my_recipe.id)
+    assert result is None
+
