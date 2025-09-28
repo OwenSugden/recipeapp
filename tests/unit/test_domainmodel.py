@@ -324,8 +324,8 @@ def test_health_star_with_missing_data():
 
 # Favourite tests
 def test_favourite_construction(my_user, my_recipe):
-    fav = Favourite(my_user.id, my_recipe.id)
-    assert fav.user_id == my_user.id
+    fav = Favourite(my_user.username, my_recipe.id)
+    assert fav.user_name == my_user.username
     assert fav.recipe_id == my_recipe.id
 
 def test_favourite_equality():
