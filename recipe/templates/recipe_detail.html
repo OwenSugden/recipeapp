@@ -30,11 +30,11 @@
         </h2>
 
        {% if recipe.id in favourites %}
-            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id) }}">
+            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
                 <button type="submit">Remove from favourites</button>
             </form>
         {% else %}
-            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id) }}">
+            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
                 <button type="submit">Add to favourites</button>
             </form>
         {% endif %}
