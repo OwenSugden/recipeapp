@@ -1,4 +1,8 @@
-from recipe.domainmodel.recipe import Recipe
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from recipe.domainmodel.recipe import Recipe
 
 class Category:
     def __init__(self, name: str, recipes: list[Recipe] = None, category_id: int = None):
@@ -35,7 +39,6 @@ class Category:
         return self.__recipes
 
     def add_recipe(self, recipe: Recipe) -> None:
-        from recipe.domainmodel.recipe import Recipe
         if isinstance(recipe, Recipe):
             self.__recipes.append(recipe)
         else:

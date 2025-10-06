@@ -1,4 +1,8 @@
-from recipe.domainmodel.recipe import Recipe
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from recipe.domainmodel.recipe import Recipe
 
 class Author:
     def __init__(self, author_id: int, name: str, recipes: list["Recipe"] = None):

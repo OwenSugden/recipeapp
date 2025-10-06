@@ -2,7 +2,7 @@ from typing import Dict, List
 from recipe.adapters.repository import AbstractRepository
 
 def get_number_of_recipes(repo: AbstractRepository) -> int:
-    return repo.get_number_of_recipe()
+    return repo.get_number_of_recipes()
 
 def get_recipe(repo: AbstractRepository) -> List[dict]:
     recipes = repo.get_all_recipes()
