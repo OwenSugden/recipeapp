@@ -1,149 +1,70 @@
 class Nutrition:
-    def __init__(self, calories: float, fat_content: float, carbohydrates_content: float,
-                 protein_content: float,
-                 saturated_fat_content: float = 0.0, cholesterol_content: float = 0.0, sodium_content: float = 0.0,
-                 fiber_content: float = 0.0 , sugar_content: float = 0.0):
-
+    def __init__(self, nutrition_id: int, calories: float, fat: float, saturated_fat: float, cholesterol: float,
+                 sodium: float, carbohydrates: float, fiber: float, sugar: float, protein: float):
+        self.__id = nutrition_id
         self.__calories = calories
-        self.__fat = fat_content
-        self.__protein = protein_content
-        self.__carbohydrates = carbohydrates_content
-        self.__saturated_fat = saturated_fat_content
-        self.__cholesterol = cholesterol_content
-        self.__sodium = sodium_content
-        self.__fiber = fiber_content
-        self.__sugar = sugar_content
+        self.__fat = fat
+        self.__saturated_fat = saturated_fat
+        self.__cholesterol = cholesterol
+        self.__sodium = sodium
+        self.__carbohydrates = carbohydrates
+        self.__fiber = fiber
+        self.__sugar = sugar
+        self.__protein = protein
 
     def __repr__(self) -> str:
-        return (f"<Nutrition: cal={self.calories}, fat={self.fat}, carbs={self.carbohydrates}, "
-                f"protein={self.protein}, sat_fat={self.saturated_fat}, chol={self.cholesterol}, sodium={self.sodium}, "
-                f"fiber={self.fiber}, sugar={self.sugar}>")
+        return (f"<Nutrition: Calories: {self.calories}, Protein: {self.protein}, Fat Total: {self.fat}, "
+                f"Carbohydrates: {self.carbohydrates}>")
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Nutrition):
             return False
-        return (self.calories == other.calories and
-                self.fat == other.fat and
-                self.carbohydrates == other.carbohydrates and
-                self.protein == other.protein and
-                self.saturated_fat == other.saturated_fat and
-                self.cholesterol == other.cholesterol and
-                self.sodium == other.sodium and
-                self.fiber == other.fiber and
-                self.sugar == other.sugar)
+        return self.id == other.id
 
     def __lt__(self, other) -> bool:
         if not isinstance(other, Nutrition):
             raise TypeError("Comparison must be between Nutrition instances")
-        return self.calories < other.calories
+        return self.id < other.id
 
     def __hash__(self) -> int:
-        return hash((self.calories, self.fat, self.carbohydrates, self.protein, self.saturated_fat, self.cholesterol,
-                     self.sodium, self.fiber, self.sugar))
+        return hash(self.id)
 
-    def health_star(self):
-        if (self.calories is None or self.saturated_fat is None or self.sugar is None or self.sodium is None
-                or self.protein is None or self.fiber is None):
-            return "Health star rating unavailable"
-
-        else:
-            neg = 30 * min(self.calories / 700.0, 1.5) \
-                  + 25 * min(self.saturated_fat / 10.0, 1.5) \
-                  + 25 * min(self.sugar / 25.0, 1.5) \
-                  + 20 * min(self.sodium / 1000.0, 1.5)
-
-            pos = 20 * min(self.protein / 25.0, 1.0) \
-                  + 20 * min(self.fiber / 8.0, 1.0)
-
-            raw = max(0.0, min(100.0, 100 - neg + pos))
-            return round((raw / 20.0) * 2) / 2.0
+    @property
+    def id(self) -> int:
+        return self.__id
 
     @property
     def calories(self) -> float:
         return self.__calories
 
-    @calories.setter
-    def calories(self, value: float):
-        if value < 0.0:
-            raise ValueError("Calories cannot be negative")
-        self.__calories = float(value)
-
     @property
     def fat(self) -> float:
         return self.__fat
-
-    @fat.setter
-    def fat(self, value: float):
-        if value < 0.0:
-            raise ValueError("Fat cannot be negative")
-        self.__fat = float(value)
-
-    @property
-    def carbohydrates(self) -> float:
-        return self.__carbohydrates
-
-    @carbohydrates.setter
-    def carbohydrates(self, value: float):
-        if value < 0.0:
-            raise ValueError("Carbohydrates cannot be negative")
-        self.__carbohydrates = float(value)
-
-    @property
-    def protein(self) -> float:
-        return self.__protein
-
-    @protein.setter
-    def protein(self, value: float):
-        if value < 0.0:
-            raise ValueError("Protein cannot be negative")
-        self.__protein = float(value)
 
     @property
     def saturated_fat(self) -> float:
         return self.__saturated_fat
 
-    @saturated_fat.setter
-    def saturated_fat(self, value: float):
-        if value < 0.0:
-            raise ValueError("Saturated fat cannot be negative")
-        self.__saturated_fat = float(value)
-
     @property
     def cholesterol(self) -> float:
         return self.__cholesterol
-
-    @cholesterol.setter
-    def cholesterol(self, value: float):
-        if value < 0.0:
-            raise ValueError("Cholesterol cannot be negative")
-        self.__cholesterol = float(value)
 
     @property
     def sodium(self) -> float:
         return self.__sodium
 
-    @sodium.setter
-    def sodium(self, value: float):
-        if value < 0.0:
-            raise ValueError("Sodium cannot be negative")
-        self.__sodium = float(value)
+    @property
+    def carbohydrates(self) -> float:
+        return self.__carbohydrates
 
     @property
     def fiber(self) -> float:
         return self.__fiber
 
-    @fiber.setter
-    def fiber(self, value: float):
-        if value < 0.0:
-            raise ValueError("Fiber cannot be negative")
-        self.__fiber = float(value)
-
     @property
     def sugar(self) -> float:
         return self.__sugar
 
-    @sugar.setter
-    def sugar(self, value: float):
-        if value < 0.0:
-            raise ValueError("Sugar cannot be negative")
-        self.__sugar = float(value)
+    @property
+    def protein(self) -> float:
+        return self.__protein

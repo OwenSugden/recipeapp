@@ -1,7 +1,10 @@
 class Favourite:
-    def __init__(self, user_name: str, recipe_id: int):
+    def __init__(self, favourite_id: int, user_name: str, recipe_id: int, date=None):
+        from datetime import datetime
+        self.__id = favourite_id
         self.__user_name = user_name
         self.__recipe_id = recipe_id
+        self.__date = date if date is not None else datetime.now()
 
     def __repr__(self):
         return f"<User: {self.__user_name} favourite recipe: {self.__recipe_id}>"
@@ -9,15 +12,19 @@ class Favourite:
     def __eq__(self, other):
         if not isinstance(other, Favourite):
             return False
-        return self.__user_name == other.__user_name and self.__recipe_id == other.__recipe_id
+        return self.id == other.id
 
     def __lt__(self, other):
         if not isinstance(other, Favourite):
             raise TypeError("Comparison must be between Favourite instances")
-        return self.__user_name < other.__user_name or self.__recipe_id < other.__recipe_id
+        return self.id < other.id
 
     def __hash__(self):
-        return hash((self.__user_name, self.__recipe_id))
+        return hash(self.id)
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def user_name(self):
@@ -27,3 +34,6 @@ class Favourite:
     def recipe_id(self):
         return self.__recipe_id
 
+    @property
+    def date(self):
+        return self.__date
