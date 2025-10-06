@@ -1,14 +1,9 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from recipe.domainmodel.author import Author
-    from recipe.domainmodel.category import Category
-
-from datetime import datetime
-
+from recipe.domainmodel.author import Author
+from recipe.domainmodel.category import Category
 from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.review import Review
+from datetime import datetime
+
 
 class Recipe:
     def __init__(self, recipe_id: int, name: str, author: "Author",
@@ -25,24 +20,17 @@ class Recipe:
                  recipe_yield: str | None = None,
                  instructions: list[str] = None):
 
-        if not isinstance(recipe_id, int) or recipe_id <= 0:
-            raise ValueError("id must be a positive int.")
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("name must be a non-empty string.")
-        if author is None:
-            raise ValueError("author is required.")
-
         self.__id = recipe_id
         self.__name = name
         self.__author = author
         self.__cook_time = cook_time
         self.__preparation_time = preparation_time
-        self.__date = created_date if created_date else datetime.now()
+        self.__date = created_date
         self.__description = description
-        self.__images = images if images else []
+        self.__images = images
         self.__category = category
-        self.__ingredient_quantities = ingredient_quantities if ingredient_quantities else []
-        self.__ingredients = ingredients if ingredients else []
+        self.__ingredient_quantities = ingredient_quantities
+        self.__ingredients = ingredients
         self.__nutrition = nutrition
         self.__servings = servings if servings else "Not specified"
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
@@ -184,12 +172,14 @@ class Recipe:
     def add_review(self, review: Review) -> None:
         if isinstance(review, Review):
             self.__reviews.append(review)
+            self.__update_rating()
         else:
             raise TypeError("Expected a Review instance")
 
     def remove_review(self, review: Review) -> None:
         if review in self.__reviews:
             self.__reviews.remove(review)
+            self.__update_rating()
         else:
             raise ValueError("Review not found in recipe's reviews")
 
@@ -205,4 +195,5 @@ class Recipe:
                 self.__rating = None
         else:
             self.__rating = None
+
 
