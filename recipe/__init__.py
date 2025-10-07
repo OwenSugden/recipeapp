@@ -55,7 +55,7 @@ def create_app(test_config = None):
         # Generate mappings that map domain model classes to the database tables.
         map_model_to_tables()
 
-        populate(data_path, repo.repo_instance, testing=testing)
+        populate(data_path, repo.repo_instance, True, testing=testing)
         print("REPOPULATING DATABASE... FINISHED")
 
     else:

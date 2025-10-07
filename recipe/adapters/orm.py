@@ -1,4 +1,5 @@
 from datetime import datetime
+from dis import Instruction
 
 from sqlalchemy import (
     Table, Column, Integer, Float, String, DateTime, ForeignKey, Text, UniqueConstraint
@@ -10,6 +11,9 @@ from recipe.domainmodel.category import Category
 from recipe.domainmodel.favourite import Favourite
 from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.recipe_image import RecipeImage
+from recipe.domainmodel.recipe_ingredient import RecipeIngredient
+from recipe.domainmodel.recipe_instruction import RecipeInstruction
 from recipe.domainmodel.review import Review
 from recipe.domainmodel.user import User
 
@@ -24,12 +28,40 @@ recipes_table = Table(
     Column('cook_time', Integer, nullable=False),
     Column('preparation_time', Integer, nullable=False),
     Column('created_date', DateTime),
-    Column('servings', String(255), nullable=False),
+    Column('servings', Integer, nullable=False),
     Column('recipe_yield', String(255), nullable=False),
     Column('nutrition_id', Integer, ForeignKey('nutrition.id'), unique=True),
     Column('author_id', Integer, ForeignKey('authors.id')),
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
+
+# # Recipe image table
+# recipe_images_table = Table(
+#     'recipe_images', mapper_registry.metadata,
+#     Column('id', Integer, primary_key=True, autoincrement=True),
+#     Column('recipe_id', Integer, ForeignKey('recipes.id'), nullable=False),
+#     Column('url', String(500), nullable=False),
+#     Column('position', Integer, nullable=False)
+# )
+#
+# # Recipe ingredient table
+# recipe_ingredients_table = Table(
+#     'recipe_ingredients', mapper_registry.metadata,
+#     Column('id', Integer, primary_key=True, autoincrement=True),
+#     Column('recipe_id', Integer, ForeignKey('recipes.id'), nullable=False),
+#     Column('quantity', String(255), nullable=False),
+#     Column('ingredient', String(255), nullable=False),
+#     Column('position', Integer, nullable=False)
+# )
+#
+# # Recipe instruction table
+# recipe_instructions_table = Table(
+#     'recipe_instructions', mapper_registry.metadata,
+#     Column('id', Integer, primary_key=True, autoincrement=True),
+#     Column('recipe_id', Integer, ForeignKey('recipes.id'), nullable=False),
+#     Column('step', String(500), nullable=False),
+#     Column('position', Integer, nullable=False)
+# )
 
 # Nutrition table
 nutrition_table = Table(
@@ -100,6 +132,9 @@ def map_model_to_tables():
         '_Recipe__created_date': recipes_table.c.created_date,
         '_Recipe__servings': recipes_table.c.servings,
         '_Recipe__recipe_yield': recipes_table.c.recipe_yield,
+        # '_Recipe__recipe_image': relationship(RecipeImage, back_populates='_RecipeImage__recipe'),
+        # '_Recipe__ingredients': relationship(RecipeIngredient, back_populates='_RecipeIngredient__recipe'),
+        # '_Recipe__instructions': relationship(Instruction, back_populates='_RecipeInstruction__recipe'),
         '_Recipe__nutrition': relationship(Nutrition, back_populates='_Nutrition__recipe'),
         '_Recipe__author': relationship(Author, back_populates='_Author__recipes'),
         '_Recipe__category': relationship(Category, back_populates='_Category__recipes'),
@@ -166,3 +201,28 @@ def map_model_to_tables():
         '_User__favourites': relationship(Favourite, back_populates='_Favourite__user'),
         '_User__reviews': relationship(Review, back_populates='_Review__user'),
     })
+
+    # # RecipeImage mapping
+    # mapper_registry.map_imperatively(RecipeImage, recipe_images_table, properties={
+    #         '_RecipeImage__id': recipe_images_table.c.id,
+    #         '_RecipeImage__url': recipe_images_table.c.url,
+    #         '_RecipeImage__position': recipe_images_table.c.position,
+    #         '_RecipeImage__recipe': relationship(Recipe, back_populates='_Recipe__recipe_image'),
+    # })
+    #
+    # # RecipeIngredient mapping
+    # mapper_registry.map_imperatively(RecipeIngredient, recipe_ingredients_table, properties={
+    #         '_RecipeIngredient__id': recipe_ingredients_table.c.id,
+    #         '_RecipeIngredient__quantity': recipe_ingredients_table.c.quantity,
+    #         '_RecipeIngredient__ingredient': recipe_ingredients_table.c.ingredient,
+    #         '_RecipeIngredient__position': recipe_ingredients_table.c.position,
+    #         '_RecipeIngredient__recipe': relationship(Recipe, back_populates='_Recipe__ingredients'),
+    # })
+    #
+    # # RecipeInstruction mapping
+    # mapper_registry.map_imperatively(RecipeInstruction, recipe_instructions_table, properties={
+    #         '_RecipeInstruction__id': recipe_instructions_table.c.id,
+    #         '_RecipeInstruction__step': recipe_instructions_table.c.step,
+    #         '_RecipeInstruction__position': recipe_instructions_table.c.position,
+    #         '_RecipeInstruction__recipe': relationship(Recipe, back_populates='_Recipe__instructions'),
+    # })
