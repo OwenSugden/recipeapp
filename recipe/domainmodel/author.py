@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -39,7 +38,6 @@ class Author:
         return self.__recipes
 
     def add_recipe(self, recipe: "Recipe") -> None:
-        from recipe.domainmodel.recipe import Recipe
         if not isinstance(recipe, Recipe):
             raise TypeError("Expected a Recipe instance")
         if recipe not in self.__recipes:

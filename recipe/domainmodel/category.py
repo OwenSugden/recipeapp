@@ -1,11 +1,10 @@
-from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from recipe.domainmodel.recipe import Recipe
 
 class Category:
-    def __init__(self, name: str, recipes: list[Recipe] = None, category_id: int = None):
+    def __init__(self, name: str, recipes: list["Recipe"] = None, category_id: int = None):
         self.__id = category_id
         self.__name = name
         self.__recipes = recipes if recipes is not None else []
@@ -35,10 +34,10 @@ class Category:
         return self.__name
 
     @property
-    def recipes(self) -> list[Recipe]:
+    def recipes(self) -> list["Recipe"]:
         return self.__recipes
 
-    def add_recipe(self, recipe: Recipe) -> None:
+    def add_recipe(self, recipe: "Recipe") -> None:
         if isinstance(recipe, Recipe):
             self.__recipes.append(recipe)
         else:

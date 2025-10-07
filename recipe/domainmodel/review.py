@@ -1,23 +1,24 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from recipe.domainmodel.user import User
+    from recipe.domainmodel.recipe import Recipe
 
 class Review:
-    def __init__(self, review_id: int, recipe_id: int, user_id: int, rating: int, comment: str = None, created_at: datetime = None):
-        if rating < 1 or rating > 5:
-            raise ValueError("Rating must be between 1 and 5")
-        if not isinstance(review_id, int) or review_id <= 0:
-            raise ValueError("id must be a positive int.")
-
+    def __init__(self, review_id: int, user: "User", date: datetime, recipe: "Recipe", rating: float, comment: str):
         self.__id = review_id
-        self.__recipe_id = recipe_id
-        self.__user_id = user_id
-        self.__rating = rating
+        self.__user = user
+        self.__date = date
+        self.__recipe = recipe
+        if not (0 <= rating <= 5):
+            raise ValueError("Rating must be between 0 and 5")
+        else:
+            self.__rating = rating
         self.__comment = comment
-        self.__created_at = created_at
 
     def __repr__(self) -> str:
-        return (f"<Review with id: {self.id} from recipe_id: {self.recipe_id} was made by user_id: {self.user_id}, "
-                f"leaving a rating of {self.rating} stars and this comment: \n{self.comment!r}>")
+        return f"<Review: User: {self.user}, Recipe: {self.recipe}>"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Review):
@@ -27,44 +28,43 @@ class Review:
     def __lt__(self, other) -> bool:
         if not isinstance(other, Review):
             raise TypeError("Comparison must be between Review instances")
-        # Sort by rating first, then lexicographically by comment
-        if self.rating != other.rating:
-            return self.rating < other.rating
-        return self.comment < other.comment
+        if self.__rating is None:
+            return False
+        if other.__rating is None:
+            return True
+        return self.__rating < other.__rating
 
     def __hash__(self) -> int:
-        return hash(self.__id)
+        return hash(self.id)
 
     @property
     def id(self) -> int:
         return self.__id
 
     @property
-    def recipe_id(self) -> int:
-        return self.__recipe_id
+    def user(self) -> "User":
+        return self.__user
 
     @property
-    def user_id(self) -> int:
-        return self.__user_id
+    def date(self) -> datetime:
+        return self.__date
 
     @property
-    def rating(self) -> int:
+    def recipe(self) -> "Recipe":
+        return self.__recipe
+
+    @property
+    def rating(self) -> float:
         return self.__rating
-
-    @rating.setter
-    def rating(self, value: float):
-        if value is not None and (value < 0 or value > 5):
-            raise ValueError("Rating must be between 0 and 5.")
-        self.__rating = value
 
     @property
     def comment(self) -> str:
         return self.__comment
 
-    @comment.setter
-    def comment(self, value: str):
-        self.__comment = value.strip()
+    def update_rating(self, new_rating: float) -> None:
+        if not (0 <= new_rating <= 5):
+            raise ValueError("Rating must be between 0 and 5")
+        self.__rating = new_rating
 
-    @property
-    def created_at(self) -> datetime:
-        return self.__created_at
+    def update_comment(self, new_comment: str) -> None:
+        self.__comment = new_comment

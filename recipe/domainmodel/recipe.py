@@ -16,7 +16,7 @@ class Recipe:
                  ingredient_quantities: list[str] = None,
                  ingredients: list[str] = None,
                  nutrition: "Nutrition" = None,
-                 servings: str | None = None,
+                 servings: int | None = None,
                  recipe_yield: str | None = None,
                  instructions: list[str] = None):
 
@@ -27,16 +27,14 @@ class Recipe:
         self.__preparation_time = preparation_time
         self.__date = created_date
         self.__description = description
-        self.__images = images
+        self.__images = images if images else []
         self.__category = category
         self.__ingredient_quantities = ingredient_quantities
-        self.__ingredients = ingredients
+        self.__ingredients = ingredients if ingredients else []
         self.__nutrition = nutrition
         self.__servings = servings if servings else "Not specified"
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
         self.__instructions = instructions if instructions else []
-        self.__reviews = []
-        self.__ratings = []
 
     def __repr__(self) -> str:
         return (f"<Recipe {self.__name} with id: {self.id} was created by {self.__author.name} "

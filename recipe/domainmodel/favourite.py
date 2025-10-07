@@ -1,13 +1,19 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from recipe.domainmodel.user import User
+    from recipe.domainmodel.recipe import Recipe
+
 class Favourite:
-    def __init__(self, favourite_id: int, user_name: str, recipe_id: int, date=None):
+    def __init__(self, favourite_id: int, user: "User", recipe: "Recipe", date=None):
         from datetime import datetime
         self.__id = favourite_id
-        self.__user_name = user_name
-        self.__recipe_id = recipe_id
+        self.__user = user
+        self.__recipe = recipe
         self.__date = date if date is not None else datetime.now()
 
     def __repr__(self):
-        return f"<User: {self.__user_name} favourite recipe: {self.__recipe_id}>"
+        return f"<Favourite: User={self.user}, Recipe={self.__recipe}>"
 
     def __eq__(self, other):
         if not isinstance(other, Favourite):
@@ -27,12 +33,12 @@ class Favourite:
         return self.__id
 
     @property
-    def user_name(self):
-        return self.__user_name
+    def user(self):
+        return self.__user
 
     @property
-    def recipe_id(self):
-        return self.__recipe_id
+    def recipe(self):
+        return self.__recipe
 
     @property
     def date(self):

@@ -8,9 +8,6 @@ from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.nutrition import Nutrition
-from recipe.domainmodel.recipe_image import RecipeImage
-from recipe.domainmodel.recipe_ingredient import RecipeIngredient
-from recipe.domainmodel.recipe_instruction import RecipeInstruction
 
 
 def _parse_int(val, default=None):
@@ -59,9 +56,6 @@ class CSVDataReader:
         self.__dataset_of_recipes: list[Recipe] = []
         self.__dataset_of_authors: list[Author] = []
         self.__dataset_of_categories: list[Category] = []
-        self.__dataset_of_recipe_images: list[RecipeImage] = []
-        self.__dataset_of_recipe_ingredients: list[RecipeIngredient] = []
-        self.__dataset_of_recipe_instructions: list[RecipeInstruction] = []
 
     @property
     def dataset_of_recipes(self) -> list[Recipe]:
@@ -74,18 +68,6 @@ class CSVDataReader:
     @property
     def dataset_of_categories(self) -> list[Category]:
         return self.__dataset_of_categories
-
-    @property
-    def dataset_of_recipe_images(self) -> list[RecipeImage]:
-        return self.__dataset_of_recipe_images
-
-    @property
-    def dataset_of_recipe_ingredients(self) -> list[RecipeIngredient]:
-        return self.__dataset_of_recipe_ingredients
-
-    @property
-    def dataset_of_recipe_instructions(self) -> list[RecipeInstruction]:
-        return self.__dataset_of_recipe_instructions
 
     def read_recipes_csv(self):
         if not os.path.exists(self.__recipe_filename):
@@ -181,7 +163,7 @@ class CSVDataReader:
                     protein = 0.0 if protein_val is None else protein_val
 
                     nutrition_obj = Nutrition(
-                        id=recipe_id,
+                        nutrition_id=recipe_id,
                         calories=calories,
                         fat=fat,
                         saturated_fat=saturated_fat,
@@ -197,12 +179,12 @@ class CSVDataReader:
                     recipe_yield = _strip_or_none(row.get("RecipeYield"))
 
                     recipe = Recipe(
-                        id=recipe_id,
+                        recipe_id=recipe_id,
                         name=recipe_name,
                         author=author_obj,
                         cook_time=cook_time,
                         preparation_time=prep_time,
-                        date=date_published,
+                        created_date=date_published,
                         description=description,
                         images=images,
                         category=category_obj,
@@ -213,29 +195,6 @@ class CSVDataReader:
                         recipe_yield=recipe_yield,
                         instructions=instructions,
                     )
-
-                    # Create RecipeImage instances
-                    for position, url in enumerate(images, 1):
-                        if url and url.strip():
-                            recipe_image = RecipeImage(recipe_id, url.strip(), position)
-                            self.__dataset_of_recipe_images.append(recipe_image)
-
-                    # Create RecipeIngredient instances
-                    for position, (quantity, ingredient) in enumerate(zip(ingredient_quantities, ingredients), 1):
-                        if quantity and ingredient and quantity.strip() and ingredient.strip():
-                            recipe_ingredient = RecipeIngredient(recipe_id, quantity.strip(), ingredient.strip(),
-                                                                 position)
-                            self.__dataset_of_recipe_ingredients.append(recipe_ingredient)
-
-                    # Create RecipeInstruction instances
-                    for position, step in enumerate(instructions, 1):
-                        if step and step.strip():
-                            recipe_instruction = RecipeInstruction(recipe_id, step.strip(), position)
-                            self.__dataset_of_recipe_instructions.append(recipe_instruction)
-                    if hasattr(author_obj, "add_recipe"):
-                        author_obj.add_recipe(recipe)
-                    if hasattr(category_obj, "add_recipe"):
-                        category_obj.add_recipe(recipe)
 
                     self.__dataset_of_recipes.append(recipe)
 

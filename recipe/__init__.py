@@ -37,7 +37,8 @@ def create_app(test_config = None):
 
     # STEP 4: Create the SQLAlchemy DatabaseRepository instance for an sqlite3-based repository.
     repo.repo_instance = SqlAlchemyRepository(session_factory)
-    data_path = Path('recipes') / 'adapters' / 'data'
+    data_path = Path('recipe') / 'adapters' / 'data'
+    testing = test_config is not None
 
     # STEP 4: Repopulate the DB.
     if len(inspect(database_engine).get_table_names()) == 0:
@@ -54,7 +55,7 @@ def create_app(test_config = None):
         # Generate mappings that map domain model classes to the database tables.
         map_model_to_tables()
 
-        populate(data_path, repo.repo_instance, True, True)
+        populate(data_path, repo.repo_instance, testing=testing)
         print("REPOPULATING DATABASE... FINISHED")
 
     else:
