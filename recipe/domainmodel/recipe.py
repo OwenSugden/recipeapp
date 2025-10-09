@@ -2,6 +2,9 @@ from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.review import Review
+from recipe.domainmodel.recipe_image import RecipeImage
+from recipe.domainmodel.recipe_ingredient import RecipeIngredient
+from recipe.domainmodel.recipe_instruction import RecipeInstruction
 from datetime import datetime
 
 
@@ -9,36 +12,37 @@ class Recipe:
     def __init__(self, recipe_id: int, name: str, author: "Author",
                  cook_time: int = 0,
                  preparation_time: int = 0,
+                 total_time: int = 0,
                  created_date: datetime = None,
                  description: str = "",
-                 images: list[str] = None,
+                 images: list[RecipeImage] = None,
                  category: "Category" = None,
-                 ingredient_quantities: list[str] = None,
-                 ingredients: list[str] = None,
+                 ingredients: list[RecipeIngredient] = None,
                  nutrition: "Nutrition" = None,
                  servings: int | None = None,
                  recipe_yield: str | None = None,
-                 instructions: list[str] = None):
+                 instructions: list[RecipeInstruction] = None):
 
         self.__id = recipe_id
         self.__name = name
         self.__author = author
         self.__cook_time = cook_time
         self.__preparation_time = preparation_time
-        self.__date = created_date
+        self.__total_time = total_time
+        self.__created_date = created_date
         self.__description = description
         self.__images = images if images else []
         self.__category = category
-        self.__ingredient_quantities = ingredient_quantities
         self.__ingredients = ingredients if ingredients else []
         self.__nutrition = nutrition
         self.__servings = servings if servings else "Not specified"
         self.__recipe_yield = recipe_yield if recipe_yield else "Not specified"
         self.__instructions = instructions if instructions else []
+        self.__review = [Review]
 
     def __repr__(self) -> str:
         return (f"<Recipe {self.__name} with id: {self.id} was created by {self.__author.name} "
-            f"on {self.__date}>")
+                f"on {self.__created_date}>")
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Recipe):
@@ -86,14 +90,24 @@ class Recipe:
         self.__preparation_time = value
 
     @property
-    def date(self) -> datetime:
-        return self.__date
+    def total_time(self) -> int:
+        return self.__total_time
 
-    @date.setter
-    def date(self, value: datetime):
+    @total_time.setter
+    def total_time(self, value: int):
+        if value < 0:
+            raise ValueError("Total time cannot be negative.")
+        self.__total_time = value
+
+    @property
+    def created_date(self) -> datetime:
+        return self.__created_date
+
+    @created_date.setter
+    def created_date(self, value: datetime):
         if not isinstance(value, datetime):
             raise TypeError("date must be a datetime.")
-        self.__date = value
+        self.__created_date = value
 
     @property
     def description(self) -> str:
@@ -104,13 +118,13 @@ class Recipe:
         self.__description = text.strip()
 
     @property
-    def images(self) -> list[str]:
+    def images(self) -> list[RecipeImage]:
         return self.__images
 
     @images.setter
-    def images(self, value: list[str]):
-        if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
-            raise TypeError("images must be a list of strings.")
+    def images(self, value: list[RecipeImage]):
+        if not isinstance(value, list) or not all(isinstance(x, RecipeImage) for x in value):
+            raise TypeError("images must be a list of RecipeImage objects.")
         self.__images = value
 
     @property
@@ -122,12 +136,14 @@ class Recipe:
         self.__category = value
 
     @property
-    def ingredient_quantities(self) -> list[str]:
-        return self.__ingredient_quantities
-
-    @property
-    def ingredients(self) -> list[str]:
+    def ingredients(self) -> list[RecipeIngredient]:
         return self.__ingredients
+
+    @ingredients.setter
+    def ingredients(self, value: list[RecipeIngredient]):
+        if not isinstance(value, list) or not all(isinstance(x, RecipeIngredient) for x in value):
+            raise TypeError("ingredients must be a list of RecipeIngredient objects.")
+        self.__ingredients = value
 
     @property
     def nutrition(self) -> "Nutrition":
@@ -154,44 +170,11 @@ class Recipe:
         self.__recipe_yield = value if value else "Not specified"
 
     @property
-    def instructions(self) -> list[str]:
+    def instructions(self) -> list[RecipeInstruction]:
         return self.__instructions
 
     @instructions.setter
-    def instructions(self, steps: list[str]):
-        if not isinstance(steps, list):
-            raise ValueError("Instructions must be provided as a list of strings.")
+    def instructions(self, steps: list[RecipeInstruction]):
+        if not isinstance(steps, list) or not all(isinstance(x, RecipeInstruction) for x in steps):
+            raise ValueError("instructions must be a list of RecipeInstruction objects.")
         self.__instructions = steps
-
-    @property
-    def reviews(self) -> list[Review]:
-        return self.__reviews
-
-    def add_review(self, review: Review) -> None:
-        if isinstance(review, Review):
-            self.__reviews.append(review)
-            self.__update_rating()
-        else:
-            raise TypeError("Expected a Review instance")
-
-    def remove_review(self, review: Review) -> None:
-        if review in self.__reviews:
-            self.__reviews.remove(review)
-            self.__update_rating()
-        else:
-            raise ValueError("Review not found in recipe's reviews")
-
-
-    def __update_rating(self) -> None:
-        if self.__reviews:
-            ratings = [r.rating for r in self.__reviews if
-                       hasattr(r, "rating") and r.rating is not None]
-            if ratings:
-                average_rating = sum(ratings) / len(ratings)
-                self.__rating = round(average_rating, 1)
-            else:
-                self.__rating = None
-        else:
-            self.__rating = None
-
-

@@ -4,6 +4,7 @@ import ast
 
 from datetime import datetime
 from bisect import insort_left
+from tkinter import Image
 from typing import List
 from pathlib import Path
 
@@ -12,6 +13,9 @@ from recipe.domainmodel.category import Category
 from recipe.domainmodel.favourite import Favourite
 from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.recipe_image import RecipeImage
+from recipe.domainmodel.recipe_ingredient import RecipeIngredient
+from recipe.domainmodel.recipe_instruction import RecipeInstruction
 from recipe.domainmodel.review import Review
 from recipe.domainmodel.user import User
 
@@ -62,14 +66,6 @@ class MemoryRepository(AbstractRepository):
     def get_number_of_categories(self) -> int:
         return len(self.__categories)
 
-    def get_category_by_name(self, name: str) -> Category | None:
-        if not isinstance(name, str):
-            raise TypeError("Expected name to be a string")
-        for category in self.__categories:
-            if category.name.lower() == name.lower():
-                return category
-        return None
-
     def add_multiple_categories(self, categories: List[Category]):
         for category in categories:
             self.add_category(category)
@@ -116,10 +112,27 @@ class MemoryRepository(AbstractRepository):
     def get_recipes(self) -> list[Recipe]:
         return self.__recipes
 
-    # def get_recipes(self, page: int, page_size: int, sort_method: str) -> List[Recipe]:
-
-    def get_number_of_recipe(self) -> int:
+    def get_number_of_recipes(self) -> int:
         return len(self.__recipes)
+
+    def search_recipes(self, search_query: str) -> List[Recipe]:
+        pass
+
+    def get_recipes_by_category_filter(self, category_id: int) -> List[Recipe]:
+        pass
+
+    def get_recipes_by_time_filter(self, time_op_filter: str, time_filter: int) -> List[Recipe]:
+        pass
+
+    def add_multiple_recipes(self, recipes: List[Recipe]):
+        """
+        Adds multiple Recipes to the repository after validating them.
+        """
+        for recipe in recipes:
+            if not isinstance(recipe, Recipe):
+                raise TypeError("Expected a Recipe instance")
+            self._validate_recipe(recipe)
+            self.__recipes.append(recipe)
 
     # end region
 
@@ -127,13 +140,13 @@ class MemoryRepository(AbstractRepository):
     def add_review(self, user: User, review: Review):
         pass
 
-    def get_reviews(self, page: int, page_size: int, sort_method: str) -> list[Review]:
+    def get_reviews(self) -> list[Review]:
         pass
 
-    def get_user_reviews(self, page: int, page_size: int, user: User, sort_method: str) -> list[Review]:
+    def get_user_reviews(self) -> list[Review]:
         pass
 
-    def get_recipe_reviews(self, page: int, page_size: int, recipe: Recipe, sort_method: str) -> list[
+    def get_recipe_reviews(self) -> list[
         Review]:
         pass
 
@@ -150,6 +163,39 @@ class MemoryRepository(AbstractRepository):
         pass
 
     def get_user_by_name(self, username: str) -> User | None:
+        pass
+
+    # endregion
+
+    def add_recipe_image(self, recipe_image: RecipeImage):
+        pass
+
+    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
+        pass
+
+    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
+        pass
+
+    # endregion
+
+    def add_recipe_ingredient(self, recipe_ingredient: RecipeIngredient):
+        pass
+
+    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
+        pass
+
+    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
+        pass
+
+    # endregion
+
+    def add_recipe_instruction(self, recipe_instruction: RecipeInstruction):
+        pass
+
+    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
+        pass
+
+    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
         pass
 
     # endregion

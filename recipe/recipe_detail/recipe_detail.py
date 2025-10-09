@@ -10,6 +10,7 @@ recipe_detail_blueprint = Blueprint('recipe_detail_bp', __name__)
 @recipe_detail_blueprint.route('/browse/<int:recipe_id>', methods=['GET'])
 def recipe_detail(recipe_id):
     recipe = services.get_recipe_by_id(repo.repo_instance, recipe_id)
+
     return_to = request.args.get("return_to")
 
     # comments = services.get_comments(repo.repo_instance, recipe_id)

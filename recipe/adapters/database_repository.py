@@ -80,17 +80,6 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         num_authors = self._session_cm.session.query(Author).count()
         return num_authors
 
-    def get_author_by_name(self, name: str) -> Author | None:
-        author = None
-        try:
-            query = self._session_cm.session.query(Author).filter(
-                func.lower(Author.name) == name.strip().lower())
-            author = query
-        except NoResultFound:
-            print(f'Author {name} not found')
-
-        return author
-
     def add_multiple_authors(self, authors: List[Author]):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
@@ -120,17 +109,6 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
     def get_number_of_categories(self) -> int:
         num_categories = self._session_cm.session.query(Category).count()
         return num_categories
-
-    def get_category_by_name(self, name: str) -> Category:
-        category = None
-        try:
-            query = self._session_cm.session.query(Category).filter(
-                func.lower(Category.name) == name.strip().lower())
-            category = query
-        except NoResultFound:
-            print(f'Category {name} not found')
-
-        return category
 
     def add_multiple_categories(self, categories: List[Category]):
         with self._session_cm as scm:
@@ -207,31 +185,81 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             query = self._session_cm.session.query(Recipe).filter(
                 Recipe._Recipe__id == recipe_id)
             recipe = query.one()
-            # Populate the recipe with related data for consistent domain model interface
-            self._populate_recipe_data(recipe)
         except NoResultFound:
             print(f'Recipe {recipe_id} was not found')
 
-    def get_recipes(self) -> list[Recipe]:
+        return recipe
+
+    def get_recipes(self) -> List[Recipe]:
         recipes = self._session_cm.session.query(Recipe).all()
         return recipes
-
-    # def get_recipes(self, page: int, page_size: int, sort_method: str) -> List[Recipe]:
-    #     query = self._session_cm.session.query(Recipe)
-    #
-    #     # Apply pagination
-    #     start_index = (page - 1) * page_size
-    #     recipes = query.offset(start_index).limit(page_size).all()
-    #
-    #     # Populate all recipes with related data
-    #     for recipe in recipes:
-    #         self._populate_recipe_data(recipe)
-    #
-    #     return recipes
 
     def get_number_of_recipes(self) -> int:
         num_recipes = self._session_cm.session.query(Recipe).count()
         return num_recipes
+
+    def search_recipes(self, search_query: str) -> List[Recipe]:
+        try:
+            with self._session_cm as scm:
+                searched_recipes = scm.session.query(Recipe).filter(
+                    func.lower(Recipe._Recipe__name).like(f'%{search_query.lower().strip()}%')
+                ).all()
+
+            if not searched_recipes:
+                print(f'No recipes found containing the name {search_query}.')
+                return []
+
+        except Exception as e:
+            print(f"An error occurred while searching for recipes by name: {e}")
+            return []
+
+        return searched_recipes
+
+    def get_recipes_by_category_filter(self, category_id: int) -> List[Recipe]:
+        try:
+            with self._session_cm as scm:
+                recipes_with_cat_filter = (
+                    scm.session.query(Recipe)
+                    .filter(Recipe._Recipe__category.has(Category._Category__id == category_id))
+                    .all()
+                )
+
+            if not recipes_with_cat_filter:
+                print(f'No recipes found for category {category_id}.')
+                return []
+
+        except Exception as e:
+            print(f"An error occurred while filtering for recipes by category: {e}")
+            return []
+
+        return recipes_with_cat_filter
+
+    def get_recipes_by_time_filter(self, time_op_filter: str, time_filter: int) -> List[Recipe]:
+        try:
+            with self._session_cm as scm:
+                if time_op_filter == 'lt':
+                    recipes_with_time_filter = (
+                        scm.session.query(Recipe)
+                        .filter(Recipe._Recipe__total_time < time_filter)
+                        .all()
+                    )
+
+                elif time_op_filter == 'gt':
+                    recipes_with_time_filter = (
+                        scm.session.query(Recipe)
+                        .filter(Recipe._Recipe__total_time > time_filter)
+                        .all()
+                    )
+
+            if not recipes_with_time_filter:
+                print(f'No recipes found for total_time greater than or less than {time_filter}.')
+                return []
+
+        except Exception as e:
+            print(f"An error occurred while filtering for recipes by time: {e}")
+            return []
+
+        return recipes_with_time_filter
 
     def add_multiple_recipes(self, recipes: List[Recipe]):
         with self._session_cm as scm:
@@ -244,22 +272,18 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
 
     # endregion
 
-    # region Review_data Methods to manage Reviews
+    # region Review data Methods to manage Reviews
 
     def add_review(self, user: User, review: Review):
         pass
 
-    def get_reviews(self, page: int, page_size: int, sort_method: str) -> list[Review]:
+    def get_reviews(self) -> list[Review]:
         pass
 
-    def get_user_reviews(self, page: int, page_size: int, user: User, sort_method: str) -> list[Review]:
+    def get_user_reviews(self) -> list[Review]:
         pass
 
-    def get_recipe_reviews(self, page: int, page_size: int, recipe: Recipe, sort_method: str) -> list[Review]:
-        pass
-
-    def get_recipes_reviewed_by_user(self, page: int, page_size: int, user: User, sort_method: str) -> \
-            list[Recipe]:
+    def get_recipe_reviews(self) -> list[Review]:
         pass
 
     def get_review_by_id(self, review_id: int) -> Review | None:
@@ -279,133 +303,81 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
 
     # endregion
 
-    # def _populate_recipe_data(self, recipe: Recipe):
-    #     """
-    #     Populate a Recipe object with related data (images, ingredients, instructions)
-    #     to maintain consistent domain model interface between memory and database repositories.
-    #     """
-    #     if recipe is None:
-    #         return
-    #
-    #     # Use the same session context
-    #     with self._session_cm as scm:
-    #         self._populate_recipe_data_in_session(recipe, scm.session)
-    #
-    # def _populate_recipe_data_in_session(self, recipe: Recipe, session):
-    #     """
-    #     Populate a Recipe object with related data using the provided session.
-    #     """
-    #     if recipe is None:
-    #         return
-    #
-    #     # Load and populate images
-    #     recipe_images = session.query(RecipeImage).filter(
-    #         RecipeImage._RecipeImage__recipe_id == recipe.id
-    #     ).order_by(RecipeImage._RecipeImage__position).all()
-    #
-    #     recipe_ingredients = session.query(RecipeIngredient).filter(
-    #         RecipeIngredient.recipe_id == recipe.id
-    #     ).order_by(RecipeIngredient._RecipeIngredient__position).all()
-    #
-    #     recipe_instructions = session.query(RecipeInstruction).filter(
-    #         RecipeInstruction.recipe_id == recipe.id
-    #     ).order_by(RecipeInstruction._RecipeInstruction__position).all()
-    #
-    #
-    #     if recipe_images:
-    #         image_urls = [img.url for img in recipe_images]
-    #         recipe._Recipe__images = image_urls
-    #     else:
-    #         print(f"DEBUG: No images found for recipe {recipe.id}")
-    #
-    #     if recipe_ingredients:
-    #         recipe._Recipe__ingredients = [ri.ingredient for ri in recipe_ingredients]
-    #         recipe._Recipe__ingredient_quantities = [ri.quantity for ri in recipe_ingredients]
-    #     else:
-    #         print(f"DEBUG: No ingredients found for recipe {recipe.id}")
-    #
-    #     if recipe_instructions:
-    #         recipe._Recipe__instructions = [ins.step for ins in recipe_instructions]
-    #     else:
-    #         print(f"DEBUG: No instructions found for recipe {recipe.id}")
-    #
-    #
-    # # region RecipeImage Methods
-    # def add_recipe_image(self, recipe_image: RecipeImage):
-    #     with self._session_cm as scm:
-    #         scm.session.add(recipe_image)
-    #         scm.commit()
-    #
-    # def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
-    #     with self._session_cm as scm:
-    #         for recipe_image in recipe_images:
-    #             scm.session.add(recipe_image)
-    #         scm.commit()
-    #
-    # def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
-    #     with self._session_cm as scm:
-    #         if hasattr(RecipeImage, "_RecipeImage__recipe_id"):
-    #             q = scm.session.query(RecipeImage).filter(RecipeImage._RecipeImage__recipe_id == recipe_id)
-    #         else:
-    #             q = scm.session.query(RecipeImage).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-    #         if hasattr(RecipeImage, "_RecipeImage__position"):
-    #             q = q.order_by(RecipeImage._RecipeImage__position)
-    #         return q.all()
-    #
-    # # endregion
-    #
-    # # region RecipeIngredient Methods
-    # def add_recipe_ingredient(self, recipe_ingredient: RecipeIngredient):
-    #     with self._session_cm as scm:
-    #         scm.session.add(recipe_ingredient)
-    #         scm.commit()
-    #
-    # def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
-    #     with self._session_cm as scm:
-    #         for ri in recipe_ingredients:
-    #             scm.session.add(ri)
-    #         scm.commit()
-    #
-    # def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
-    #     with self._session_cm as scm:
-    #         if hasattr(RecipeIngredient, "_RecipeIngredient__recipe_id"):
-    #             q = scm.session.query(RecipeIngredient).filter(
-    #                 RecipeIngredient._RecipeIngredient__recipe_id == recipe_id)
-    #         else:
-    #             q = scm.session.query(RecipeIngredient).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-    #         # Keep ordering stable
-    #         if hasattr(RecipeIngredient, "_RecipeIngredient__position"):
-    #             q = q.order_by(RecipeIngredient._RecipeIngredient__position)
-    #         elif hasattr(RecipeIngredient, "_RecipeIngredient__id"):
-    #             q = q.order_by(RecipeIngredient._RecipeIngredient__id)
-    #         return q.all()
-    #
-    # # endregion
-    #
-    # # region RecipeInstruction Methods
-    # def add_recipe_instruction(self, recipe_instruction: RecipeInstruction):
-    #     with self._session_cm as scm:
-    #         scm.session.add(recipe_instruction)
-    #         scm.commit()
-    #
-    # def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
-    #     with self._session_cm as scm:
-    #         for rins in recipe_instructions:
-    #             scm.session.add(rins)
-    #         scm.commit()
-    #
-    # def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
-    #     with self._session_cm as scm:
-    #         if hasattr(RecipeInstruction, "_RecipeInstruction__recipe_id"):
-    #             q = scm.session.query(RecipeInstruction).filter(
-    #                 RecipeInstruction._RecipeInstruction__recipe_id == recipe_id)
-    #         else:
-    #             q = scm.session.query(RecipeInstruction).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-    #         if hasattr(RecipeInstruction, "_RecipeInstruction__position"):
-    #             q = q.order_by(RecipeInstruction._RecipeInstruction__position)
-    #         elif hasattr(RecipeInstruction, "_RecipeInstruction__id"):
-    #             q = q.order_by(RecipeInstruction._RecipeInstruction__id)
-    #         return q.all()
-    #
-    # # endregion
-    #
+    # region RecipeImage Methods
+    def add_recipe_image(self, recipe_image: RecipeImage):
+        with self._session_cm as scm:
+            scm.session.add(recipe_image)
+            scm.commit()
+
+    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
+        with self._session_cm as scm:
+            for recipe_image in recipe_images:
+                scm.session.add(recipe_image)
+            scm.commit()
+
+    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
+        with self._session_cm as scm:
+            if hasattr(RecipeImage, "_RecipeImage__recipe_id"):
+                q = scm.session.query(RecipeImage).filter(RecipeImage._RecipeImage__recipe_id == recipe_id)
+            else:
+                q = scm.session.query(RecipeImage).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
+            if hasattr(RecipeImage, "_RecipeImage__position"):
+                q = q.order_by(RecipeImage._RecipeImage__position)
+            return q.all()
+
+    # endregion
+
+    # region RecipeIngredient Methods
+    def add_recipe_ingredient(self, recipe_ingredient: RecipeIngredient):
+        with self._session_cm as scm:
+            scm.session.add(recipe_ingredient)
+            scm.commit()
+
+    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
+        with self._session_cm as scm:
+            for ri in recipe_ingredients:
+                scm.session.add(ri)
+            scm.commit()
+
+    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
+        with self._session_cm as scm:
+            if hasattr(RecipeIngredient, "_RecipeIngredient__recipe_id"):
+                q = scm.session.query(RecipeIngredient).filter(
+                    RecipeIngredient._RecipeIngredient__recipe_id == recipe_id)
+            else:
+                q = scm.session.query(RecipeIngredient).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
+            # Keep ordering stable
+            if hasattr(RecipeIngredient, "_RecipeIngredient__position"):
+                q = q.order_by(RecipeIngredient._RecipeIngredient__position)
+            elif hasattr(RecipeIngredient, "_RecipeIngredient__id"):
+                q = q.order_by(RecipeIngredient._RecipeIngredient__id)
+            return q.all()
+
+    # endregion
+
+    # region RecipeInstruction Methods
+    def add_recipe_instruction(self, recipe_instruction: RecipeInstruction):
+        with self._session_cm as scm:
+            scm.session.add(recipe_instruction)
+            scm.commit()
+
+    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
+        with self._session_cm as scm:
+            for rins in recipe_instructions:
+                scm.session.add(rins)
+            scm.commit()
+
+    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
+        with self._session_cm as scm:
+            if hasattr(RecipeInstruction, "_RecipeInstruction__recipe_id"):
+                q = scm.session.query(RecipeInstruction).filter(
+                    RecipeInstruction._RecipeInstruction__recipe_id == recipe_id)
+            else:
+                q = scm.session.query(RecipeInstruction).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
+            if hasattr(RecipeInstruction, "_RecipeInstruction__position"):
+                q = q.order_by(RecipeInstruction._RecipeInstruction__position)
+            elif hasattr(RecipeInstruction, "_RecipeInstruction__id"):
+                q = q.order_by(RecipeInstruction._RecipeInstruction__id)
+            return q.all()
+
+    # endregion

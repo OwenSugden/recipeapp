@@ -40,6 +40,7 @@ class Author:
     def add_recipe(self, recipe: "Recipe") -> None:
         if not isinstance(recipe, Recipe):
             raise TypeError("Expected a Recipe instance")
+
         if recipe not in self.__recipes:
             self.__recipes.append(recipe)
         else:

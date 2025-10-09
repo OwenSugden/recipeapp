@@ -4,6 +4,7 @@ import ast
 import re
 from datetime import datetime
 
+from recipe.domainmodel import recipe_image
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
@@ -96,6 +97,7 @@ class CSVDataReader:
             rows = csv.DictReader(f)
             author_count = 1
             category_count = 1
+            nutrition_count = 1
 
             for row in rows:
                 try:
@@ -113,9 +115,8 @@ class CSVDataReader:
                     # Use default author if name is empty
                     if not author_name:
                         author_name = "Unknown Author"
-                        print(f"DEBUG: Using default author for recipe {recipe_name}")
 
-                    # Check for existing author by name, not by equality
+                    # Check for existing author by name
                     existing_author = next((a for a in self.__dataset_of_authors if a.name == author_name), None)
                     if existing_author is None:
                         # Use author_id from CSV if available, otherwise let database auto-generate
@@ -131,20 +132,19 @@ class CSVDataReader:
 
                     # ---- Category (unique, list-based) ----
                     category_name = (row.get("RecipeCategory") or "").strip()
-                    # Check for existing category by name, not by equality
+                    # Check for existing category by name
                     existing_category = next((c for c in self.__dataset_of_categories if c.name == category_name), None)
                     if existing_category is None:
-                        # Don't specify ID - let the database auto-generate it
                         candidate_category = Category(category_name)
                         self.__dataset_of_categories.append(candidate_category)
                         category_obj = candidate_category
-                        # print(f"DEBUG: Created new category: {category_name}")
                     else:
                         category_obj = existing_category
 
                     # ---- Other fields ----
                     cook_time = _parse_int(row.get("CookTime"), default=0)
                     prep_time = _parse_int(row.get("PrepTime"), default=0)
+                    total_time = _parse_int(row.get("TotalTime"), default=0)
                     date_published = _parse_date_with_ordinals(row.get("DatePublished"))
                     description = (row.get("Description") or "").strip()
                     images = _parse_list_literal(row.get("Images"))
@@ -181,7 +181,7 @@ class CSVDataReader:
                     protein = 0.0 if protein_val is None else protein_val
 
                     nutrition_obj = Nutrition(
-                        nutrition_id=recipe_id,
+                        nutrition_id=nutrition_count,
                         calories=calories,
                         fat=fat,
                         saturated_fat=saturated_fat,
@@ -192,55 +192,67 @@ class CSVDataReader:
                         sugar=sugar,
                         protein=protein,
                     )
+                    nutrition_count += 1
 
                     servings = _parse_int(row.get("RecipeServings"))
                     recipe_yield = _strip_or_none(row.get("RecipeYield"))
 
+                    # Create RecipeImage instances
+                    recipe_images = [
+                        RecipeImage(recipe_id, url.strip(), position)
+                        for position, url in enumerate(images, 1)
+                        if url and url.strip()
+                    ]
+
+                    # Create RecipeIngredient instances
+                    recipe_ingredients = [
+                        RecipeIngredient(recipe_id, quantity.strip(), ingredient.strip(), position)
+                        for position, (quantity, ingredient) in enumerate(zip(ingredient_quantities, ingredients), 1)
+                        if quantity and ingredient and quantity.strip() and ingredient.strip()
+                    ]
+
+                    # Create RecipeInstruction instances
+                    recipe_instructions = [
+                        RecipeInstruction(recipe_id, step.strip(), position)
+                        for position, step in enumerate(instructions, 1)
+                        if step and step.strip()
+                    ]
+
+                    for rim in recipe_images:
+                        self.__dataset_of_recipe_images.append(rim)
+                    for rin in recipe_ingredients:
+                        self.__dataset_of_recipe_ingredients.append(rin)
+                    for rins in recipe_instructions:
+                        self.__dataset_of_recipe_instructions.append(rins)
+
+                    # Create Recipe object
                     recipe = Recipe(
                         recipe_id=recipe_id,
                         name=recipe_name,
                         author=author_obj,
                         cook_time=cook_time,
                         preparation_time=prep_time,
+                        total_time=total_time,
                         created_date=date_published,
                         description=description,
-                        images=images,
+                        images=recipe_images,
                         category=category_obj,
-                        ingredient_quantities=ingredient_quantities,
-                        ingredients=ingredients,
+                        ingredients=recipe_ingredients,
                         nutrition=nutrition_obj,
                         servings=servings,
                         recipe_yield=recipe_yield,
-                        instructions=instructions,
+                        instructions=recipe_instructions,
                     )
-                    print(recipe.created_date)
 
-                    # # Create RecipeImage instances
-                    # for position, url in enumerate(images, 1):
-                    #     if url and url.strip():
-                    #         recipe_image = RecipeImage(recipe_id, url.strip(), position)
-                    #         self.__dataset_of_recipe_images.append(recipe_image)
-                    #
-                    # # Create RecipeIngredient instances
-                    # for position, (quantity, ingredient) in enumerate(zip(ingredient_quantities, ingredients), 1):
-                    #     if quantity and ingredient and quantity.strip() and ingredient.strip():
-                    #         recipe_ingredient = RecipeIngredient(recipe_id, quantity.strip(), ingredient.strip(),
-                    #                                              position)
-                    #         self.__dataset_of_recipe_ingredients.append(recipe_ingredient)
-                    #
-                    # # Create RecipeInstruction instances
-                    # for position, step in enumerate(instructions, 1):
-                    #     if step and step.strip():
-                    #         recipe_instruction = RecipeInstruction(recipe_id, step.strip(), position)
-                    #         self.__dataset_of_recipe_instructions.append(recipe_instruction)
+                    # Add recipe to datasets
                     # if hasattr(author_obj, "add_recipe"):
                     #     author_obj.add_recipe(recipe)
                     # if hasattr(category_obj, "add_recipe"):
                     #     category_obj.add_recipe(recipe)
-                    #
+
                     self.__dataset_of_recipes.append(recipe)
 
                 except (ValueError, KeyError) as e:
                     # Skip malformed rows
-                    # print(f"Skipping malformed row: {e}")
+                    print(f"Skipping malformed row: {e}")
                     continue

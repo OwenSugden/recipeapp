@@ -26,24 +26,13 @@ def populate(data_path: Path, repo: AbstractRepository, database_mode: bool, tes
     repo.add_multiple_categories(categories)
     repo.add_multiple_recipes(recipes)
 
-    # if database_mode:
-    #     print("Populating additional tables...")
-    #
-    #     # Add recipe images
-    #     recipe_images = getattr(reader, "dataset_of_recipe_images", None)
-    #     add_imgs = getattr(repo, "add_multiple_recipe_images", None)
-    #     if recipe_images and callable(add_imgs):
-    #         add_imgs(recipe_images)
-    #
-    #     # Add recipe ingredients
-    #     recipe_ingredients = getattr(reader, "dataset_of_recipe_ingredients", None)
-    #     add_ingredients = getattr(repo, "add_multiple_recipe_ingredients", None)
-    #     if recipe_ingredients and callable(add_ingredients):
-    #         add_ingredients(recipe_ingredients)
-    #
-    #     # Add recipe instructions
-    #     recipe_instructions = getattr(reader, "dataset_of_instructions", None)
-    #     add_instructions = getattr(repo, "add_multiple_recipe_instructions", None)
-    #     if recipe_instructions and callable(add_instructions):
-    #         add_instructions(recipe_instructions)
+    if database_mode:
+        print("Populating additional tables...")
 
+        recipe_images = reader.dataset_of_recipe_images
+        recipe_ingredients = reader.dataset_of_recipe_ingredients
+        recipe_instructions = reader.dataset_of_recipe_instructions
+
+        repo.add_multiple_recipe_images(recipe_images)
+        repo.add_multiple_recipe_ingredients(recipe_ingredients)
+        repo.add_multiple_recipe_instructions(recipe_instructions)
