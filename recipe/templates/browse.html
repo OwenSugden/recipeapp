@@ -49,18 +49,14 @@
         </div>
     </div>
     <nav class="pager">
-        {% if page > 1 %}
-            <a class="page-btn" href="?q={{ search_query }}&filter_by={{ filter_by }}&page={{ page - 1 }}">
-                Previous
-            </a>
+        {% if prev_url %}
+            <a class="page-btn" href="{{ prev_url }}">Previous</a>
         {% endif %}
 
         <span>Page {{ page }} of {{ total_pages }}</span>
 
-        {% if page < total_pages %}
-            <a class="page-btn" href="?q={{ search_query }}&filter_by={{ filter_by }}&page={{ page + 1 }}">
-                Next
-            </a>
+        {% if next_url %}
+            <a class="page-btn" href="{{ next_url }}">Next</a>
         {% endif %}
     </nav>
 </div>
