@@ -1,47 +1,43 @@
-from flask import render_template, Blueprint, request
+from flask import Blueprint, render_template, request, session, redirect, url_for, flash
 import recipe.adapters.repository as repo
 import recipe.browse.services as services
 
 browse_blueprint = Blueprint('browse_bp', __name__)
 
+
 @browse_blueprint.route('/browse', methods=['GET'])
 def browse():
-    q = (request.args.get('q') or "").strip()
-    filter_by = (request.args.get('filter') or "").strip()
-    sort_option = (request.args.get('sort') or "").strip().lower()
+    # All recipes
+    recipes = services.get_recipes(repo.repo_instance)
+    number_of_recipes = len(recipes)
 
-    time_op = (request.args.get('time_op') or '').strip()
-    time_val = request.args.get('time', type=int)
+    # Get search query
+    search_query = request.args.get('q', '')
+    filter_by = request.args.get('filter_by', 'name')
 
-    calories_op = (request.args.get('calories_op') or '').strip()
-    calories_val = request.args.get('calories', type=int)
+    if search_query:
+        search_query_lower = search_query.lower()
 
-    protein_op = (request.args.get('protein_op') or '').strip()
-    protein_val = request.args.get('protein', type=int)
+        if filter_by == 'name':
+            recipes = services.get_recipes_by_name(repo.repo_instance, search_query_lower)
 
-    fat_op = (request.args.get('fat_op') or '').strip()
-    fat_val = request.args.get('fat', type=int)
+        elif filter_by == 'author':
+            recipes = services.get_recipes_by_author(repo.repo_instance, search_query_lower)
 
-    carbs_op = (request.args.get('carbohydrates_op') or '').strip()
-    carbs_val = request.args.get('carbohydrates', type=int)
+        elif filter_by == 'category':
+            recipes = services.get_recipes_by_category(repo.repo_instance, search_query_lower)
 
+    # Pagination logic
     page = request.args.get('page', 1, type=int)
     per_page = 24
+    start = (page - 1) * per_page
+    end = start + per_page
+    total_pages = (len(recipes) + per_page - 1) // per_page
+    recipes_on_page = recipes[start:end]
 
-    dto = services.browse_recipes(
-        repo=repo.repo_instance,
-        q=q,
-        filter_by=filter_by,
-        sort_option=sort_option,
-        numeric_filters={
-            "time": (time_op, time_val),
-            "calories": (calories_op, calories_val),
-            "protein": (protein_op, protein_val),
-            "fat": (fat_op, fat_val),
-            "carbohydrates": (carbs_op, carbs_val),
-        },
-        page=page,
-        per_page=per_page,
-    )
-
-    return render_template('browse.html', **dto)
+    return render_template('browse.html',
+                           total_pages=total_pages,
+                           page=page,
+                           search_query=search_query,
+                           recipes_on_page=recipes_on_page,
+                           number_of_recipes=number_of_recipes)

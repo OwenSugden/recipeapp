@@ -198,15 +198,15 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         num_recipes = self._session_cm.session.query(Recipe).count()
         return num_recipes
 
-    def search_recipes(self, search_query: str) -> List[Recipe]:
+    def get_recipes_by_name(self, name: str) -> List[Recipe]:
         try:
             with self._session_cm as scm:
                 searched_recipes = scm.session.query(Recipe).filter(
-                    func.lower(Recipe._Recipe__name).like(f'%{search_query.lower().strip()}%')
+                    func.lower(Recipe._Recipe__name).like(f'%{name.lower().strip()}%')
                 ).all()
 
             if not searched_recipes:
-                print(f'No recipes found containing the name {search_query}.')
+                print(f'No recipes found containing the name {name}.')
                 return []
 
         except Exception as e:
@@ -215,51 +215,40 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
 
         return searched_recipes
 
-    def get_recipes_by_category_filter(self, category_id: int) -> List[Recipe]:
+    def get_recipes_by_author(self, author: str) -> List[Recipe]:
         try:
             with self._session_cm as scm:
-                recipes_with_cat_filter = (
-                    scm.session.query(Recipe)
-                    .filter(Recipe._Recipe__category.has(Category._Category__id == category_id))
-                    .all()
-                )
+                searched_recipes = (scm.session.query(Recipe).join(Recipe._Recipe__author)
+                    .filter(Author._Author__name.ilike(f"%{author}%"))
+                    ).all()
 
-            if not recipes_with_cat_filter:
-                print(f'No recipes found for category {category_id}.')
+            if not searched_recipes:
+                print(f'No recipes found with author {author}.')
                 return []
 
         except Exception as e:
-            print(f"An error occurred while filtering for recipes by category: {e}")
+            print(f"An error occurred while searching for recipes by author: {e}")
             return []
 
-        return recipes_with_cat_filter
+        return searched_recipes
 
-    def get_recipes_by_time_filter(self, time_op_filter: str, time_filter: int) -> List[Recipe]:
+    def get_recipes_by_category(self, category: str) -> List[Recipe]:
         try:
             with self._session_cm as scm:
-                if time_op_filter == 'lt':
-                    recipes_with_time_filter = (
-                        scm.session.query(Recipe)
-                        .filter(Recipe._Recipe__total_time < time_filter)
-                        .all()
-                    )
+                searched_recipes = (scm.session.query(Recipe).join(Recipe._Recipe__category)
+                                    .filter(Category._Category__name.ilike(f"%{category}%"))
+                                    ).all()
 
-                elif time_op_filter == 'gt':
-                    recipes_with_time_filter = (
-                        scm.session.query(Recipe)
-                        .filter(Recipe._Recipe__total_time > time_filter)
-                        .all()
-                    )
-
-            if not recipes_with_time_filter:
-                print(f'No recipes found for total_time greater than or less than {time_filter}.')
+            if not searched_recipes:
+                print(f'No recipes found with category {category}.')
                 return []
 
         except Exception as e:
-            print(f"An error occurred while filtering for recipes by time: {e}")
+            print(f"An error occurred while searching for recipes by category: {e}")
             return []
 
-        return recipes_with_time_filter
+        return searched_recipes
+
 
     def add_multiple_recipes(self, recipes: List[Recipe]):
         with self._session_cm as scm:
