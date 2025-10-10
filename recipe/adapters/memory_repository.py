@@ -30,6 +30,9 @@ class MemoryRepository(AbstractRepository):
         self.__reviews = list()
         self.__users = list()
         self.__nutritions = list()
+        self.__recipe_images = list()
+        self.__recipe_ingredients = list()
+        self.__recipe_instructions = list()
         self._next_user_id = 1
         self._next_category_id = 1
 
@@ -115,14 +118,17 @@ class MemoryRepository(AbstractRepository):
     def get_number_of_recipes(self) -> int:
         return len(self.__recipes)
 
-    def search_recipes(self, search_query: str) -> List[Recipe]:
-        pass
+    def get_recipes_by_name(self, name: str) -> List[Recipe]:
+        searched_recipes = [recipe for recipe in self.__recipes if name in recipe.name]
+        return searched_recipes
 
-    def get_recipes_by_category_filter(self, category_id: int) -> List[Recipe]:
-        pass
+    def get_recipes_by_category(self, category: str) -> List[Recipe]:
+        searched_recipes = [recipe for recipe in self.__recipes if category in recipe.category.name]
+        return searched_recipes
 
-    def get_recipes_by_time_filter(self, time_op_filter: str, time_filter: int) -> List[Recipe]:
-        pass
+    def get_recipes_by_author(self, author: str) -> List[Recipe]:
+        searched_recipes = [recipe for recipe in self.__recipes if author in recipe.author.name]
+        return searched_recipes
 
     def add_multiple_recipes(self, recipes: List[Recipe]):
         """
@@ -168,35 +174,51 @@ class MemoryRepository(AbstractRepository):
     # endregion
 
     def add_recipe_image(self, recipe_image: RecipeImage):
-        pass
+        self.__recipe_images.append(recipe_image)
 
     def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
-        pass
+        for recipe_image in recipe_images:
+            self.__recipe_images.append(recipe_image)
 
     def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
-        pass
+        recipe_images = []
+        for recipe_image in self.__recipe_images:
+            if recipe_image.recipe_id == recipe_id:
+                recipe_images.append(recipe_image)
+
+        return recipe_images
 
     # endregion
 
     def add_recipe_ingredient(self, recipe_ingredient: RecipeIngredient):
-        pass
+        self.__recipe_ingredients.append(recipe_ingredient)
 
     def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
-        pass
+        for recipe_ingredient in recipe_ingredients:
+            self.__recipe_ingredients.append(recipe_ingredient)
 
     def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
-        pass
+        recipe_ingredients = []
+        for recipe_ingredient in self.__recipe_ingredients:
+            if recipe_ingredient.recipe_id == recipe_id:
+                recipe_ingredients.append(recipe_ingredient)
+        return recipe_ingredients
 
     # endregion
 
     def add_recipe_instruction(self, recipe_instruction: RecipeInstruction):
-        pass
+        self.__recipe_instructions.append(recipe_instruction)
 
     def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
-        pass
+        for recipe_instruction in recipe_instructions:
+            self.__recipe_instructions.append(recipe_instruction)
 
     def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
-        pass
+        recipe_instructions = []
+        for recipe_instruction in self.__recipe_instructions:
+            if recipe_instruction.recipe_id == recipe_id:
+                recipe_instructions.append(recipe_instruction)
+        return recipe_instructions
 
     # endregion
 

@@ -132,15 +132,15 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search_recipes(self, search_query: str) -> List[Recipe]:
+    def get_recipes_by_name(self, name: str) -> List[Recipe]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipes_by_category_filter(self, category_id: int) -> List[Recipe]:
+    def get_recipes_by_category(self, category: str) -> List[Recipe]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipes_by_time_filter(self, time_op_filter: str, time_filter: int) -> List[Recipe]:
+    def get_recipes_by_author(self, author: str) -> List[Recipe]:
         raise NotImplementedError
 
     @abc.abstractmethod
