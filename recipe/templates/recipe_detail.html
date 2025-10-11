@@ -34,7 +34,7 @@
 
         <div class="recipe-intro">
             <img
-              src="{{ recipe.images[0] if recipe.images and recipe.images[0] else url_for('static', filename='images/placeholder.jpg') }}"
+              src="{{ recipe.images[0].url if recipe.images and recipe.images[0].url else url_for('static', filename='images/placeholder.jpg') }}"
               alt="Photo of {{ recipe.name }}"
             >
             <h3>Made By:</h3>
@@ -47,7 +47,7 @@
               <h2>Ingredients</h2>
               <ul>
                 {% for item in recipe.ingredients %}
-                  <li>{{ item }}</li>
+                  <li>{{ item.ingredient }}</li>
                 {% endfor %}
               </ul>
             </div>
@@ -56,7 +56,7 @@
               <h2>Instructions</h2>
               <ol>
                 {% for step in recipe.instructions %}
-                  <li>{{ step }}</li>
+                  <li>{{ step.step }}</li>
                 {% endfor %}
               </ol>
             </div>

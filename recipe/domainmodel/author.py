@@ -1,4 +1,7 @@
-from recipe.domainmodel.recipe import Recipe
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from recipe.domainmodel.recipe import Recipe
 
 class Author:
     def __init__(self, author_id: int, name: str, recipes: list["Recipe"] = None):
@@ -35,9 +38,9 @@ class Author:
         return self.__recipes
 
     def add_recipe(self, recipe: "Recipe") -> None:
-        from recipe.domainmodel.recipe import Recipe
         if not isinstance(recipe, Recipe):
             raise TypeError("Expected a Recipe instance")
+
         if recipe not in self.__recipes:
             self.__recipes.append(recipe)
         else:

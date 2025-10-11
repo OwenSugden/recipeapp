@@ -28,11 +28,11 @@
                 <li class="recipe-card">
                     <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id, return_to=request.full_path) }}" style="text-decoration: none">
                         <div class="card-img">
-                            <img src="{{ recipe.images[0] }}" alt="recipe image">
+                            <img src="{{ recipe.images[0].url }}" alt="">
                         </div>
                         <div class="card-body">
                             <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
-                            <p class="card-author" style="margin: 0">Author: {{ recipe.author }}</p>
+                            <p class="card-author" style="margin: 0">Author: {{ recipe.author.name }}</p>
                         </div>
                     </a>
                 </li>

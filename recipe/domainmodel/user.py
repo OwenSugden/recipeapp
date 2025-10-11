@@ -1,5 +1,8 @@
-from recipe.domainmodel.favourite import Favourite
-from recipe.domainmodel.review import Review
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from recipe.domainmodel.favourite import Favourite
+    from recipe.domainmodel.review import Review
 
 class User:
     def __init__(self, username: str, password: str, user_id: int = None):
@@ -8,6 +11,18 @@ class User:
         self.__password = password
         self.__favourite_recipes = []
         self.__reviews = []
+
+    def __getattr__(self, name):
+        """Ensure private attributes are initialized when accessed via SQLAlchemy"""
+        if name == '_User__favourite_recipes':
+            if not hasattr(self, '__favourite_recipes'):
+                self.__favourite_recipes = []
+            return self.__favourite_recipes
+        elif name == '_User__reviews':
+            if not hasattr(self, '__reviews'):
+                self.__reviews = []
+            return self.__reviews
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def __repr__(self) -> str:
         return f"<User {self.id}: {self.username}>"
