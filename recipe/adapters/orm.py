@@ -239,3 +239,4 @@ def map_model_to_tables():
             '_RecipeInstruction__position': recipe_instructions_table.c.position,
             '_RecipeInstruction__recipe': relationship(Recipe, back_populates='_Recipe__instructions'),
     })
+

@@ -282,9 +282,23 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
 
     # region User methods
     def add_user(self, user: User):
+        with self._session_cm as scm:
+            with scm.session.no_autoflush:
+                # Check if user already exists
+                existing_user = scm.session.query(Recipe).filter(Recipe.id == user.id).first()
+                if not existing_user:
+                    scm.session.add(user)
+            scm.commit()
         pass
 
     def get_user_by_id(self, user_id: int) -> User | None:
+        user = None
+        try:
+            query = self._session_cm.session.query(User).filter(
+                User._User__id == user_id)
+            user = query.one()
+        except NoResultFound:
+            print(f'User {user_id} was not found')
         pass
 
     def get_user_by_name(self, username: str) -> User | None:

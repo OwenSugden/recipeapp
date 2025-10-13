@@ -163,13 +163,24 @@ class MemoryRepository(AbstractRepository):
 
     # region User data Methods to manage Users
     def add_user(self, user: User):
-        pass
+        if not isinstance(user, User):
+            raise TypeError("Expected a User instance")
+        self._validate_recipe(user)
+        insort_left(self.__users, user)
+        self.__recipes_index[user.id] = user
+
 
     def get_user_by_id(self, user_id: int) -> User | None:
-        pass
+        for user in self.__users:
+            if user.id == user_id:
+                return user
+        return None
 
     def get_user_by_name(self, username: str) -> User | None:
-        pass
+        for user in self.__users:
+            if user.username == username:
+                return user
+        return None
 
     # endregion
 
