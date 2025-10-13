@@ -3,9 +3,7 @@ from recipe.adapters.repository import AbstractRepository
 def get_recipe_by_id(repo: AbstractRepository, recipe_id: int) :
     return repo.get_recipe_by_id(recipe_id)
 
-def get_recipe(repo, recipe_id):
-    return repo.get_recipe_by_id(recipe_id)
-
+# TODO add the review functionality
 # def get_comments(repo, recipe_id):
 #     return repo.get_comments_for_recipe(recipe_id)
 #
