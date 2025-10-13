@@ -18,7 +18,7 @@ class Review:
         self.__comment = comment
 
     def __repr__(self) -> str:
-        return f"<Review: User: {self.user}, Recipe: {self.recipe}>"
+        return f"<Review: User: {self.user.username}, Recipe: {self.recipe.id}>"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Review):
@@ -68,3 +68,4 @@ class Review:
 
     def update_comment(self, new_comment: str) -> None:
         self.__comment = new_comment
+

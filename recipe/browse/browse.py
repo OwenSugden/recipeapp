@@ -36,7 +36,6 @@ def browse():
     end = start + per_page
     recipes_on_page = recipes[start:end]
 
-    # Build prev/next URLs that preserve current query params
     args = request.args.to_dict(flat=True)
     prev_url = None
     next_url = None

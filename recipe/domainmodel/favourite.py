@@ -13,7 +13,7 @@ class Favourite:
         self.__date = date if date is not None else datetime.now()
 
     def __repr__(self):
-        return f"<Favourite: User={self.user}, Recipe={self.__recipe}>"
+        return f"<Favourite: User={self.user.username}, Recipe={self.__recipe.id}>"
 
     def __eq__(self, other):
         if not isinstance(other, Favourite):
