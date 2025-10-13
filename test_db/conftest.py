@@ -26,13 +26,12 @@ from recipe.domainmodel.review import Review
 from recipe.domainmodel.user import User
 
 
-# Paths to test data for podcast library
 TEST_DATA_PATH_DATABASE_FULL = get_project_root() / "recipe" / "adapters" / "data"
 TEST_DATA_PATH_DATABASE_LIMITED = get_project_root() / "tests" / "data"
 
 # Database URIs
 TEST_DATABASE_URI_IN_MEMORY = 'sqlite://'
-TEST_DATABASE_URI_FILE = 'sqlite:///podcast-test.db'
+TEST_DATABASE_URI_FILE = 'sqlite:///recipe-test.db'
 
 @pytest.fixture
 def database_engine():

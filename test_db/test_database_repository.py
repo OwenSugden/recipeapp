@@ -1,7 +1,4 @@
 import pytest
-
-from recipe.adapters.database_repository import SqlAlchemyRepository
-from recipe.adapters.orm import users_table
 from test_db.conftest import *
 
 from recipe.domainmodel.author import Author
