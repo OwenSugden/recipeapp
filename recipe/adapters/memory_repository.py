@@ -38,8 +38,13 @@ class MemoryRepository(AbstractRepository):
 
     # region Author_data
     def add_author(self, author: Author):
-        self._validate_author(author)
         self.__authors.append(author)
+
+    def get_author_by_id(self, author_id: int):
+        for author in self.__authors:
+            if author.id == author_id:
+                return author
+        return None
 
     def get_authors(self) -> list[Author]:
         return self.__authors
@@ -60,8 +65,13 @@ class MemoryRepository(AbstractRepository):
         if category.id is None:
             category._Category__id = self._next_category_id
             self._next_category_id += 1
-        self._validate_category(category)
         self.__categories.append(category)
+
+    def get_category_by_id(self, category_id: int):
+        for category in self.__categories:
+            if category.id == category_id:
+                return category
+        return None
 
     def get_categories(self) -> List[Category]:
         return self.__categories
@@ -74,6 +84,8 @@ class MemoryRepository(AbstractRepository):
             self.add_category(category)
 
     # endregion
+
+    # region Favourite_data Methods to manage Favourites
     def add_favourite(self, user: User, recipe: Recipe):
         pass
 
@@ -92,6 +104,15 @@ class MemoryRepository(AbstractRepository):
     def add_nutrition(self, nutrition: Nutrition):
         self.__nutritions.append(nutrition)
 
+    def get_nutrition_by_id(self, nutrition_id: int):
+        for nutrition in self.__nutritions:
+            if nutrition.id == nutrition_id:
+                return nutrition
+        return None
+
+    def get_nutritions(self) -> List[Nutrition]:
+        return self.__nutritions
+
     def add_multiple_nutritions(self, nutritions: List[Nutrition]):
         for nutrition in nutritions:
             self.add_nutrition(nutrition)
@@ -102,7 +123,6 @@ class MemoryRepository(AbstractRepository):
     def add_recipe(self, recipe: Recipe):
         if not isinstance(recipe, Recipe):
             raise TypeError("Expected a Recipe instance")
-        self._validate_recipe(recipe)
         insort_left(self.__recipes, recipe)
         self.__recipes_index[recipe.id] = recipe
 
@@ -137,7 +157,6 @@ class MemoryRepository(AbstractRepository):
         for recipe in recipes:
             if not isinstance(recipe, Recipe):
                 raise TypeError("Expected a Recipe instance")
-            self._validate_recipe(recipe)
             self.__recipes.append(recipe)
 
     # end region
@@ -173,158 +192,59 @@ class MemoryRepository(AbstractRepository):
 
     # endregion
 
+    # region RecipeImage data Methods to manage RecipeImage
     def add_recipe_image(self, recipe_image: RecipeImage):
         self.__recipe_images.append(recipe_image)
+
+    def get_recipe_image(self, recipe_id: int, position: int):
+        for recipeimage in self.__recipe_images:
+            if recipeimage.recipe_id == recipe_id and recipeimage.position == position:
+                return recipeimage
+        return None
+
+    def get_recipe_images(self) -> list[RecipeImage]:
+        return self.__recipe_images
 
     def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
         for recipe_image in recipe_images:
             self.__recipe_images.append(recipe_image)
 
-    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
-        recipe_images = []
-        for recipe_image in self.__recipe_images:
-            if recipe_image.recipe_id == recipe_id:
-                recipe_images.append(recipe_image)
-
-        return recipe_images
-
     # endregion
 
+    # region RecipeIngredient data Methods to manage RecipeIngredient
     def add_recipe_ingredient(self, recipe_ingredient: RecipeIngredient):
         self.__recipe_ingredients.append(recipe_ingredient)
+
+    def get_recipe_ingredient(self, recipe_id: int, position: int):
+        for recipeingredient in self.__recipe_ingredients:
+            if recipeingredient.recipe_id == recipe_id and recipeingredient.position == position:
+                return recipeingredient
+        return None
+
+    def get_recipe_ingredients(self) -> list[RecipeIngredient]:
+        return self.__recipe_ingredients
 
     def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
         for recipe_ingredient in recipe_ingredients:
             self.__recipe_ingredients.append(recipe_ingredient)
 
-    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
-        recipe_ingredients = []
-        for recipe_ingredient in self.__recipe_ingredients:
-            if recipe_ingredient.recipe_id == recipe_id:
-                recipe_ingredients.append(recipe_ingredient)
-        return recipe_ingredients
-
     # endregion
 
+    # region RecipeIngredient data Methods to manage RecipeIngredient
     def add_recipe_instruction(self, recipe_instruction: RecipeInstruction):
         self.__recipe_instructions.append(recipe_instruction)
+
+    def get_recipe_instruction(self, recipe_id: int, position: int):
+        for recipeinstruction in self.__recipe_instructions:
+            if recipeinstruction.recipe_id == recipe_id and recipeinstruction.position == position:
+                return recipeinstruction
+        return None
+
+    def get_recipe_instructions(self) -> list[RecipeInstruction]:
+        return self.__recipe_instructions
 
     def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
         for recipe_instruction in recipe_instructions:
             self.__recipe_instructions.append(recipe_instruction)
-
-    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
-        recipe_instructions = []
-        for recipe_instruction in self.__recipe_instructions:
-            if recipe_instruction.recipe_id == recipe_id:
-                recipe_instructions.append(recipe_instruction)
-        return recipe_instructions
-
-    # endregion
-
-    def _validate_author(self, author: Author):
-        if not isinstance(author, Author):
-            raise TypeError("Expected an Author instance")
-        if author in self.__authors:
-            raise FileExistsError(
-                f"Author {author.name} already exists in repository")
-        if not author.name:
-            raise ValueError("Author name cannot be empty")
-        if not isinstance(author.name, str):
-            raise TypeError("Author name must be a string")
-        if author.id < 0:
-            raise ValueError("Author ID must be a non-negative integer")
-        if not isinstance(author.recipes, list) or not all(
-                isinstance(recipe, Recipe) for recipe in author.recipes):
-            raise TypeError(
-                "Author recipes must be a list of Recipe instances")
-        return
-
-    def _validate_category(self, category: Category):
-        if category in self.__categories:
-            raise FileExistsError(
-                f"Category {category.name} already exists in repository")
-        if not category.name:
-            raise ValueError("Category name cannot be empty")
-        if not isinstance(category.name, str):
-            raise TypeError("Category name must be a string")
-        return
-
-    def _validate_recipe(self, recipe: Recipe):
-        if not isinstance(recipe, Recipe):
-            raise TypeError("Expected a Recipe instance")
-        if recipe.author not in self.__authors:
-            raise ValueError(
-                f"Author {recipe.author.name} not found in repository")
-        if recipe.category not in self.__categories:
-            raise ValueError(
-                f"Category {recipe.category.name} not found in repository")
-        if any(r.id == recipe.id for r in self.__recipes):
-            raise FileExistsError(
-                f"Recipe with ID {recipe.id} already exists in repository")
-        if recipe.rating is not None:
-            if not (0 <= recipe.rating <= 5):
-                raise ValueError("Rating must be between 0 and 5")
-        if not isinstance(recipe.date, datetime):
-            raise TypeError("Expected a datetime instance for date")
-        if recipe in self.__recipes:
-            raise FileExistsError("Recipe already exists in the repository")
-        if recipe.id < 0:
-            raise ValueError("Recipe ID must be a non-negative integer")
-        if not isinstance(recipe.name, str) or not recipe.name:
-            raise ValueError("Recipe name must be a non-empty string")
-        if not isinstance(recipe.author, Author):
-            raise TypeError("Expected an Author instance for author")
-        if not isinstance(recipe.category, Category):
-            raise TypeError("Expected a Category instance for category")
-        if not isinstance(recipe.images, list) or not all(
-                isinstance(img, str) for img in recipe.images):
-            raise TypeError("Expected a list of strings for images")
-        if not isinstance(recipe.ingredients, list) or not all(
-                isinstance(ing, str) for ing in recipe.ingredients):
-            raise TypeError("Expected a list of strings for ingredients")
-        if not isinstance(recipe.ingredient_quantities, list) or not all(
-                isinstance(qty, str) for qty in recipe.ingredient_quantities):
-            raise TypeError(
-                "Expected a list of strings for ingredient quantities")
-        if not isinstance(recipe.description, str) or not recipe.description:
-            raise ValueError("Recipe description must be a non-empty string")
-        if not (isinstance(recipe.rating, float) or recipe.rating is None):
-            print(recipe.rating)
-            print(type(recipe.rating))
-            raise ValueError("Recipe rating must be an float or None")
-        return
-
-    def _validate_review(self, review: Review):
-        if not isinstance(review, Review):
-            raise TypeError("Expected a Review instance")
-        if review.user not in self.__users:
-            raise ValueError(
-                f"User {review.user.username} not found in repository")
-        if review.recipe not in self.__recipes:
-            raise ValueError(
-                f"Recipe {review.recipe.name} not found in repository")
-        if not (0 <= review.rating <= 5):
-            raise ValueError("Rating must be between 0 and 5")
-        if not isinstance(review.date, datetime):
-            raise TypeError("Expected a datetime instance for date")
-        return
-
-    def _validate_user(self, user):
-        if user in self.__users:
-            raise FileExistsError(
-                f"User {user.username} already exists in repository")
-        if user.username in [u.username for u in self.__users]:
-            raise FileExistsError(
-                f"Username {user.username} already exists in repository")
-        if not user.username:
-            raise ValueError("Username cannot be empty")
-        if not isinstance(user.username, str):
-            raise TypeError("Username must be a string")
-        if not user.password:
-            raise ValueError("Password cannot be empty")
-        if not isinstance(user.password, str):
-            raise TypeError("Password must be a string")
-        return
 
     # endregion

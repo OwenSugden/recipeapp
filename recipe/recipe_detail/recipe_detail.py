@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, session
 import recipe.adapters.repository as repo
 import recipe.recipe_detail.services as services
-import recipe.ratings.services as ratings
 import recipe.user_profile.services as fav_services
 
 

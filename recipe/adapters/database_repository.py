@@ -67,10 +67,21 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 # Check if author already exists
-                existing_author = scm.session.query(Author).filter(Author.id == author.id).first()
+                existing_author = scm.session.query(Author).filter(Author._Author__id == author.id).first()
                 if not existing_author:
                     scm.session.add(author)
             scm.commit()
+
+    def get_author_by_id(self, author_id: int):
+        author = None
+        try:
+            query = self._session_cm.session.query(Author).filter(
+                Author._Author__id == author_id)
+            author = query.one()
+        except NoResultFound:
+            print(f'Author {author_id} was not found')
+
+        return author
 
     def get_authors(self) -> List[Author]:
         authors = self._session_cm.session.query(Author).all()
@@ -85,7 +96,7 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             with scm.session.no_autoflush:
                 for author in authors:
                     # Check if author already exists
-                    existing_author = scm.session.query(Author).filter(Author.id == author.id).first()
+                    existing_author = scm.session.query(Author).filter(Author._Author__id == author.id).first()
                     if not existing_author:
                         scm.session.add(author)
             scm.commit()
@@ -97,10 +108,21 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 # Check if category already exists
-                existing_category = scm.session.query(Category).filter(Category.id == category.id).first()
+                existing_category = scm.session.query(Category).filter(Category._Category__id == category.id).first()
                 if not existing_category:
                     scm.session.add(category)
             scm.commit()
+
+    def get_category_by_id(self, category_id: int):
+        category = None
+        try:
+            query = self._session_cm.session.query(Category).filter(
+                Category._Category__id == category_id)
+            category = query.one()
+        except NoResultFound:
+            print(f'Author {category_id} was not found')
+
+        return category
 
     def get_categories(self) -> List[Category]:
         categories = self._session_cm.session.query(Category).all()
@@ -115,7 +137,7 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             with scm.session.no_autoflush:
                 for category in categories:
                     # Check if category already exists
-                    existing_category = scm.session.query(Category).filter(Category.id == category.id).first()
+                    existing_category = scm.session.query(Category).filter(Category._Category__id == category.id).first()
                     if not existing_category:
                         scm.session.add(category)
             scm.commit()
@@ -133,17 +155,7 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         pass
 
     def is_favourite(self, user: User, recipe: Recipe) -> bool:
-        with self._session_cm as scm:
-            exists = (
-                    scm.session.query(Favourite)
-                    .filter(
-                        Favourite.user == user,
-                        Favourite.recipe == recipe,
-                    )
-                    .first()
-                    is not None
-            )
-            return exists
+        pass
 
     # endregion
 
@@ -152,17 +164,32 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 # Check if nutrition already exists
-                existing_nutrition = scm.session.query(Nutrition).filter(Nutrition.id == nutrition.id).first()
+                existing_nutrition = scm.session.query(Nutrition).filter(Nutrition._Nutrition__id == nutrition.id).first()
                 if not existing_nutrition:
                     scm.session.add(nutrition)
             scm.commit()
+
+    def get_nutrition_by_id(self, nutrition_id: int):
+        nutrition = None
+        try:
+            query = self._session_cm.session.query(Nutrition).filter(
+                Nutrition._Nutrition__id == nutrition_id)
+            nutrition = query.one()
+        except NoResultFound:
+            print(f'Nutrition {nutrition_id} was not found')
+
+        return nutrition
+
+    def get_nutritions(self) -> List[Nutrition]:
+        nutritions = self._session_cm.session.query(Nutrition).all()
+        return nutritions
 
     def add_multiple_nutritions(self, nutritions: List[Nutrition]):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 for nutrition in nutritions:
                     # Check if nutrition already exists
-                    existing_nutrition = scm.session.query(Nutrition).filter(Nutrition.id == nutrition.id).first()
+                    existing_nutrition = scm.session.query(Nutrition).filter(Nutrition._Nutrition__id == nutrition.id).first()
                     if not existing_nutrition:
                         scm.session.add(nutrition)
             scm.commit()
@@ -174,7 +201,7 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 # Check if recipe already exists
-                existing_recipe = scm.session.query(Recipe).filter(Recipe.id == recipe.id).first()
+                existing_recipe = scm.session.query(Recipe).filter(Recipe._Recipe__id == recipe.id).first()
                 if not existing_recipe:
                     scm.session.add(recipe)
             scm.commit()
@@ -257,8 +284,6 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
                     scm.session.add(recipe)
             scm.commit()
 
-        return recipe
-
     # endregion
 
     # region Review data Methods to manage Reviews
@@ -298,21 +323,32 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             scm.session.add(recipe_image)
             scm.commit()
 
+    def get_recipe_image(self, recipe_id: int, position: int):
+        recipe_image = None
+        try:
+            recipe_image = (
+            self._session_cm.session.query(RecipeImage)
+            .filter(
+                RecipeImage._RecipeImage__recipe_id == recipe_id,
+                RecipeImage._RecipeImage__position == position,
+            )
+            .order_by(RecipeImage._RecipeImage__id.asc())
+            .first()
+        )
+        except NoResultFound:
+            print(f'Recipe_image with Recipe {recipe_id} and Position {position} was not found')
+
+        return recipe_image
+
+    def get_recipe_images(self):
+        recipe_images = self._session_cm.session.query(RecipeImage).all()
+        return recipe_images
+
     def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
         with self._session_cm as scm:
             for recipe_image in recipe_images:
                 scm.session.add(recipe_image)
             scm.commit()
-
-    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
-        with self._session_cm as scm:
-            if hasattr(RecipeImage, "_RecipeImage__recipe_id"):
-                q = scm.session.query(RecipeImage).filter(RecipeImage._RecipeImage__recipe_id == recipe_id)
-            else:
-                q = scm.session.query(RecipeImage).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-            if hasattr(RecipeImage, "_RecipeImage__position"):
-                q = q.order_by(RecipeImage._RecipeImage__position)
-            return q.all()
 
     # endregion
 
@@ -322,25 +358,31 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             scm.session.add(recipe_ingredient)
             scm.commit()
 
+    def get_recipe_ingredient(self, recipe_id: int, position: int):
+        recipe_ingredient = None
+        try:
+            recipe_ingredient = (
+                self._session_cm.session.query(RecipeIngredient)
+                .filter(
+                    RecipeIngredient._RecipeIngredient__recipe_id == recipe_id,
+                    RecipeIngredient._RecipeIngredient__position == position,
+                )
+                .order_by(RecipeIngredient._RecipeIngredient__id.asc())
+                .first()
+            )
+        except NoResultFound:
+            print(f"Recipe_ingredient with Recipe {recipe_id} and Position {position} was not found")
+        return recipe_ingredient
+
+    def get_recipe_ingredients(self) -> List[RecipeIngredient]:
+        recipe_ingredients = self._session_cm.session.query(RecipeIngredient).all()
+        return recipe_ingredients
+
     def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
         with self._session_cm as scm:
             for ri in recipe_ingredients:
                 scm.session.add(ri)
             scm.commit()
-
-    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
-        with self._session_cm as scm:
-            if hasattr(RecipeIngredient, "_RecipeIngredient__recipe_id"):
-                q = scm.session.query(RecipeIngredient).filter(
-                    RecipeIngredient._RecipeIngredient__recipe_id == recipe_id)
-            else:
-                q = scm.session.query(RecipeIngredient).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-            # Keep ordering stable
-            if hasattr(RecipeIngredient, "_RecipeIngredient__position"):
-                q = q.order_by(RecipeIngredient._RecipeIngredient__position)
-            elif hasattr(RecipeIngredient, "_RecipeIngredient__id"):
-                q = q.order_by(RecipeIngredient._RecipeIngredient__id)
-            return q.all()
 
     # endregion
 
@@ -350,23 +392,30 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             scm.session.add(recipe_instruction)
             scm.commit()
 
+    def get_recipe_instruction(self, recipe_id: int, position: int):
+        recipe_instruction = None
+        try:
+            recipe_instruction = (
+                self._session_cm.session.query(RecipeInstruction)
+                .filter(
+                    RecipeInstruction._RecipeInstruction__recipe_id == recipe_id,
+                    RecipeInstruction._RecipeInstruction__position == position,
+                )
+                .order_by(RecipeInstruction._RecipeInstruction__id.asc())
+                .first()
+            )
+        except NoResultFound:
+            print(f"Recipe_instruction with Recipe {recipe_id} and Position {position} was not found")
+        return recipe_instruction
+
+    def get_recipe_instructions(self) -> List[RecipeInstruction]:
+        recipe_instructions = self._session_cm.session.query(RecipeInstruction).all()
+        return recipe_instructions
+
     def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
         with self._session_cm as scm:
             for rins in recipe_instructions:
                 scm.session.add(rins)
             scm.commit()
-
-    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
-        with self._session_cm as scm:
-            if hasattr(RecipeInstruction, "_RecipeInstruction__recipe_id"):
-                q = scm.session.query(RecipeInstruction).filter(
-                    RecipeInstruction._RecipeInstruction__recipe_id == recipe_id)
-            else:
-                q = scm.session.query(RecipeInstruction).join(Recipe).filter(Recipe._Recipe__id == recipe_id)
-            if hasattr(RecipeInstruction, "_RecipeInstruction__position"):
-                q = q.order_by(RecipeInstruction._RecipeInstruction__position)
-            elif hasattr(RecipeInstruction, "_RecipeInstruction__id"):
-                q = q.order_by(RecipeInstruction._RecipeInstruction__id)
-            return q.all()
 
     # endregion

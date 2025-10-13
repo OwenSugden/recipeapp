@@ -4,7 +4,6 @@ import ast
 import re
 from datetime import datetime
 
-from recipe.domainmodel import recipe_image
 from recipe.domainmodel.recipe import Recipe
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
@@ -135,7 +134,8 @@ class CSVDataReader:
                     # Check for existing category by name
                     existing_category = next((c for c in self.__dataset_of_categories if c.name == category_name), None)
                     if existing_category is None:
-                        candidate_category = Category(category_name)
+                        candidate_category = Category(category_count, category_name)
+                        category_count += 1
                         self.__dataset_of_categories.append(candidate_category)
                         category_obj = candidate_category
                     else:
@@ -243,12 +243,6 @@ class CSVDataReader:
                         recipe_yield=recipe_yield,
                         instructions=recipe_instructions,
                     )
-
-                    # Add recipe to datasets
-                    # if hasattr(author_obj, "add_recipe"):
-                    #     author_obj.add_recipe(recipe)
-                    # if hasattr(category_obj, "add_recipe"):
-                    #     category_obj.add_recipe(recipe)
 
                     self.__dataset_of_recipes.append(recipe)
 

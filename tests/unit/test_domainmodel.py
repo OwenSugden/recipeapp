@@ -1,117 +1,16 @@
-import pytest
+from tests.conftest import *
 from datetime import datetime
 
-from recipe.domainmodel.comment import Comment
-from recipe.domainmodel.rating import Rating
-from recipe.domainmodel.user import User
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
-from recipe.domainmodel.recipe import Recipe
-from recipe.domainmodel.nutrition import Nutrition
 from recipe.domainmodel.favourite import Favourite
+from recipe.domainmodel.nutrition import Nutrition
+from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.recipe_image import RecipeImage
+from recipe.domainmodel.recipe import RecipeIngredient
+from recipe.domainmodel.recipe import RecipeInstruction
 from recipe.domainmodel.review import Review
-
-# Fixtures
-@pytest.fixture
-def my_user():
-    return User("tests user", "password123", 1)
-
-@pytest.fixture
-def my_author():
-    return Author(1, "Gordon Ramsay")
-
-
-@pytest.fixture
-def my_category():
-    return Category("Italian", [], 1)
-
-
-@pytest.fixture
-def my_recipe(my_author, my_category):
-    return Recipe(
-        recipe_id=1,
-        name="Spaghetti Carbonara",
-        author=my_author,
-        cook_time=20,
-        preparation_time=15,
-        created_date=datetime(2024, 1, 1),
-        description="Classic Italian pasta dish",
-        images=["image1.jpg"],
-        category=my_category,
-        ingredient_quantities=["200g pasta", "100g bacon"],
-        ingredients=["pasta", "bacon", "eggs", "cheese"],
-        nutrition=None,
-        servings="4",
-        recipe_yield="4 portions",
-        instructions=["Boil pasta", "Cook bacon", "Mix with eggs"]
-    )
-
-@pytest.fixture
-def my_nutrition():
-    return Nutrition(100.1, 10.1, 20.1, 30.2, 40.3,
-                     50.4, 60.5, 70.6, 80.7)
-
-@pytest.fixture
-def my_favourite():
-    return Favourite(1, 1)
-
-@pytest.fixture
-def my_review():
-    return Review(1, 1, 1, 1, "Food is good")
-
-# User tests
-def test_user_construction():
-    user = User("john_doe", "secret123", 1)
-    assert user.id == 1
-    assert user.username == "john_doe"
-    assert user.password == "secret123"
-    assert user.favourite_recipes == []
-    assert user.reviews == []
-
-
-def test_user_construction_without_id():
-    user = User("jane_doe", "password456")
-    assert user.id is None
-    assert user.username == "jane_doe"
-
-
-def test_user_equality():
-    user1 = User("tests", "pass", 1)
-    user2 = User("tests", "pass", 1)
-    user3 = User("tests", "pass", 2)
-    assert user1 == user2
-    assert user1 != user3
-
-
-def test_user_less_than():
-    user1 = User("tests", "pass", 1)
-    user2 = User("tests", "pass", 2)
-    assert user1 < user2
-
-
-def test_user_hash():
-    user1 = User("tests", "pass", 1)
-    user2 = User("tests", "pass", 1)
-    user_set = {user1, user2}
-    assert len(user_set) == 1
-
-def test_user_add_favourite_recipe(my_user, my_favourite):
-    my_user.add_favourite_recipe(my_favourite)
-    assert my_favourite in my_user.favourite_recipes
-
-def test_user_remove_favourite_recipe(my_user, my_favourite):
-    my_user.add_favourite_recipe(my_favourite)
-    my_user.remove_favourite_recipe(my_favourite)
-    assert my_favourite not in my_user.favourite_recipes
-
-def test_user_add_review(my_user, my_review):
-    my_user.add_review(my_review)
-    assert my_review in my_user.reviews
-
-def test_user_remove_review(my_user, my_review):
-    my_user.add_review(my_review)
-    my_user.remove_review(my_review)
-    assert my_review not in my_user.reviews
+from recipe.domainmodel.user import User
 
 # Author tests
 def test_author_construction():
@@ -134,300 +33,475 @@ def test_author_less_than():
     author2 = Author(2, "Chef B")
     assert author1 < author2
 
-
 def test_author_hash():
     author1 = Author(1, "Chef A")
     author2 = Author(1, "Chef B")
     author_set = {author1, author2}
     assert len(author_set) == 1
 
-
-def test_author_add_recipe(my_author, my_recipe):
-    my_author.add_recipe(my_recipe)
-    assert my_recipe in my_author.recipes
-
-
-def test_author_add_duplicate_recipe(my_author, my_recipe):
-    my_author.add_recipe(my_recipe)
-    with pytest.raises(ValueError):
-        my_author.add_recipe(my_recipe)
-
+def test_author_repr(my_author):
+    # my_author: Author(1, "Gordon Ramsay")
+    assert repr(my_author) == "<Author 1: Gordon Ramsay>"
 
 # Category tests
 def test_category_construction():
-    category = Category("Desserts", [], 1)
-    assert category.id == 1
-    assert category.name == "Desserts"
-    assert category.recipes == []
-
-
-def test_category_construction_without_id():
-    category = Category("Main Course")
-    assert category.id is None
-    assert category.name == "Main Course"
-
+    cat = Category(10, "Desserts", [])
+    assert cat.id == 10
+    assert cat.name == "Desserts"
+    assert cat.recipes == []
 
 def test_category_equality():
-    category1 = Category("Italian", [], 1)
-    category2 = Category("French", [], 1)
-    category3 = Category("Italian", [], 2)
-    assert category1 == category2
-    assert category1 != category3
-
+    c1 = Category(1, "Italian", [])
+    c2 = Category(1, "Pasta", [])   # same id, different name -> equal
+    c3 = Category(2, "Italian", [])
+    assert c1 == c2
+    assert c1 != c3
 
 def test_category_less_than():
-    category1 = Category("A", [], 1)
-    category2 = Category("B", [], 2)
-    assert category1 < category2
-
+    c1 = Category(1, "A", [])
+    c2 = Category(2, "B", [])
+    assert c1 < c2
 
 def test_category_hash():
-    category1 = Category("Italian", [], 1)
-    category2 = Category("French", [], 1)
-    category_set = {category1, category2}
-    assert len(category_set) == 1
+    c1 = Category(1, "A", [])
+    c2 = Category(1, "B", [])
+    cat_set = {c1, c2}
+    assert len(cat_set) == 1
 
-
-def test_category_add_recipe(my_category, my_recipe):
-    my_category.add_recipe(my_recipe)
-    assert my_recipe in my_category.recipes
-
-
-def test_category_add_invalid_recipe(my_category):
-    with pytest.raises(TypeError):
-        my_category.add_recipe("not a recipe")
-
-
-# Recipe tests
-def test_recipe_construction(my_author, my_category, my_review):
-    recipe = Recipe(
-        recipe_id=1,
-        name="Test Recipe",
-        author=my_author,
-        cook_time=30,
-        preparation_time=15,
-        created_date=datetime(2024, 1, 1),
-        description="Test description",
-        images=["tests.jpg"],
-        category=my_category,
-        ingredient_quantities=["1 cup flour"],
-        ingredients=["flour"],
-        nutrition=None,
-        servings="2",
-        recipe_yield="2 portions",
-        instructions=["Mix ingredients"]
-    )
-    assert recipe.id == 1
-    assert recipe.name == "Test Recipe"
-    assert recipe.author == my_author
-
-
-def test_recipe_equality():
-    author = Author(1, "Chef")
-
-    recipe1 = Recipe(1, "Recipe A", author)
-    recipe2 = Recipe(1, "Recipe B", author)
-    recipe3 = Recipe(2, "Recipe A", author)
-
-    assert recipe1 == recipe2
-    assert recipe1 != recipe3
-
-
-def test_recipe_less_than():
-    author = Author(1, "Chef")
-
-    recipe1 = Recipe(1, "Recipe A", author)
-    recipe2 = Recipe(2, "Recipe B", author)
-
-    assert recipe1 < recipe2
-
-
-def test_recipe_hash():
-    author = Author(1, "Chef")
-
-    recipe1 = Recipe(1, "Recipe A", author)
-    recipe2 = Recipe(1, "Recipe B", author)
-
-    recipe_set = {recipe1, recipe2}
-    assert len(recipe_set) == 1
-
-
-def test_author_set_recipe(my_author):
-    new_recipe = Recipe(200, "New Recipe", my_author)
-
-    my_author.add_recipe(new_recipe)
-    assert new_recipe in my_author.recipes
-
-
-def test_author_set_recipe_invalid_type(my_author):
-    with pytest.raises(TypeError):
-        my_author.add_recipe("not a recipe")
-
-def test_recipe_add_review(my_recipe, my_review):
-    my_recipe.add_review(my_review)
-    assert my_review in my_recipe.reviews
-
-def test_recipe_remove_review(my_recipe, my_review):
-    my_recipe.add_review(my_review)
-    my_recipe.remove_review(my_review)
-    assert my_review not in my_recipe.reviews
-
-# Nutrition tests
-def test_nutrition_construction():
-    nutrition = Nutrition(100.0, 10.0, 3.0, 20.0,
-                          200.0,15.0, 5.0, 7.0,
-                          8.0)
-    assert nutrition.calories == 100.0
-    assert nutrition.fat == 10.0
-    assert nutrition.carbohydrates == 3.0
-    assert nutrition.protein == 20.0
-
-
-def test_nutrition_equality():
-    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    n2 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    n3 = Nutrition(120.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    assert n1 == n2
-    assert n1 != n3
-
-def test_nutrition_less_than():
-    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    n2 = Nutrition(150.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    assert n1 < n2
-
-def test_nutrition_hash():
-    n1 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    n2 = Nutrition(100.0, 10.0, 3.0, 20.0, 200.0,
-                   15.0, 5.0, 7.0, 8.0)
-    nutrition_set = {n1, n2}
-    assert len(nutrition_set) == 1
-
-def test_health_star():
-    nutrition = Nutrition(100.0, 10.0, 3.0, 20.0,
-                          200.0, 15.0, 5.0, 7.0,
-                          8.0)
-    rating = nutrition.health_star()
-    expected = 4.0
-    assert rating == expected
-
-
-def test_health_star_with_missing_data():
-    n = Nutrition(None, 10, 3, 20, 200, 15, 5, 7, 8)
-    assert n.health_star() == "Health star rating unavailable"
-
+def test_category_repr(my_category):
+    # my_category: Category("Italian", [], 1)
+    assert repr(my_category) == "<Category 1: Italian>"
 
 # Favourite tests
 def test_favourite_construction(my_user, my_recipe):
-    fav = Favourite(my_user.username, my_recipe.id)
-    assert fav.user_name == my_user.username
-    assert fav.recipe_id == my_recipe.id
+    dt = datetime(2024, 1, 1)
+    fav = Favourite(42, my_user, my_recipe, dt)
+    assert fav.id == 42
+    assert fav.user is my_user
+    assert fav.recipe is my_recipe
+    assert fav.date == dt
 
-def test_favourite_equality():
-    fav1 = Favourite(1, 2)
-    fav2 = Favourite(1, 2)
-    fav3 = Favourite(1, 3)
-    assert fav1 == fav2
-    assert fav1 != fav3
+def test_favourite_equality(my_user, my_recipe):
+    dt = datetime(2024, 1, 1)
+    f1 = Favourite(1, my_user, my_recipe, dt)
+    f2 = Favourite(1, my_user, my_recipe, dt)
+    f3 = Favourite(2, my_user, my_recipe, dt)
+    assert f1 == f2
+    assert f1 != f3
 
-def test_favourite_less_than():
-    fav1 = Favourite(1, 2)
-    fav2 = Favourite(2, 1)
-    assert fav1 < fav2
+def test_favourite_less_than(my_user, my_recipe):
+    f1 = Favourite(1, my_user, my_recipe, datetime(2024, 1, 1))
+    f2 = Favourite(2, my_user, my_recipe, datetime(2024, 1, 2))
+    assert f1 < f2
 
-def test_favourite_hash():
-    fav1 = Favourite(1, 2)
-    fav2 = Favourite(1, 2)
-    fav_set = {fav1, fav2}
-    assert len(fav_set) == 1
+def test_favourite_hash(my_user, my_recipe):
+    f1 = Favourite(1, my_user, my_recipe, datetime(2024, 1, 1))
+    f2 = Favourite(2, my_user, my_recipe, datetime(2024, 1, 2))
+    fav_set = {f1, f2}
+    assert len(fav_set) == 2
 
-# Review tests
-def test_review_construction(my_recipe, my_user):
-    review = Review(1, my_recipe.id, my_user.id, 5, "Excellent!")
-    assert review.id == 1
-    assert review.recipe_id == my_recipe.id
-    assert review.user_id == my_user.id
+def test_favourite_repr(my_favourite, my_user, my_recipe):
+    # my_favourite: Favourite(1, my_user, my_recipe, datetime(2024, 1, 1))
+    assert repr(my_favourite) == f"<Favourite: User={my_user.username}, Recipe={my_recipe.id}>"
 
+# Nutrition tests
+def test_nutrition_construction():
+    n = Nutrition(1, 250.0, 10.0, 3.0, 30.0, 200.0, 30.0, 5.0, 12.0, 8.0)
+    assert n.id == 1
+    assert n.calories == 250.0
+    assert n.fat == 10.0
+    assert n.saturated_fat == 3.0
+    assert n.cholesterol == 30.0
+    assert n.sodium == 200.0
+    assert n.carbohydrates == 30.0
+    assert n.fiber == 5.0
+    assert n.sugar == 12.0
+    assert n.protein == 8.0
 
-def test_review_equality():
-    r1 = Review(1, 7, 3, 5, "A")
-    r2 = Review(1, 8, 4, 3, "B")
-    r3 = Review(2, 7, 3, 5, "A")
+def test_nutrition_equality():
+    a = Nutrition(1, 100.0, 5.0, 1.0, 10.0, 50.0, 20.0, 3.0, 5.0, 6.0)
+    b = Nutrition(1, 999.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0)  # same id -> equal
+    c = Nutrition(2, 100.0, 5.0, 1.0, 10.0, 50.0, 20.0, 3.0, 5.0, 6.0)
+    assert a == b
+    assert a != c
+
+def test_nutrition_less_than():
+    low = Nutrition(1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    high = Nutrition(2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    assert low < high
+
+def test_nutrition_hash():
+    a = Nutrition(7, 100.0, 5.0, 1.0, 10.0, 50.0, 20.0, 3.0, 5.0, 6.0)
+    b = Nutrition(7, 200.0, 6.0, 2.0, 12.0, 60.0, 25.0, 4.0, 6.0, 8.0)  # same id
+    c = Nutrition(8, 100.0, 5.0, 1.0, 10.0, 50.0, 20.0, 3.0, 5.0, 6.0)
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_nutrition_repr():
+    n = Nutrition(3, 200.0, 9.0, 2.0, 25.0, 150.0, 28.0, 4.0, 10.0, 12.0)
+    r = repr(n)
+    assert r == "<Nutrition: Calories: 200.0, Protein: 12.0, Fat Total: 9.0, Carbohydrates: 28.0>"
+
+def test_health_star(my_nutrition):
+    rating = my_nutrition.health_star()
+    expected = 3.0
+    assert rating == expected
+
+def test_health_star_with_missing_data():
+    n = Nutrition(1,None, 10, 3, 20, 200, 15, 5, 7, 8)
+    assert n.health_star() == "Health star rating unavailable"
+
+# Recipe tests
+def test_recipe_construction(my_author, my_category, my_nutrition, my_recipe_image, my_recipe_ingredients, my_recipe_instructions):
+    recipe = Recipe(
+        recipe_id=1,
+        name="Spaghetti Carbonara",
+        author=my_author,
+        cook_time=20,
+        preparation_time=15,
+        created_date=datetime(2024, 1, 1),
+        description="Classic Italian pasta dish",
+        images=[my_recipe_image],
+        category=my_category,
+        ingredients=my_recipe_ingredients,
+        nutrition=my_nutrition,
+        servings=4,
+        recipe_yield="4 portions",
+        instructions=my_recipe_instructions,
+    )
+    assert recipe.id == 1
+    assert recipe.name == "Spaghetti Carbonara"
+    assert recipe.author is my_author
+    assert recipe.cook_time == 20
+    assert recipe.preparation_time == 15
+    assert isinstance(recipe.created_date, datetime)
+    assert "Classic Italian" in recipe.description
+    assert isinstance(recipe.images, list) and recipe.images[0] is my_recipe_image
+    assert recipe.category is my_category
+    assert recipe.ingredients == my_recipe_ingredients
+    assert recipe.nutrition is my_nutrition
+    assert recipe.servings == 4
+    assert recipe.recipe_yield == "4 portions"
+    assert recipe.instructions == my_recipe_instructions
+
+def test_recipe_equality(my_author, my_category, my_nutrition):
+    r1 = Recipe(
+        recipe_id=10,
+        name="A",
+        author=my_author,
+        cook_time=5,
+        preparation_time=5,
+        created_date=datetime(2024, 1, 1),
+        description="x",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=1,
+        recipe_yield="1",
+        instructions=[]
+    )
+    r2 = Recipe(
+        recipe_id=10,  # same id -> equal
+        name="B",
+        author=my_author,
+        cook_time=7,
+        preparation_time=3,
+        created_date=datetime(2024, 1, 2),
+        description="y",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=2,
+        recipe_yield="2",
+        instructions=[]
+    )
+    r3 = Recipe(
+        recipe_id=11,
+        name="C",
+        author=my_author,
+        cook_time=7,
+        preparation_time=3,
+        created_date=datetime(2024, 1, 2),
+        description="z",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=2,
+        recipe_yield="2",
+        instructions=[]
+    )
     assert r1 == r2
     assert r1 != r3
 
-def test_review_less_than():
-    r1 = Review(1, 7, 3, 2, "apple")
-    r2 = Review(2, 7, 3, 3, "banana")
-    r3 = Review(3, 7, 3, 3, "zebra")
-    assert r1 < r2        # lower rating
-    assert r2 < r3        # same rating, compare comment
-
-def test_review_hash():
-    r1 = Review(1, 7, 3, 5, "nice")
-    r2 = Review(1, 8, 4, 2, "different")
-    review_set = {r1, r2}
-    assert len(review_set) == 1
-
-# Comment tests
-def test_comment_construction(my_recipe, my_user):
-    c = Comment(
-        user_name="alice",
-        comment_id=1,
-        recipe_id=my_recipe.id,
-        user_id=my_user.id,
-        text="  Nice recipe!  "
+def test_recipe_less_than(my_author, my_category, my_nutrition):
+    a = Recipe(
+        recipe_id=1,
+        name="A",
+        author=my_author,
+        cook_time=0,
+        preparation_time=0,
+        created_date=datetime(2024, 1, 1),
+        description="",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=1,
+        recipe_yield="1",
+        instructions=[]
     )
-    assert c.id == 1
-    assert c.recipe_id == my_recipe.id
-    assert c.user_id == my_user.id
-    assert c.user_name == "alice"
-    # text should be stripped on init
-    assert c.text == "Nice recipe!"
-    # timestamp should auto-populate
-    assert isinstance(c.timestamp, datetime)
-
-def test_comment_text_setter_strips():
-    c = Comment("bob", 2, 10, 20, "hello")
-    c.text = "   updated text   "
-    assert c.text == "updated text"
-
-def test_comment_timestamp_custom():
-    ts = datetime(2024, 1, 1, 12, 0, 0)
-    c = Comment("carol", 3, 11, 21, "fixed time", timestamp=ts)
-    assert c.timestamp == ts
-
-# Rating tests
-def test_rating_construction(my_recipe, my_user):
-    r = Rating(
-        rating_id=1,
-        recipe_id=my_recipe.id,
-        user_id=my_user.id,
-        value=5,
-        user_name="dave"
+    b = Recipe(
+        recipe_id=2,
+        name="B",
+        author=my_author,
+        cook_time=0,
+        preparation_time=0,
+        created_date=datetime(2024, 1, 1),
+        description="",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=1,
+        recipe_yield="1",
+        instructions=[]
     )
+    assert a < b
+
+def test_recipe_hash(my_author, my_category, my_nutrition):
+    a = Recipe(
+        recipe_id=7,
+        name="A",
+        author=my_author,
+        cook_time=0,
+        preparation_time=0,
+        created_date=datetime(2024, 1, 1),
+        description="",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=1,
+        recipe_yield="1",
+        instructions=[]
+    )
+    b = Recipe(
+        recipe_id=7,
+        name="B",
+        author=my_author,
+        cook_time=10,
+        preparation_time=5,
+        created_date=datetime(2024, 1, 2),
+        description="desc",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=2,
+        recipe_yield="2",
+        instructions=[]
+    )
+    c = Recipe(
+        recipe_id=8,
+        name="C",
+        author=my_author,
+        cook_time=0,
+        preparation_time=0,
+        created_date=datetime(2024, 1, 1),
+        description="",
+        images=[],
+        category=my_category,
+        ingredients=[],
+        nutrition=my_nutrition,
+        servings=1,
+        recipe_yield="1",
+        instructions=[]
+    )
+
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_recipe_repr(my_recipe):
+    r = repr(my_recipe)
+    assert "Recipe" in r or "recipe" in r
+    assert str(my_recipe.id) in r
+    assert my_recipe.name in r
+
+# RecipeImage tests
+def test_recipe_image_construction():
+    img = RecipeImage(recipe_id=1, url="https://example.com/a.jpg", position=0)
+    assert img.recipe_id == 1
+    assert img.url == "https://example.com/a.jpg"
+    assert img.position == 0
+
+def test_recipe_image_equality():
+    a = RecipeImage(1, "https://x/a.jpg", 0)
+    b = RecipeImage(1, "https://x/other.jpg", 0)
+    c = RecipeImage(1, "https://x/a.jpg", 1)
+    d = RecipeImage(2, "https://x/a.jpg", 0)
+    assert a == b
+    assert a != c
+    assert a != d
+
+def test_recipe_image_hash():
+    a = RecipeImage(1, "https://x/a.jpg", 0)
+    b = RecipeImage(1, "https://x/b.jpg", 0)
+    c = RecipeImage(1, "https://x/a.jpg", 1)
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_recipe_image_repr():
+    img = RecipeImage(3, "https://img.site/pic.png", 4)
+    assert repr(img) == "<RecipeImage: Recipe 3, Position 4, URL: https://img.site/pic.png>"
+
+# RecipeIngredient tests
+def test_recipe_ingredient_construction():
+    ing = RecipeIngredient(recipe_id=1, quantity="1 cup", ingredient="flour", position=0)
+    assert ing.recipe_id == 1
+    assert ing.quantity == "1 cup"
+    assert ing.ingredient == "flour"
+    assert ing.position == 0
+
+def test_recipe_ingredient_equality():
+    a = RecipeIngredient(1, "1 cup", "flour", 0)
+    b = RecipeIngredient(1, "2 cups", "sugar", 0)
+    c = RecipeIngredient(1, "1 cup", "flour", 1)
+    d = RecipeIngredient(2, "1 cup", "flour", 0)
+    assert a == b
+    assert a != c
+    assert a != d
+
+def test_recipe_ingredient_hash():
+    a = RecipeIngredient(1, "1 cup", "flour", 0)
+    b = RecipeIngredient(1, "2 cups", "sugar", 0)
+    c = RecipeIngredient(1, "1 cup", "flour", 1)
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_recipe_ingredient_repr():
+    ing = RecipeIngredient(3, "200 g", "spaghetti", 4)
+    assert repr(ing) == "<RecipeIngredient: Recipe 3, Position 4, 200 g spaghetti>"
+
+# RecipeInstruction tests
+def test_recipe_instruction_construction():
+    instr = RecipeInstruction(recipe_id=1, step="Boil water", position=0)
+    assert instr.recipe_id == 1
+    assert instr.step == "Boil water"
+    assert instr.position == 0
+
+def test_recipe_instruction_equality():
+    a = RecipeInstruction(1, "Boil water", 0)
+    b = RecipeInstruction(1, "Add pasta", 0)
+    c = RecipeInstruction(1, "Boil water", 1)
+    d = RecipeInstruction(2, "Boil water", 0)
+    assert a == b
+    assert a != c
+    assert a != d
+
+def test_recipe_instruction_hash():
+    a = RecipeInstruction(1, "Step A", 0)
+    b = RecipeInstruction(1, "Different text same pos", 0)
+    c = RecipeInstruction(1, "Step C", 1)
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_recipe_instruction_repr():
+    instr = RecipeInstruction(3, "Mix well", 4)
+    assert repr(instr) == "<RecipeInstruction: Recipe 3, Step 4: Mix well...>"
+
+# Review tests
+def test_review_construction(my_user, my_recipe):
+    dt = datetime(2024, 1, 1)
+    r = Review(1, my_user, dt, my_recipe, 4.0, "Nice!")
     assert r.id == 1
-    assert r.recipe_id == my_recipe.id
-    assert r.user_id == my_user.id
-    assert r.user_name == "dave"
-    assert r.value == 5
+    assert r.user is my_user
+    assert r.date == dt
+    assert r.recipe is my_recipe
+    assert r.rating == 4.0
+    assert r.comment == "Nice!"
 
-def test_rating_invalid_value_raises_on_init():
-    with pytest.raises(ValueError):
-        Rating(2, 10, 20, 0, "erin")
-    with pytest.raises(ValueError):
-        Rating(3, 10, 20, 6, "frank")
+def test_review_equality(my_user, my_recipe):
+    a = Review(10, my_user, datetime(2024, 1, 1), my_recipe, 3.0, "ok")
+    b = Review(10, my_user, datetime(2024, 1, 2), my_recipe, 5.0, "great")
+    c = Review(11, my_user, datetime(2024, 1, 1), my_recipe, 3.0, "ok")
+    assert a == b
+    assert a != c
 
-def test_rating_setter_validation_and_update():
-    r = Rating(4, 10, 20, 3, "gina")
-    r.value = 4
-    assert r.value == 4
-    with pytest.raises(ValueError):
-        r.value = 0
-    with pytest.raises(ValueError):
-        r.value = 6
+def test_review_less_than(my_user, my_recipe):
+    low = Review(1, my_user, datetime(2024, 1, 1), my_recipe, 2.0, "low")
+    high = Review(2, my_user, datetime(2024, 1, 1), my_recipe, 4.0, "high")
+    assert low < high
+
+def test_review_hash(my_user, my_recipe):
+    a = Review(7, my_user, datetime(2024, 1, 1), my_recipe, 3.0, "a")
+    b = Review(7, my_user, datetime(2024, 1, 2), my_recipe, 5.0, "b")  # same id
+    c = Review(8, my_user, datetime(2024, 1, 3), my_recipe, 1.0, "c")
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_review_repr(my_review, my_user, my_recipe):
+    assert repr(my_review) == f"<Review: User: {my_user.username}, Recipe: {my_recipe.id}>"
+
+def test_review_update_rating_valid(my_user, my_recipe):
+    rv = Review(1, my_user, datetime(2024, 1, 1), my_recipe, 2.5, "meh")
+    rv.update_rating(4.0)
+    assert rv.rating == 4.0
+    rv.update_rating(0.0)
+    assert rv.rating == 0.0
+    rv.update_rating(5.0)
+    assert rv.rating == 5.0
+
+def test_review_update_comment(my_user, my_recipe):
+    rv = Review(3, my_user, datetime(2024, 1, 1), my_recipe, 3.5, "old")
+    rv.update_comment("new comment")
+    assert rv.comment == "new comment"
+
+# User tests
+def test_user_construction():
+    u = User("Alice", "secret123", 42)
+    assert u.username == "Alice"
+    assert u.password == "secret123"
+    assert u.id == 42
+
+def test_user_equality():
+    a = User("A", "x", 1)
+    b = User("B", "y", 1)
+    c = User("C", "z", 2)
+    assert a == b
+    assert a != c
+
+def test_user_less_than():
+    u1 = User("Lower", "x", 1)
+    u2 = User("Higher", "y", 2)
+    assert u1 < u2
+
+def test_user_hash():
+    a = User("A", "x", 7)
+    b = User("B", "y", 7)  # same id
+    c = User("C", "z", 8)
+    s = {a, b, c}
+    assert len(s) == 2
+    assert a in s and b in s and c in s
+
+def test_user_repr(my_user):
+     assert repr(my_user) == f"<User {my_user.id}: {my_user.username}>"
+
+def test_user_add_review(my_user, my_recipe):
+    rv = Review(1, my_user, datetime(2024, 1, 1), my_recipe, 4.0, "Nice")
+    # add
+    my_user.add_review(rv)
+    assert rv in my_user.reviews
+    assert len(my_user.reviews) >= 1
+
+def test_user_check_password_correct_and_incorrect(my_user):
+    assert my_user.check_password("password123") is True
+    assert my_user.check_password("wrong-pass") is False

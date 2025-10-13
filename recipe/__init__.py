@@ -55,7 +55,7 @@ def create_app(test_config = None):
         # Generate mappings that map domain model classes to the database tables.
         map_model_to_tables()
 
-        populate(data_path, repo.repo_instance, True, testing=testing)
+        populate(data_path, repo.repo_instance, testing=testing)
         print("REPOPULATING DATABASE... FINISHED")
 
     else:
@@ -81,12 +81,6 @@ def create_app(test_config = None):
         
         from .authentication import authentication
         app.register_blueprint(authentication.authentication_blueprint)
-        
-        from .comments import comments
-        app.register_blueprint(comments.comments_blueprint)
-        
-        from .ratings import ratings
-        app.register_blueprint(ratings.ratings_blueprint)
         
         from .user_profile import user_profile
         app.register_blueprint(user_profile.user_profile_blueprint)

@@ -28,6 +28,11 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_author_by_id(self, author_id: int):
+        """Gets an Author from the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_authors(self) -> list[Author]:
         """Returns a list of all Authors in the repository."""
         raise NotImplementedError
@@ -50,6 +55,11 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def add_category(self, category: Category):
         """Adds a Category to the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_category_by_id(self, category_id: int):
+        """Gets a Category from the repository."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -97,6 +107,16 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def add_nutrition(self, nutrition: Nutrition):
         """Adds a Nutrition to the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_nutrition_by_id(self, nutrition_id: int):
+        """Gets a Nutrition from the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_nutritions(self) -> List[Nutrition]:
+        """Returns a list of all Nutritions in the repository."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -219,12 +239,16 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
-        """Adds multiple Images to the repository."""
+    def get_recipe_image(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
+    def get_recipe_images(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
+        """Adds multiple Images to the repository."""
         raise NotImplementedError
 
     # endregion
@@ -234,12 +258,16 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
-        """Adds multiple RecipeIngredients to the repository."""
+    def get_recipe_ingredient(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
+    def get_recipe_ingredients(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
+        """Adds multiple RecipeIngredients to the repository."""
         raise NotImplementedError
 
     # endregion
@@ -249,10 +277,14 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
-        """Adds multiple RecipeInstructions to the repository."""
+    def get_recipe_instruction(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
+    def get_recipe_instructions(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
+        """Adds multiple RecipeInstructions to the repository."""
         raise NotImplementedError
