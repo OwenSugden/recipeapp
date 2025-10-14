@@ -19,7 +19,7 @@ class AuthenticationException(Exception):
 def add_user(user_name: str, password: str, repo: AbstractRepository):
     # Check that the given username is available.
 
-    user = repo.get_user_by_name(user_name)
+    user = repo.get_user(user_name)
     if user is not None:
         raise NameNotUniqueException
 
@@ -32,7 +32,7 @@ def add_user(user_name: str, password: str, repo: AbstractRepository):
 
 
 def get_user(user_name: str, repo: AbstractRepository):
-    user = repo.get_user_by_name(user_name)
+    user = repo.get_user(user_name) #Change
     if user is None:
         raise UnknownUserException
 
@@ -42,7 +42,7 @@ def get_user(user_name: str, repo: AbstractRepository):
 def authenticate_user(user_name: str, password: str, repo: AbstractRepository):
     authenticated = False
 
-    user = repo.get_user_by_name(user_name)
+    user = repo.get_user(user_name)
     if user is not None:
         authenticated = check_password_hash(user.password, password)
     if not authenticated:
