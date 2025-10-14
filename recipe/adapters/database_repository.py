@@ -285,11 +285,10 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
                 # Check if user already exists
-                existing_user = scm.session.query(Recipe).filter(Recipe.id == user.id).first()
+                existing_user = scm.session.query(User).filter(User._User__id == user.id).first()
                 if not existing_user:
                     scm.session.add(user)
             scm.commit()
-        pass
 
     def get_user_by_id(self, user_id: int) -> User | None:
         user = None
@@ -299,10 +298,16 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
             user = query.one()
         except NoResultFound:
             print(f'User {user_id} was not found')
-        pass
+        return user
 
-    def get_user_by_name(self, username: str) -> User | None:
-        pass
+    def get_user(self, username: str) -> User | None:
+        user = None
+        try:
+            query = self._session_cm.session.query(User).filter(User._User__username == username )
+            user = query.one()
+        except NoResultFound:
+            print(f'User with username {username} was not found')
+        return user
 
     # endregion
 

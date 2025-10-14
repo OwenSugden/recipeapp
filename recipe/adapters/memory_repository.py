@@ -176,7 +176,7 @@ class MemoryRepository(AbstractRepository):
                 return user
         return None
 
-    def get_user_by_name(self, username: str) -> User | None:
+    def get_user(self, username: str) -> User | None:
         for user in self.__users:
             if user.username == username:
                 return user

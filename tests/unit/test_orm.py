@@ -119,3 +119,28 @@ def test_saving_of_recipe(empty_session):
         recipe.description,
         recipe.nutrition.id,
     )]
+
+    #TODO
+    def test_review_recipe_relationship(empty_session):
+        pass
+
+    #TODO
+    def test_category_recipe_relationship(empty_session):
+        pass
+
+    #TODO
+    def test_user_review_relationship(empty_session):
+        pass
+
+    #TODO
+    def test_user_favourite_relationship(empty_session):
+        pass
+
+    #TODO
+    def test_recipe_ingredient_recipe_relationship(empty_session):
+        pass
+
+    #TODO
+    def test_nutrition_recipe_relationship(empty_session):
+        pass
+
