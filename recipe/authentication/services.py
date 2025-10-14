@@ -32,7 +32,7 @@ def add_user(user_name: str, password: str, repo: AbstractRepository):
 
 
 def get_user(user_name: str, repo: AbstractRepository):
-    user = repo.get_user(user_name)
+    user = repo.get_user(user_name) #Change
     if user is None:
         raise UnknownUserException
 
