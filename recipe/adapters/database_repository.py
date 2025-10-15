@@ -5,6 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm.exc import NoResultFound
 
+from recipe.adapters.orm import users_table, favourites_table
 from recipe.adapters.repository import AbstractRepository
 
 from recipe.domainmodel.author import Author
@@ -145,17 +146,40 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
     # end region
 
     # region Favourite_data Methods to manage Favourites
-    def add_favourite(self, user: User, recipe: Recipe):
-        pass
+    def add_favourite(self, favourite: Favourite):
+        with self._session_cm as scm:
+            with scm.session.no_autoflush:
+                # Check if favourite already exists
+                existing_favourite = scm.session.query(Favourite).filter(Favourite._Favourite__recipe_id == favourite.recipe_id).first()
+                if not existing_favourite:
+                    scm.session.add(favourite)
+            scm.commit()
 
-    def remove_favourite(self, user: User, recipe: Recipe):
-        pass
+    def remove_favourite(self, user_id: int, recipe_id: int):
+        with self._session_cm as scm:
+            fav = (scm.session.query(Favourite)
+                .filter(
+                    Favourite._Favourite__user_id == user_id,
+                    Favourite._Favourite__recipe_id == recipe_id,
+                )
+                .one_or_none()
+            )
+            scm.session.delete(fav)
+            scm.commit()
 
-    def get_favourite_for_user(self, page: int, page_size: int, user: User) -> List[Recipe]:
-        pass
+    def get_favourites_for_user(self, user_id: str):
+        favourites = (self._session_cm.session.query(Favourite)
+                      .filter(Favourite._Favourite__user_id == user_id)
+                      ).all()
+        return favourites
 
-    def is_favourite(self, user: User, recipe: Recipe) -> bool:
-        pass
+    def get_new_favourite_id(self) -> int:
+        favourite_id = self._session_cm.session.query(func.max(favourites_table.c.id)).one()[0]
+        if favourite_id is None:
+            favourite_id = 1
+        else:
+            favourite_id += 1
+        return favourite_id
 
     # endregion
 
@@ -333,6 +357,14 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
         except NoResultFound:
             print(f'User with username {username} was not found')
         return user
+
+    def get_new_user_id(self) -> int:
+        user_id = self._session_cm.session.query(func.max(users_table.c.id)).one()[0]
+        if user_id is None:
+            user_id = 1
+        else:
+            user_id += 1
+        return user_id
 
     # endregion
 

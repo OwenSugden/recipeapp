@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, session
+from flask_wtf import FlaskForm
+
 import recipe.adapters.repository as repo
 import recipe.recipe_detail.services as services
-import recipe.user_profile.services as fav_services
-
+from recipe.authentication.authentication import login_required
 
 recipe_detail_blueprint = Blueprint('recipe_detail_bp', __name__)
 
@@ -14,11 +15,12 @@ def recipe_detail(recipe_id):
 
     # comments = services.get_comments(repo.repo_instance, recipe_id)
     # avg_rating = ratings.get_average_rating(repo.repo_instance, recipe_id)
-  
-    # favourites = []
-    # if 'user_name' in session:
-    #     user_name = session['user_name']
-    #     favourites = fav_services.get_user_favourites(repo.repo_instance, user_name)  # list of recipe_ids
+
+    recipe_ids = []
+    if 'user_name' in session:
+        user_id = session['user_id']
+        favourites = services.get_user_favourites(repo.repo_instance, user_id)
+        recipe_ids = [fav.recipe_id for fav in favourites]
 
     return render_template(
         'recipe_detail.html',
@@ -26,11 +28,8 @@ def recipe_detail(recipe_id):
         # comments=comments,
         # avg_rating=avg_rating,
         return_to=return_to,
-        # favourites=favourites
+        recipe_ids=recipe_ids
     )
-
-
-
 
 
 

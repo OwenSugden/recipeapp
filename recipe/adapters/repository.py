@@ -82,22 +82,19 @@ class AbstractRepository(abc.ABC):
     # region Favourites data Methods to manage Favourites
     # Methods to manage Favourites
     @abc.abstractmethod
-    def add_favourite(self, user: User, recipe: Recipe):
-        """Adds a Recipe to the User's list of favourite Recipes."""
+    def add_favourite(self, favourite: Favourite):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove_favourite(self, user: User, recipe: Recipe):
-        """Removes a Recipe from the User's list of favourite Recipes."""
+    def remove_favourite(self, user_id: int, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_favourite_for_user(self, page: int, page_size: int, user: User) -> list[Recipe]:
-        """Returns a list of the User's favourite Recipes."""
+    def get_favourites_for_user(self, user_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def is_favourite(self, user: User, recipe: Recipe) -> bool:
+    def get_new_favourite_id(self) -> int:
         raise NotImplementedError
 
     # endregion
@@ -238,6 +235,10 @@ class AbstractRepository(abc.ABC):
         Returns the User with the provided username from the repository.
         If there is no User with the given username, this method returns None.
         """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_new_user_id(self) -> int:
         raise NotImplementedError
 
     # endregion

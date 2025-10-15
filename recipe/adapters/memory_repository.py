@@ -27,14 +27,16 @@ class MemoryRepository(AbstractRepository):
         self.__categories = list()
         self.__recipes = list()
         self.__recipes_index = dict()
-        self.__reviews = list()
         self.__users = list()
+        self.__reviews = dict()
+        self.__favourites = dict()
         self.__nutritions = list()
         self.__recipe_images = list()
         self.__recipe_ingredients = list()
         self.__recipe_instructions = list()
-        self._next_user_id = 1
-        self._next_category_id = 1
+        self.__current_user_id = 0
+        self.__current_favourite_id = 0
+
 
     # region Author_data
     def add_author(self, author: Author):
@@ -60,11 +62,6 @@ class MemoryRepository(AbstractRepository):
 
     # region Category_data Methods to manage Categories
     def add_category(self, category: Category):
-        if not isinstance(category, Category):
-            raise TypeError("Expected a Category instance")
-        if category.id is None:
-            category._Category__id = self._next_category_id
-            self._next_category_id += 1
         self.__categories.append(category)
 
     def get_category_by_id(self, category_id: int):
@@ -86,17 +83,41 @@ class MemoryRepository(AbstractRepository):
     # endregion
 
     # region Favourite_data Methods to manage Favourites
-    def add_favourite(self, user: User, recipe: Recipe):
-        pass
+    def add_favourite(self, favourite: Favourite):
+        user_id = favourite.user_id
 
-    def remove_favourite(self, user: User, recipe: Recipe):
-        pass
+        # If this user_id doesn't exist yet, create a new list for it
+        if user_id not in self.__favourites:
+            self.__favourites[user_id] = []
 
-    def get_favourite_for_user(self, page: int, page_size: int, user: User) -> list[Recipe]:
-        pass
+        # Only add if this recipe_id isn't already present
+        if any(f.recipe_id == favourite.recipe_id for f in self.__favourites[user_id]):
+            # Add the Favourite object to that user's list
+            self.__favourites[user_id].append(favourite)
 
-    def is_favourite(self, user_name: str, recipe_id: int):
-        return Favourite(user_name, recipe_id) in self.__favourites
+    def remove_favourite(self, user_id: int, recipe_id: int):
+        # Check if this user has any favourites stored
+        if user_id in self.__favourites:
+            favourites_list = self.__favourites[user_id]
+
+            # Find the favourite to remove
+            for favourite in favourites_list:
+                if favourite.recipe_id == recipe_id:
+                    favourites_list.remove(favourite)
+                    break  # stop once found
+
+            if not favourites_list:
+                del self.__favourites[user_id]
+
+    def get_favourites_for_user(self, user_id: int):
+        if user_id in self.__favourites:
+            favourites_list = self.__favourites[user_id]
+            return favourites_list
+
+    def get_new_favourite_id(self) -> int:
+        favourite_id = self.__current_favourite_id
+        self.__current_favourite_id += 1
+        return favourite_id
 
     # endregion
 
@@ -151,9 +172,6 @@ class MemoryRepository(AbstractRepository):
         return searched_recipes
 
     def add_multiple_recipes(self, recipes: List[Recipe]):
-        """
-        Adds multiple Recipes to the repository after validating them.
-        """
         for recipe in recipes:
             if not isinstance(recipe, Recipe):
                 raise TypeError("Expected a Recipe instance")
@@ -182,12 +200,7 @@ class MemoryRepository(AbstractRepository):
 
     # region User data Methods to manage Users
     def add_user(self, user: User):
-        if not isinstance(user, User):
-            raise TypeError("Expected a User instance")
-        self._validate_recipe(user)
-        insort_left(self.__users, user)
-        self.__recipes_index[user.id] = user
-
+        self.__users.append(user)
 
     def get_user_by_id(self, user_id: int) -> User | None:
         for user in self.__users:
@@ -200,6 +213,11 @@ class MemoryRepository(AbstractRepository):
             if user.username == username:
                 return user
         return None
+
+    def get_new_user_id(self) -> int:
+        user_id = self.__current_user_id
+        self.__current_user_id += 1
+        return user_id
 
     # endregion
 

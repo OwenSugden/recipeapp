@@ -6,11 +6,11 @@ if TYPE_CHECKING:
     from recipe.domainmodel.recipe import Recipe
 
 class Review:
-    def __init__(self, review_id: int, user: "User", date: datetime, recipe: "Recipe", rating: float, comment: str):
+    def __init__(self, review_id: int, user_id: int, date: datetime, recipe_id: int, rating: float, comment: str):
         self.__id = review_id
-        self.__user = user
+        self.__user_id = user_id
         self.__date = date
-        self.__recipe = recipe
+        self.__recipe_id = recipe_id
         if not (0 <= rating <= 5):
             raise ValueError("Rating must be between 0 and 5")
         else:
@@ -18,7 +18,7 @@ class Review:
         self.__comment = comment
 
     def __repr__(self) -> str:
-        return f"<Review: User: {self.user.username}, Recipe: {self.recipe.id}>"
+        return f"<Review: User: {self.__user_id}, Recipe: {self.__recipe_id}>"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Review):
@@ -42,16 +42,16 @@ class Review:
         return self.__id
 
     @property
-    def user(self) -> "User":
-        return self.__user
+    def user_id(self) -> int:
+        return self.__user_id
 
     @property
     def date(self) -> datetime:
         return self.__date
 
     @property
-    def recipe(self) -> "Recipe":
-        return self.__recipe
+    def recipe_id(self) -> int:
+        return self.__recipe_id
 
     @property
     def rating(self) -> float:

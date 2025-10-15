@@ -183,7 +183,7 @@ def map_model_to_tables():
         '_Favourite__id': favourites_table.c.id,
         '_Favourite__user_id': favourites_table.c.user_id,
         '_Favourite__recipe_id': favourites_table.c.recipe_id,
-        '_Favourite__date_added': favourites_table.c.date_added,
+        '_Favourite__date': favourites_table.c.date_added,
         '_Favourite__user': relationship(User, back_populates='_User__favourites'),
         '_Favourite__recipe': relationship(Recipe, back_populates='_Recipe__favourites')
     })

@@ -1,7 +1,11 @@
+from recipe import Recipe
 from recipe.adapters.repository import AbstractRepository
 
 def get_recipe_by_id(repo: AbstractRepository, recipe_id: int) :
     return repo.get_recipe_by_id(recipe_id)
+
+def get_user_favourites(repo: AbstractRepository, user_id: int):
+    return repo.get_favourites_for_user(user_id)
 
 # TODO add the review functionality
 # def get_comments(repo, recipe_id):

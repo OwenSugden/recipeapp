@@ -41,13 +41,13 @@
         {% elif section == 'favourites' %}
     <h2>Favourite Recipes</h2>
 
-    {% if favourites %}
+    {% if favourite_recipes %}
         <ul class="recipes-grid">
-            {% for recipe in favourites %}
+            {% for recipe in favourite_recipes %}
                 <li class="recipe-card">
                     <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe.id) }}" style="text-decoration: none">
                         <div class="card-img">
-                            <img src="{{ recipe.images[0] }}" alt="recipe image">
+                            <img src="{{ recipe.images[0].url }}" alt="recipe image">
                         </div>
                         <div class="card-body">
                             <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
@@ -59,7 +59,6 @@
                             </button>
                         </form>
                     </a>
-
                 </li>
             {% endfor %}
         </ul>

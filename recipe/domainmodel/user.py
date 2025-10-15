@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from recipe.domainmodel.review import Review
 
 class User:
-    def __init__(self, username: str, password: str, user_id: int = None):
+    def __init__(self, user_id: int, username: str, password: str):
         self.__id = user_id
         self.__username = username
         self.__password = password

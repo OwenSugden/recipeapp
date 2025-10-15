@@ -9,26 +9,24 @@ user_profile_blueprint = Blueprint('user_profile_bp', __name__)
 def profile():
     section = request.args.get('section', 'profile')
 
-    favourites = []
+    favourite_recipes = []
     if 'user_name' in session:
-        user_name= session['user_name']
-        fav_ids = services.get_user_favourites(repo.repo_instance, user_name)  # returns list of recipe_ids
-        favourites = [services.get_recipe_by_id(repo.repo_instance, rid) for rid in fav_ids]  # now list of recipe objects
+        user_id = session['user_id']
+        favourites = services.get_user_favourites(repo.repo_instance, user_id)
+        favourite_recipes = [services.get_recipe_by_id(repo.repo_instance, fav.recipe_id) for fav in favourites]
 
-
-        pass
 
     return render_template(
         'user_profile.html',
         section=section,
-        favourites=favourites
+        favourite_recipes=favourite_recipes
     )
 
 @user_profile_blueprint.route('/user_profile/add_favourite/<int:recipe_id>', methods=['POST'])
 @login_required
 def add_favourite(recipe_id):
-    user_name = session['user_name']
-    services.add_favourite(repo.repo_instance, user_name, recipe_id)
+    user_id = session['user_id']
+    services.add_favourite(repo.repo_instance, user_id, recipe_id)
     return_to = request.args.get("return_to")
 
     return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
@@ -38,8 +36,8 @@ def add_favourite(recipe_id):
 @user_profile_blueprint.route('/user_profile/remove_favourite/<int:recipe_id>', methods=['POST'])
 @login_required
 def remove_favourite(recipe_id):
-    user_name = session['user_name']
-    services.remove_favourite(repo.repo_instance, user_name, recipe_id)
+    user_id = session['user_id']
+    services.remove_favourite(repo.repo_instance, user_id, recipe_id)
 
     return_to = request.args.get("return_to")
 
