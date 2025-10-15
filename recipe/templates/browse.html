@@ -18,35 +18,39 @@
                 <option value="category" {% if filter_by == 'category' %}selected{% endif %}>Category</option>
                 <option value="author" {% if filter_by == 'author' %}selected{% endif %}>Author</option>
             </select>
-            <input type="text" name="q" placeholder="Search Recipe..." value="{{ search_query }}" class="search-input">
+          <div class="search-wrapper">
+            <input
+              type="text"
+              name="q"
+              placeholder="Search Recipe..."
+              value="{{ search_query }}"
+              class="search-input">
             <button type="submit" class="search-btn" aria-label="Search">
-                <img src="{{ url_for('static', filename='images/search.svg') }}" alt="" aria-hidden="true" class="search-icon"/>
+              <img src="{{ url_for('static', filename='images/search.svg') }}" alt="" class="search-icon"/>
             </button>
+          </div>
         </form>
     </div>
 
     <div class="browse-content">
-        <div class="browse-recipes-content">
-            <ul class="recipes-grid">
-                {% for recipe in recipes_on_page %}
-                    <li class="recipe-card">
-                        <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail',
-                                                       recipe_id=recipe.id,
-                                                       return_to=request.full_path) }}">
-                            <div class="card-img">
-                                <img src="{{ recipe.images[0].url }}" alt="">
-                            </div>
-
-                            <div class="card-body">
-                                <h3 class="card-recipe" style="margin: 0">{{ recipe.name }}</h3>
-                                <p class="card-author" style="margin: 0">Author: {{ recipe.author.name }}</p>
-                                <p class="card-health-star"> Health Star rating: {{ recipe.nutrition.health_star() }}</p>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+      <ul class="recipes-grid">
+        {% for recipe in recipes_on_page %}
+          <li class="recipe-card">
+            <a class="card-link" href="{{ url_for('recipe_detail_bp.recipe_detail',
+                       recipe_id=recipe.id,
+                       return_to=request.full_path) }}">
+              <div class="card-img">
+                <img src="{{ recipe.images[0].url }}" alt="">
+              </div>
+              <div class="card-body">
+                <h3>{{ recipe.name }}</h3>
+                <p>Author: {{ recipe.author.name }}</p>
+                <p>Health Star rating: {{ recipe.nutrition.health_star() }}</p>
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
     <nav class="pager">
         {% if prev_url %}
@@ -61,4 +65,5 @@
     </nav>
 </div>
 </body>
+{% include 'footer.html' %}
 </html>
