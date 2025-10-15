@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm.exc import NoResultFound
 
-from recipe.adapters.orm import users_table, favourites_table
+from recipe.adapters.orm import users_table, favourites_table, reviews_table
 from recipe.adapters.repository import AbstractRepository
 
 from recipe.domainmodel.author import Author
@@ -149,10 +149,19 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
     def add_favourite(self, favourite: Favourite):
         with self._session_cm as scm:
             with scm.session.no_autoflush:
-                # Check if favourite already exists
-                existing_favourite = scm.session.query(Favourite).filter(Favourite._Favourite__recipe_id == favourite.recipe_id).first()
+                # Check if favourite already exists for this user AND recipe
+                existing_favourite = (
+                    scm.session.query(Favourite)
+                    .filter(
+                        Favourite._Favourite__user_id == favourite.user_id,
+                        Favourite._Favourite__recipe_id == favourite.recipe_id,
+                    )
+                    .first()
+                )
+
                 if not existing_favourite:
                     scm.session.add(favourite)
+
             scm.commit()
 
     def remove_favourite(self, user_id: int, recipe_id: int):
@@ -311,21 +320,67 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
     # endregion
 
     # region Review data Methods to manage Reviews
+    def add_review(self, review: Review):
+        with self._session_cm as scm:
+            scm.session.add(review)
+            scm.commit()
 
-    def add_review(self, user: User, review: Review):
-        pass
+    def remove_review(self, user_id: int, review_id: int):
+        with self._session_cm as scm:
+            review = scm.session.get(Review, review_id)
+            if review is not None and review._Review__user_id == user_id:
+                scm.session.delete(review)
+                scm.commit()
 
-    def get_reviews(self) -> list[Review]:
-        pass
+    def get_reviews_with_usernames_for_recipe(self, recipe_id: int):
+        rows = (
+            self._session_cm.session.query(Review, User._User__username)
+            .join(User, Review._Review__user_id == User._User__id)
+            .filter(Review._Review__recipe_id == recipe_id)
+            .all()
+        )
 
-    def get_user_reviews(self) -> list[Review]:
-        pass
+        return [(review, username) for review, username in rows]
 
-    def get_recipe_reviews(self) -> list[Review]:
-        pass
+    def get_reviews_and_recipes_for_user(self, user_id: int):
+        rows = (
+            self._session_cm.session.query(Review, Recipe)
+            .join(Recipe, Review._Review__recipe_id == Recipe._Recipe__id)
+            .filter(Review._Review__user_id == user_id)
+            .all()
+        )
+        return rows
 
-    def get_review_by_id(self, review_id: int) -> Review | None:
-        pass
+    def get_reviews_for_user(self, user_id: int):
+        reviews = (self._session_cm.session.query(Review)
+                      .filter(Review._Review__user_id == user_id)
+                      ).all()
+        return reviews
+
+    def get_reviews_for_recipe(self, recipe_id: int):
+        reviews = (self._session_cm.session.query(Review)
+                   .filter(Review._Review__recipe_id == recipe_id)
+                   ).all()
+        return reviews
+
+    def get_new_review_id(self) -> int:
+        review_id = self._session_cm.session.query(func.max(reviews_table.c.id)).one()[0]
+        if review_id is None:
+            review_id = 1
+        else:
+            review_id += 1
+        return review_id
+
+    def get_average_rating(self, recipe_id: int):
+        ratings = (self._session_cm.session.query(Review._Review__rating)
+                .filter(Review._Review__recipe_id == recipe_id)
+                .all())
+
+        if not ratings:
+            return 0.0
+
+        rating_values = [r[0] for r in ratings]
+        return round(sum(rating_values) / len(rating_values), 1)
 
     # endregion
 

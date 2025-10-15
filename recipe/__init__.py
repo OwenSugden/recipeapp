@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, clear_mappers
 from sqlalchemy.pool import NullPool
 
+from recipe.adapters.memory_repository import MemoryRepository
 from recipe.domainmodel.recipe import Recipe
 from recipe.browse import browse
 
@@ -62,12 +63,12 @@ def create_app(test_config = None):
         # Solely generate mappings that map domain model classes to the database tables.
         map_model_to_tables()
 
-    # if test_config is not None:
-    #     app.config.from_mapping(test_config)
-    #     data_path = app.config['TEST_DATA_PATH']
+    if test_config is not None:
+        app.config.from_mapping(test_config)
+        data_path = app.config['TEST_DATA_PATH']
 
     # repo.repo_instance = MemoryRepository()
-    # populate(data_path, repo.repo_instance)
+    # populate(data_path, repo.repo_instance, False)
 
     with app.app_context():
         from .home import home

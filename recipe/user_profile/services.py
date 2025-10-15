@@ -15,4 +15,10 @@ def get_user_favourites(repo: AbstractRepository, user_id: int):
 def get_recipe_by_id(repo: AbstractRepository, recipe_id: int) :
     return repo.get_recipe_by_id(recipe_id)
 
+def get_reviews_for_user(repo: AbstractRepository, user_id: int):
+    return repo.get_reviews_and_recipes_for_user(user_id)
+
+def remove_review(repo: AbstractRepository, user_id: int, recipe_id: int):
+    repo.remove_review(user_id, recipe_id)
+
 

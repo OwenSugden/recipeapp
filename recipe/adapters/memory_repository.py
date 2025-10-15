@@ -36,6 +36,7 @@ class MemoryRepository(AbstractRepository):
         self.__recipe_instructions = list()
         self.__current_user_id = 0
         self.__current_favourite_id = 0
+        self.__current_review_id = 0
 
 
     # region Author_data
@@ -90,9 +91,7 @@ class MemoryRepository(AbstractRepository):
         if user_id not in self.__favourites:
             self.__favourites[user_id] = []
 
-        # Only add if this recipe_id isn't already present
-        if any(f.recipe_id == favourite.recipe_id for f in self.__favourites[user_id]):
-            # Add the Favourite object to that user's list
+        if not any(f.recipe_id == favourite.recipe_id for f in self.__favourites[user_id]):
             self.__favourites[user_id].append(favourite)
 
     def remove_favourite(self, user_id: int, recipe_id: int):
@@ -101,10 +100,10 @@ class MemoryRepository(AbstractRepository):
             favourites_list = self.__favourites[user_id]
 
             # Find the favourite to remove
-            for favourite in favourites_list:
+            for favourite in list(favourites_list):  # iterate over a copy
                 if favourite.recipe_id == recipe_id:
                     favourites_list.remove(favourite)
-                    break  # stop once found
+                    break
 
             if not favourites_list:
                 del self.__favourites[user_id]
@@ -113,6 +112,7 @@ class MemoryRepository(AbstractRepository):
         if user_id in self.__favourites:
             favourites_list = self.__favourites[user_id]
             return favourites_list
+        return []
 
     def get_new_favourite_id(self) -> int:
         favourite_id = self.__current_favourite_id
@@ -180,27 +180,88 @@ class MemoryRepository(AbstractRepository):
     # end region
 
     # region Review data Methods to manage Reviews
-    def add_review(self, user: User, review: Review):
-        pass
+    def add_review(self, review: Review):
+        user_id = review.user_id
 
-    def get_reviews(self) -> list[Review]:
-        pass
+        # If this user_id doesn't exist yet, create a new list for it
+        if user_id not in self.__reviews:
+            self.__reviews[user_id] = []
 
-    def get_user_reviews(self) -> list[Review]:
-        pass
+        self.__reviews[user_id].append(review)
 
-    def get_recipe_reviews(self) -> list[
-        Review]:
-        pass
+    def remove_review(self, user_id: int, review_id: int):
+        reviews_list = self.__reviews.get(user_id)
+        if not reviews_list:
+            return
 
-    def get_review_by_id(self, review_id: int) -> Review | None:
-        pass
+        # find by id, then delete
+        for i, r in enumerate(reviews_list):
+            if r.id == review_id:
+                del reviews_list[i]
+                break
+
+        if not reviews_list:
+            del self.__reviews[user_id]
+
+    def get_reviews_with_usernames_for_recipe(self, recipe_id: int):
+        results = []
+        for user_id, user_reviews in self.__reviews.items():
+            user = next((u for u in self.__users if u.id == user_id), None)
+            username = user.username if user else "Unknown"
+
+            for review in user_reviews:
+                if review.recipe_id == recipe_id:
+                    results.append((review, username))
+
+        return results
+
+    def get_reviews_and_recipes_for_user(self, user_id: int):
+        results = []
+        user_reviews = self.__reviews.get(user_id, [])
+        for review in user_reviews:
+            recipe = self.get_recipe_by_id(review.recipe_id)
+            if recipe is not None:
+                results.append((review, recipe))
+        return results
+
+    def get_reviews_for_user(self, user_id: int):
+        if user_id in self.__reviews:
+            reviews_list = self.__reviews[user_id]
+            return reviews_list
+        return None
+
+    def get_reviews_for_recipe(self, recipe_id: int):
+        reviews_list = []
+        for user_reviews in self.__reviews.values():
+            for review in user_reviews:
+                if review.recipe_id == recipe_id:
+                    reviews_list.append(review)
+        return reviews_list
+
+    def get_new_review_id(self) -> int:
+        review_id = self.__current_review_id
+        self.__current_review_id += 1
+        return review_id
+
+    def get_average_rating(self, recipe_id: int):
+        ratings = []
+
+        for user_reviews in self.__reviews.values():
+            for review in user_reviews:
+                if review.recipe_id == recipe_id:
+                    ratings.append(review.rating)
+
+        if not ratings:
+            return 0.0
+
+        return round(sum(ratings) / len(ratings), 1)
 
     # endregion
 
     # region User data Methods to manage Users
     def add_user(self, user: User):
         self.__users.append(user)
+        print(self.__users)
 
     def get_user_by_id(self, user_id: int) -> User | None:
         for user in self.__users:

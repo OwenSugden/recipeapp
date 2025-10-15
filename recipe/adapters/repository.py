@@ -170,37 +170,35 @@ class AbstractRepository(abc.ABC):
     # region Review_data Methods to manage Reviews
     # Methods to manage Reviews
     @abc.abstractmethod
-    def add_review(self, user: User, review: Review):
-        """Adds a Review to the repository."""
+    def add_review(self, review: Review):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_reviews(self) -> list[Review]:
-        """
-        Returns a list of all Reviews in the repository
-        """
+    def remove_review(self, user_id: int, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_user_reviews(self) -> list[Review]:
-        """
-        Returns a list of Reviews submitted by the specified User
-        """
+    def get_reviews_for_user(self, user_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_reviews(self) -> list[Review]:
-        """
-        Returns a list of Reviews for the specified Recipe, sorted by sort_method.
-        """
+    def get_reviews_for_recipe(self, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_review_by_id(self, review_id: int) -> Review | None:
-        """
-        Returns the Review with the specified review_id from the repository.
-        If there is no Review with the given review_id, this method returns None.
-        """
+    def get_new_review_id(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_reviews_and_recipes_for_user(self, user_id):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_reviews_with_usernames_for_recipe(self, recipe_id):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_average_rating(self, user_id: int):
         raise NotImplementedError
 
     # endregion
