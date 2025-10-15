@@ -38,6 +38,12 @@ def make_recipe() -> Recipe:
 
     return recipe
 
+def make_user() -> User:
+
+
+def make_review() -> Review:
+    user = make_user()
+
 
 def insert_recipe(empty_session, recipe):
     empty_session.execute(
@@ -122,7 +128,16 @@ def test_saving_of_recipe(empty_session):
 
     #TODO
     def test_review_recipe_relationship(empty_session):
-        pass
+        author = make_author()
+        review = make_review()
+        recipe.author = author
+        insert_recipe(empty_session, recipe)
+        insert_author(empty_session, author)
+        empty_session.commit()
+
+        rows = empty_session.query(Recipe).one()
+        assert rows == recipe
+        assert author.recipes == [recipe]
 
     #TODO
     def test_category_recipe_relationship(empty_session):
