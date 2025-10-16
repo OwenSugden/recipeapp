@@ -33,7 +33,6 @@ def in_memory_repo():
     populate(TEST_DATA_PATH, repo, True)
     return repo
 
-
 @pytest.fixture
 def csv_file_paths():
     current_dir = os.path.dirname(os.path.abspath(__file__))   # .../cs235.../tests
@@ -123,30 +122,3 @@ def my_user():
 @pytest.fixture
 def my_review(my_user, my_recipe):
     return Review(1, my_user.id, datetime(2024, 1, 1), my_recipe.id, 5, "Food is good")
-
-@pytest.fixture
-def client():
-    my_app = create_app({
-        'TESTING': True,
-        'TEST_DATA_PATH': TEST_DATA_PATH,
-        'WTF_CSRF_ENABLED': False,
-        'REPOSITORY': 'memory'
-    })
-    return my_app.test_client()
-
-@pytest.fixture
-def auth(client):
-    return AuthenticationManager(client)
-
-class AuthenticationManager:
-    def __init__(self, client):
-        self.__client = client
-
-    def login(self, user_name="Username", password="Password"):
-        return self.__client.post(
-            "/authentication/login",
-            data={"user_name": user_name, "password": password}
-        )
-
-    def logout(self):
-        return self.__client.get("/authentication/logout")

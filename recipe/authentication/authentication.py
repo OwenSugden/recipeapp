@@ -38,8 +38,7 @@ def register():
         title='Register',
         form=form,
         user_name_error_message=user_name_not_unique,
-        handler_url=url_for('authentication_bp.register'),
-    )
+        handler_url=url_for('authentication_bp.register')), 400
 
 
 @authentication_blueprint.route('/login', methods=['GET', 'POST'])

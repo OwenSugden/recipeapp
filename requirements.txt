@@ -7,3 +7,4 @@ flask-wtf==1.2.1
 password-validator==1.0
 SQLAlchemy==2.0.33
 pathlib2~=2.3.7.post1
+WTForms~=3.2.1
