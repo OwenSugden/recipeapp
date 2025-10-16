@@ -90,17 +90,7 @@ def test_add_multiple_categories(memory_repository, my_recipe):
     assert len(result) == 3
 
 # Favourite tests
-def test_add_favourite():
-    pass
-
-def test_remove_favourite():
-    pass
-
-def test_get_favourite_for_user():
-    pass
-
-def test_is_favourite():
-    pass
+# TODO finish this
 
 # Nutrition tests
 def test_add_nutrition(memory_repository, my_nutrition):
@@ -228,30 +218,10 @@ def test_add_multiple_recipes(memory_repository, my_author, my_category, my_nutr
     assert len(result) == 2
 
 # Review tests
-def test_add_review():
-    pass
-
-def test_get_reviews():
-    pass
-
-def test_get_user_reviews():
-    pass
-
-def test_get_recipe_reviews():
-    pass
-
-def test_get_review_by_id():
-    pass
+# TODO finish this
 
 # User tests
-def test_add_user():
-    pass
-
-def test_get_user_by_id():
-    pass
-
-def test_get_user_by_name():
-    pass
+# TODO finish this
 
 # RecipeImage tests
 def test_add_recipe_image(memory_repository, my_recipe_image):

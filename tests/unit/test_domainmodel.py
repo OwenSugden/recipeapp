@@ -75,10 +75,10 @@ def test_category_repr(my_category):
 # Favourite tests
 def test_favourite_construction(my_user, my_recipe):
     dt = datetime(2024, 1, 1)
-    fav = Favourite(42, my_user, my_recipe, dt)
+    fav = Favourite(42, my_user.id, my_recipe.id, dt)
     assert fav.id == 42
-    assert fav.user is my_user
-    assert fav.recipe is my_recipe
+    assert fav.user_id is my_user.id
+    assert fav.recipe_id is my_recipe.id
     assert fav.date == dt
 
 def test_favourite_equality(my_user, my_recipe):
@@ -102,7 +102,7 @@ def test_favourite_hash(my_user, my_recipe):
 
 def test_favourite_repr(my_favourite, my_user, my_recipe):
     # my_favourite: Favourite(1, my_user, my_recipe, datetime(2024, 1, 1))
-    assert repr(my_favourite) == f"<Favourite: User={my_user.username}, Recipe={my_recipe.id}>"
+    assert repr(my_favourite) == f"<Favourite: User={my_user.id}, Recipe={my_recipe.id}>"
 
 # Nutrition tests
 def test_nutrition_construction():
@@ -420,11 +420,11 @@ def test_recipe_instruction_repr():
 # Review tests
 def test_review_construction(my_user, my_recipe):
     dt = datetime(2024, 1, 1)
-    r = Review(1, my_user, dt, my_recipe, 4.0, "Nice!")
+    r = Review(1, my_user.id, dt, my_recipe.id, 4.0, "Nice!")
     assert r.id == 1
-    assert r.user is my_user
+    assert r.user_id is my_user.id
     assert r.date == dt
-    assert r.recipe is my_recipe
+    assert r.recipe_id is my_recipe.id
     assert r.rating == 4.0
     assert r.comment == "Nice!"
 
@@ -449,7 +449,7 @@ def test_review_hash(my_user, my_recipe):
     assert a in s and b in s and c in s
 
 def test_review_repr(my_review, my_user, my_recipe):
-    assert repr(my_review) == f"<Review: User: {my_user.username}, Recipe: {my_recipe.id}>"
+    assert repr(my_review) == f"<Review: User: {my_user.id}, Recipe: {my_recipe.id}>"
 
 def test_review_update_rating_valid(my_user, my_recipe):
     rv = Review(1, my_user, datetime(2024, 1, 1), my_recipe, 2.5, "meh")
@@ -467,27 +467,28 @@ def test_review_update_comment(my_user, my_recipe):
 
 # User tests
 def test_user_construction():
-    u = User("Alice", "secret123", 42)
+    u = User(42, "Alice", "secret123")
+    assert u.id == 42
     assert u.username == "Alice"
     assert u.password == "secret123"
-    assert u.id == 42
+
 
 def test_user_equality():
-    a = User("A", "x", 1)
-    b = User("B", "y", 1)
-    c = User("C", "z", 2)
+    a = User(1, "A", "x")
+    b = User(1, "B", "y")
+    c = User(2, "C", "z")
     assert a == b
     assert a != c
 
 def test_user_less_than():
-    u1 = User("Lower", "x", 1)
-    u2 = User("Higher", "y", 2)
+    u1 = User(1, "Lower", "x")
+    u2 = User(2, "Higher", "y")
     assert u1 < u2
 
 def test_user_hash():
-    a = User("A", "x", 7)
-    b = User("B", "y", 7)  # same id
-    c = User("C", "z", 8)
+    a = User(7,"A", "x")
+    b = User(7, "B", "y")  # same id
+    c = User(8, "C", "z")
     s = {a, b, c}
     assert len(s) == 2
     assert a in s and b in s and c in s

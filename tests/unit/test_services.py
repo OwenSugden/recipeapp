@@ -1,4 +1,3 @@
-ta
 from recipe.home import services as home_services
 from recipe.authentication import services as auth_services
 from recipe.browse import services as browse_services
@@ -20,9 +19,10 @@ def test_get_number_of_recipes_browse(in_memory_repo, sample_recipes):
     assert number_of_recipes_from_service == len(sample_recipes)
 
 # RecipeDetail services tests
-
+# TODO finish this
 
 # Authentication services tests
-
+# TODO finish this
 
 # UserProfile services tests
+# TODO finish this

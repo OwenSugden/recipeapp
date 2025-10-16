@@ -93,14 +93,7 @@ def test_repository_can_add_multiple_categories(session_factory):
     assert repo.get_category_by_id(3) == categories[2]
 
 # Favourites tests
-def test_repository_can_add_favourites(session_factory):
-    pass
-
-def test_repository_can_get_favourite_by_id(session_factory, my_favourite):
-    pass
-
-def test_repository_can_get_favourites(session_factory):
-    pass
+# TODO finish these
 
 # Nutrition tests
 def test_repository_can_add_nutrition(session_factory, my_nutrition):
