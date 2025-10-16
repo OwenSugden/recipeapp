@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from recipe.domainmodel.recipe import Recipe
 
 class Category:
-    def __init__(self, name: str, recipes: list["Recipe"] = None, category_id: int = None):
+    def __init__(self,  category_id: int, name: str, recipes: list["Recipe"] = None,):
         self.__id = category_id
         self.__name = name
         self.__recipes = recipes if recipes is not None else []
@@ -38,6 +38,8 @@ class Category:
         return self.__recipes
 
     def add_recipe(self, recipe: "Recipe") -> None:
+        from recipe.domainmodel.recipe import Recipe
+
         if isinstance(recipe, Recipe):
             self.__recipes.append(recipe)
         else:

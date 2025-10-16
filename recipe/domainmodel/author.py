@@ -38,6 +38,7 @@ class Author:
         return self.__recipes
 
     def add_recipe(self, recipe: "Recipe") -> None:
+        from recipe.domainmodel.recipe import Recipe
         if not isinstance(recipe, Recipe):
             raise TypeError("Expected a Recipe instance")
 

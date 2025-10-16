@@ -9,41 +9,49 @@ user_profile_blueprint = Blueprint('user_profile_bp', __name__)
 def profile():
     section = request.args.get('section', 'profile')
 
-    favourites = []
-    if 'user_name' in session:
-        user_name= session['user_name']
-        fav_ids = services.get_user_favourites(repo.repo_instance, user_name)  # returns list of recipe_ids
-        favourites = [services.get_recipe_by_id(repo.repo_instance, rid) for rid in fav_ids]  # now list of recipe objects
+    favourite_recipes = []
+    reviews = []
+    if 'user_id' in session:
+        user_id = session['user_id']
+        favourites = services.get_user_favourites(repo.repo_instance, user_id)
+        favourite_recipes = [services.get_recipe_by_id(repo.repo_instance, fav.recipe_id) for fav in favourites]
+        reviews = services.get_reviews_for_user(repo.repo_instance, user_id)
 
-
-        pass
 
     return render_template(
         'user_profile.html',
         section=section,
-        favourites=favourites
+        favourite_recipes=favourite_recipes,
+        reviews=reviews
     )
-
-@user_profile_blueprint.route('/user_profile/add_favourite/<int:recipe_id>', methods=['POST'])
-@login_required
-def add_favourite(recipe_id):
-    user_name = session['user_name']
-    services.add_favourite(repo.repo_instance, user_name, recipe_id)
-    return_to = request.args.get("return_to")
-
-    return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
-
-
 
 @user_profile_blueprint.route('/user_profile/remove_favourite/<int:recipe_id>', methods=['POST'])
 @login_required
 def remove_favourite(recipe_id):
-    user_name = session['user_name']
-    services.remove_favourite(repo.repo_instance, user_name, recipe_id)
+    user_id = session['user_id']
+    services.remove_favourite(repo.repo_instance, user_id, recipe_id)
 
     return_to = request.args.get("return_to")
 
     return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id, return_to=return_to))
+
+@user_profile_blueprint.route('/user_profile/remove_review/<int:recipe_id>', methods=['POST'])
+@login_required
+def remove_review(recipe_id):
+    user_id = session['user_id']
+    services.remove_review(repo.repo_instance, user_id, recipe_id)
+    review_id = request.form.get('review_id', type=int)
+
+    if review_id is None:
+        return redirect(url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id))
+
+    services.remove_review(repo.repo_instance, user_id, review_id)
+    return_to = request.form.get('return_to')
+
+    if not return_to:
+        return_to = url_for('recipe_detail_bp.recipe_detail', recipe_id=recipe_id)
+
+    return redirect(return_to)
 
 
 @user_profile_blueprint.route('/user_profile/edit_profile', methods=['POST'])

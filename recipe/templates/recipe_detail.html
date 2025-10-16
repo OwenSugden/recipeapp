@@ -15,6 +15,8 @@
         {% if return_to %}
             {% if 'browse' in return_to %}
                 <a href="{{ url_for('browse_bp.browse') }}" class="back-link">← Back to browse</a>
+            {% elif 'user_profile' in return_to %}
+                <a href="{{ url_for('user_profile_bp.profile') }}" class="back-link">← Back to user_profile</a>
             {% else %}
                 <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back to home</a>
             {% endif %}
@@ -23,7 +25,7 @@
         <h1>{{ recipe.name }}</h1>
 
 
-        <h2>Average Rating: {{ avg_rating }} / 5</h2>
+        <h2>Average Rating: {{ avg_rating }}</h2>
 
         <h2 class="centered-heading">
                 Cooking Time: {{ recipe.cook_time }} mins | Prep Time: {{ recipe.preparation_time }} mins
@@ -63,15 +65,17 @@
         </div>
 
         <div class="nutritional-info">
-            {% if recipe.id in favourites %}
-            <form method="POST" action="{{ url_for('user_profile_bp.remove_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
+            {% if recipe.id in recipe_ids %}
+            <form method="POST" action="{{ url_for('recipe_detail_bp.remove_favourite', recipe_id=recipe.id) }}">
+                <input type="hidden" name="return_to" value="{{ request.full_path }}">
                 <button type="submit" class="fav-btn active">
                     <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Remove from favourites">
                 </button>
             </form>
                 <p class="fav-btn">Remove from Favourites</p>
             {% else %}
-            <form method="POST" action="{{ url_for('user_profile_bp.add_favourite', recipe_id=recipe.id, return_to=request.full_path) }}">
+            <form method="POST" action="{{ url_for('recipe_detail_bp.add_favourite', recipe_id=recipe.id) }}">
+                <input type="hidden" name="return_to" value="{{ request.full_path }}">
                 <button type="submit" class="fav-btn">
                     <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Add to favourites">
                 </button>
@@ -94,35 +98,53 @@
           </table>
         </div>
       </div>
+
         <div class="reviews">
             <h2>Leave a Review</h2>
-            {% if not comments %}
+            {% if not reviews_with_names %}
                 <p>No reviews have been made</p>
             {% endif %}
-            <div class="ratings">
-                <form action="{{ url_for('ratings_bp.rate_recipe', recipe_id=recipe.id,  return_to=request.full_path) }}" method="post">
-                {% for i in range(1, 6) %}
-                    <input type="radio" name="rating" value="{{ i }}"> {{ i }}
-                {% endfor %}
+
+            <form action="{{ url_for('recipe_detail_bp.add_review', recipe_id=recipe.id) }}" method="post">
+                <input type="hidden" name="return_to" value="{{ request.full_path }}">
+                <div class="review">
+                    <div class="ratings">
+                        {% for i in range(1, 6) %}
+                            <input type="radio" name="rating" value="{{ i }}"> {{ i }}
+                        {% endfor %}
+                    </div>
+                    <div class="comments">
+                        <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
+                    </div>
                 <button type="submit">Rate</button>
-                </form>
-            </div>
+                </div>
+            </form>
 
-            <div class="comments">
-                <form method="post" action="{{ url_for('comments_bp.add_comment', recipe_id=recipe.id, return_to=request.full_path) }}">
-                    <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
-                    <button type="submit">Post Comment</button>
-                </form>
-            </div>
-
-            {% if comments %}
+            {% if reviews_with_names %}
                 <h2>Previous Reviews:</h2>
-                <div class="comments-list">
+                <div class="reviews-list">
                     <ul>
-                        {% for c in comments %}
+                        {% for review, username in reviews_with_names %}
                             <li>
-                                <strong>{{ c.user_name }} at {{ c.timestamp }} said:</strong>
-                                <p>{{ c.text }}</p>
+                                <p>Review made by: {{ username }}</p>
+                                <p>{{ review.date.strftime('%Y-%m-%d') }} at {{ review.date.strftime('%H:%M') }}</p>
+                                <div class="review">
+                                    <div class="review-rating">
+                                        Rating: {{ review.rating }}/5
+                                    </div>
+                                    <div class="review-comment">
+                                        {{ review.comment }}
+                                    </div>
+
+                                    {% if session.get('user_id') == review.user_id %}
+                                    <form method="POST" action="{{ url_for('recipe_detail_bp.remove_review', recipe_id=recipe.id) }}">
+                                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                                        <input type="hidden" name="return_to" value="{{ request.full_path }}">
+                                        <button type="submit">Delete Review</button>
+                                    </form>
+                                    {% endif %}
+
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>

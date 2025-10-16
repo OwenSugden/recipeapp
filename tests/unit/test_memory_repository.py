@@ -1,222 +1,304 @@
-import pytest
 from datetime import datetime
 
-from recipe.domainmodel.comment import Comment
-from recipe.domainmodel.rating import Rating
-from recipe.domainmodel.recipe import Recipe
-from recipe.domainmodel.author import Author
+from tests.conftest import *
+
+from recipe.domainmodel.recipe import Author
 from recipe.domainmodel.category import Category
-from recipe.adapters.memory_repository import MemoryRepository
-from recipe.domainmodel.user import User
 from recipe.domainmodel.favourite import Favourite
+from recipe.domainmodel.nutrition import Nutrition
+from recipe.domainmodel.recipe import Recipe
+from recipe.domainmodel.recipe import RecipeImage
+from recipe.domainmodel.recipe import RecipeIngredient
+from recipe.domainmodel.recipe import RecipeInstruction
+from recipe.domainmodel.review import Review
+from recipe.domainmodel.user import User
 
-
-# Fixtures
-@pytest.fixture
-def memory_repository():
-    return MemoryRepository()
-
-@pytest.fixture
-def my_user():
-    return User("tests user", "password123", 1)
-
-
-@pytest.fixture
-def my_author():
-    return Author(1, "Gordon Ramsay")
-
-
-@pytest.fixture
-def my_category():
-    return Category("Italian", [], 1)
-
-
-@pytest.fixture
-def my_recipe():
-    author = Author(1, "Gordon Ramsay")
-    category = Category("Italian", [], 1)
-    return Recipe(
-        recipe_id=1,
-        name="Spaghetti Carbonara",
-        author=author,
-        cook_time=20,
-        preparation_time=15,
-        created_date=datetime(2024, 1, 1),
-        description="Classic Italian pasta dish",
-        images=["image1.jpg"],
-        category=category,
-        ingredient_quantities=["200g pasta", "100g bacon"],
-        ingredients=["pasta", "bacon", "eggs", "cheese"],
-        nutrition=None,
-        servings="4",
-        recipe_yield="4 portions",
-        instructions=["Boil pasta", "Cook bacon", "Mix with eggs"]
-    )
-
-@pytest.fixture
-def my_comment(my_recipe, my_user):
-    user_name = getattr(my_user, "user_name", getattr(my_user, "username", "tester"))
-    return Comment(user_name=user_name,
-        comment_id=1,
-        recipe_id=my_recipe.id,
-        user_id=my_user.id,
-        text="Great recipe!"
-    )
-
-@pytest.fixture
-def my_rating(my_recipe, my_user):
-    user_name = getattr(my_user, "user_name", getattr(my_user, "username", "tester"))
-    return Rating(
-        rating_id=1,
-        recipe_id=my_recipe.id,
-        user_id=my_user.id,
-        value=5,
-        user_name=user_name
-    )
 
 # MemoryRepository tests
+# Author tests
+def test_add_author(memory_repository, my_author):
+    memory_repository.add_author(my_author)
+    authors = memory_repository.get_authors()
+    assert len(authors) == 1
+    assert authors[0] == my_author
+
+def test_get_author_by_id(memory_repository, my_author):
+    memory_repository.add_author(my_author)
+    found = memory_repository.get_author_by_id(my_author.id)
+    assert found == my_author
+
+def test_get_authors(memory_repository, my_author):
+    memory_repository.add_author(my_author)
+    authors = memory_repository.get_authors()
+
+    assert authors[0].id == 1
+
+def test_get_number_of_authors(memory_repository, my_author):
+    memory_repository.add_author(my_author)
+    authors = memory_repository.get_authors()
+    number_of_authors = memory_repository.get_number_of_authors()
+    expected = len(authors)
+    assert number_of_authors == expected
+
+def test_add_multiple_authors(memory_repository):
+    authors = [
+        Author(1, "Gordon Ramsay"),
+        Author(2, "Nigella Lawson"),
+        Author(3, "Jamie Oliver"),
+    ]
+
+    memory_repository.add_multiple_authors(authors)
+    result = memory_repository.get_authors()
+    assert result == authors
+    assert len(result) == 3
+
+# Category tests
+def test_add_category(memory_repository, my_category):
+    memory_repository.add_category(my_category)
+    categories = memory_repository.get_categories()
+    assert len(categories) == 1
+    assert categories[0] == my_category
+
+def test_get_category_by_id(memory_repository, my_category):
+    memory_repository.add_category(my_category)
+    found = memory_repository.get_category_by_id(my_category.id)
+    assert found == my_category
+
+def test_get_categories(memory_repository, my_category):
+    memory_repository.add_category(my_category)
+    categories = memory_repository.get_categories()
+
+    assert categories[0].id == 1
+
+def test_get_number_of_categories(memory_repository, my_category):
+    memory_repository.add_category(my_category)
+    categories = memory_repository.get_categories()
+    number_of_categories = memory_repository.get_number_of_categories()
+    expected = len(categories)
+    assert number_of_categories == expected
+
+def test_add_multiple_categories(memory_repository, my_recipe):
+    categories = [
+        Category(1, "C1", [my_recipe]),
+        Category(2, "C2", [my_recipe]),
+        Category(3, "C2", [my_recipe])
+    ]
+
+    memory_repository.add_multiple_categories(categories)
+    result = memory_repository.get_categories()
+    assert result == categories
+    assert len(result) == 3
+
+# Favourite tests
+# TODO finish this
+
+# Nutrition tests
+def test_add_nutrition(memory_repository, my_nutrition):
+    memory_repository.add_nutrition(my_nutrition)
+    nutritions = memory_repository.get_nutritions()
+    assert len(nutritions) == 1
+    assert nutritions[0] == my_nutrition
+
+def test_get_nutrition_by_id(memory_repository, my_nutrition):
+    memory_repository.add_nutrition(my_nutrition)
+    found = memory_repository.get_nutrition_by_id(my_nutrition.id)
+    assert found == my_nutrition
+
+def test_get_nutritions(memory_repository, my_nutrition):
+    memory_repository.add_nutrition(my_nutrition)
+    nutritions = memory_repository.get_nutritions()
+
+    assert nutritions[0].id == 1
+
+def test_add_multiple_nutritions(memory_repository, my_nutrition):
+    nutritions = [
+        Nutrition(
+            nutrition_id=1,
+            calories=250.0,
+            fat=10.0,
+            saturated_fat=3.0,
+            cholesterol=30.0,
+            sodium=200.0,
+            carbohydrates=30.0,
+            fiber=5.0,
+            sugar=12.0,
+            protein=8.0
+        ),
+        Nutrition(
+            nutrition_id=2,
+            calories=450.0,
+            fat=20.0,
+            saturated_fat=8.0,
+            cholesterol=60.0,
+            sodium=500.0,
+            carbohydrates=50.0,
+            fiber=3.0,
+            sugar=20.0,
+            protein=15.0
+        ),
+        Nutrition(
+            nutrition_id=3,
+            calories=120.0,
+            fat=2.0,
+            saturated_fat=0.5,
+            cholesterol=10.0,
+            sodium=100.0,
+            carbohydrates=15.0,
+            fiber=4.0,
+            sugar=5.0,
+            protein=6.0
+        ),
+    ]
+
+    memory_repository.add_multiple_nutritions(nutritions)
+    result = memory_repository.get_nutritions()
+    assert result == nutritions
+    assert len(result) == 3
+
+# Recipe tests
 def test_add_recipe(memory_repository, my_recipe):
+    memory_repository.add_author(my_recipe.author)
+    memory_repository.add_category(my_recipe.category)
     memory_repository.add_recipe(my_recipe)
-    assert len(memory_repository.get_all_recipes()) == 1
-    assert memory_repository.get_recipe_by_id(1) == my_recipe
+    recipes = memory_repository.get_recipes()
+    assert len(recipes) == 1
+    assert recipes[0] == my_recipe
 
-def test_add_recipe_invalid_type(memory_repository):
-    memory_repository.add_recipe("not a recipe")
-    assert len(memory_repository.get_all_recipes()) == 0
-
-def test_add_recipe_none(memory_repository):
-    memory_repository.add_recipe(None)
-    assert len(memory_repository.get_all_recipes()) == 0
-
-def test_get_all_recipes_empty(memory_repository):
-    assert memory_repository.get_all_recipes() == []
-
-def test_get_number_of_recipe_empty(memory_repository):
-    assert memory_repository.get_number_of_recipe() == 0
-
-def test_get_recipe_by_id_found(memory_repository, my_recipe):
+def test_get_recipe_by_id(memory_repository, my_recipe):
     memory_repository.add_recipe(my_recipe)
-    result = memory_repository.get_recipe_by_id(1)
-    assert result == my_recipe
-    assert result.name == "Spaghetti Carbonara"
-    assert result.author.name == "Gordon Ramsay"
+    found = memory_repository.get_recipe_by_id(my_recipe.id)
+    assert found == my_recipe
 
-def test_get_recipe_by_id_not_found(memory_repository):
-    assert memory_repository.get_recipe_by_id(9999) is None
-
-def test_add_multiple_recipes(memory_repository, my_recipe):
+def test_get_recipes(memory_repository, my_recipe):
     memory_repository.add_recipe(my_recipe)
+    recipes = memory_repository.get_recipes()
+    assert recipes == [my_recipe]
+    assert len(recipes) == 1
+    assert recipes[0] == my_recipe
+
+def test_get_number_of_recipes(memory_repository, my_recipe):
+    memory_repository.add_recipe(my_recipe)
+    recipes = memory_repository.get_recipes()
+    number_of_recipes = memory_repository.get_number_of_recipes()
+    expected = len(recipes)
+    assert number_of_recipes == expected
+
+def test_get_recipes_by_name(memory_repository, my_recipe):
+    memory_repository.add_recipe(my_recipe)
+    result = memory_repository.get_recipes_by_name("Spaghetti")
+    assert result == [my_recipe]
+
+def test_get_recipes_by_category(memory_repository, my_recipe):
+    memory_repository.add_recipe(my_recipe)
+    result = memory_repository.get_recipes_by_category(my_recipe.category.name)
+    assert result == [my_recipe]
+
+def test_get_recipes_by_author(memory_repository, my_recipe):
+    memory_repository.add_recipe(my_recipe)
+    result = memory_repository.get_recipes_by_author(my_recipe.author.name)
+    assert result == [my_recipe]
+
+def test_add_multiple_recipes(memory_repository, my_author, my_category, my_nutrition):
+    r1 = Recipe(
+        recipe_id=10, name="A", author=my_author, cook_time=5, preparation_time=5,
+        created_date=datetime(2024, 1, 1), description="x", images=[],
+        category=my_category, ingredients=[], nutrition=my_nutrition,
+        servings=1, recipe_yield="1", instructions=[]
+    )
     r2 = Recipe(
-        recipe_id=2,
-        name="Pesto",
-        author=my_recipe.author,
-        cook_time=10,
-        preparation_time=5,
-        created_date=my_recipe.date,
-        description="Basil pesto",
-        images=[],
-        category=my_recipe.category,
-        ingredient_quantities=[],
-        ingredients=[],
-        nutrition=None,
-        servings="2",
-        recipe_yield="2 portions",
-        instructions=[]
+        recipe_id=11, name="B", author=my_author, cook_time=6, preparation_time=4,
+        created_date=datetime(2024, 1, 2), description="y", images=[],
+        category=my_category, ingredients=[], nutrition=my_nutrition,
+        servings=2, recipe_yield="2", instructions=[]
     )
-    memory_repository.add_recipe(r2)
+    recipes = [r1, r2]
+    memory_repository.add_multiple_recipes(recipes)
+    result = memory_repository.get_recipes()
+    assert result == recipes
+    assert len(result) == 2
 
-    assert memory_repository.get_number_of_recipe() == 2
-    assert memory_repository.get_recipe_by_id(1) is my_recipe
-    assert memory_repository.get_recipe_by_id(2) is r2
+# Review tests
+# TODO finish this
 
-def test_recipes_are_kept_sorted(memory_repository, my_recipe):
-    r_high = Recipe(
-        recipe_id=10, name="Z", author=my_recipe.author,
-        cook_time=0, preparation_time=0, created_date=my_recipe.date,
-        description="", images=[], category=my_recipe.category,
-        ingredient_quantities=[], ingredients=[],
-        nutrition=None, servings="", recipe_yield="", instructions=[]
-    )
-    memory_repository.add_recipe(r_high)
-    memory_repository.add_recipe(my_recipe)
+# User tests
+# TODO finish this
 
-    recipes = memory_repository.get_all_recipes()
-    assert recipes[0].id < recipes[1].id
+# RecipeImage tests
+def test_add_recipe_image(memory_repository, my_recipe_image):
+    memory_repository.add_recipe_image(my_recipe_image)
+    result = memory_repository.get_recipe_image(38, my_recipe_image.position)
+    assert result == my_recipe_image
 
-def test_add_and_get_user(memory_repository, my_user):
-    memory_repository.add_user(my_user)
-    found = memory_repository.get_user("tests user")
-    assert found is my_user
+def test_get_recipe_image(memory_repository, my_recipe_image):
+    memory_repository.add_recipe_image(my_recipe_image)
+    found = memory_repository.get_recipe_image(38, my_recipe_image.position)
+    assert found == my_recipe_image
 
-def test_get_user_not_found(memory_repository):
-    assert memory_repository.get_user("no such user") is None
+def test_get_recipe_images(memory_repository, my_recipe_image):
+    memory_repository.add_recipe_image(my_recipe_image)
+    recipe_images = memory_repository.get_recipe_images()
 
-def test_add_invalid_then_valid_keeps_repo_consistent(memory_repository, my_recipe):
-    memory_repository.add_recipe("not a recipe")
-    memory_repository.add_recipe(my_recipe)
-    assert memory_repository.get_number_of_recipe() == 1
-    assert memory_repository.get_all_recipes()[0] is my_recipe
+    assert recipe_images[0].recipe_id == 38
 
-def test_add_and_get_comments(memory_repo, my_comment):
-    memory_repo.add_comment(my_comment)
-    assert my_comment in memory_repo.get_comments()
-    assert memory_repo.get_comments_for_recipe(my_comment.recipe_id) == [my_comment]
+def test_add_multiple_recipe_image(memory_repository):
+    imgs = [
+        RecipeImage(recipe_id=1, url="https://x/a.jpg", position=0),
+        RecipeImage(recipe_id=1, url="https://x/b.jpg", position=1),
+    ]
+    memory_repository.add_multiple_recipe_images(imgs)
+    result = memory_repository.get_recipe_images()
+    assert result == imgs
+    assert len(result) == 2
 
-def test_add_comment_type_error(memory_repo):
-    with pytest.raises(TypeError):
-        memory_repo.add_comment("not-a-comment")
+# RecipeIngredient tests
+def test_add_recipe_ingredient(memory_repository, my_recipe_ingredient):
+    memory_repository.add_recipe_ingredient(my_recipe_ingredient)
+    result = memory_repository.get_recipe_ingredient(38, my_recipe_ingredient.position)
+    assert result == my_recipe_ingredient
 
-def test_add_rating_replaces_previous_from_same_user(memory_repo, my_recipe, my_user):
-    r1 = Rating(1, my_recipe.id, my_user.id, 2, user_name="alice")
-    r2 = Rating(2, my_recipe.id, my_user.id, 5, user_name="alice")  # same user & recipe
-    memory_repo.add_rating(r1)
-    memory_repo.add_rating(r2)
+def test_get_recipe_ingredient(memory_repository, my_recipe_ingredient):
+    memory_repository.add_recipe_ingredient(my_recipe_ingredient)
+    found = memory_repository.get_recipe_ingredient(38, my_recipe_ingredient.position)
+    assert found == my_recipe_ingredient
 
-    ratings = memory_repo.get_ratings_for_recipe(my_recipe.id)
-    # Only one rating from 'alice' should remain, and it's the latest (value=5)
-    user_ratings = [r for r in ratings if r.user_name == "alice"]
-    assert len(user_ratings) == 1
-    assert user_ratings[0].value == 5
+def test_get_recipe_ingredients(memory_repository, my_recipe_ingredient):
+    memory_repository.add_recipe_ingredient(my_recipe_ingredient)
+    recipe_ingredients = memory_repository.get_recipe_ingredients()
 
-def test_get_ratings_filters_by_recipe(memory_repo, my_recipe, my_user):
-    r_ok = Rating(3, my_recipe.id, my_user.id, 4, user_name="bob")
-    r_other = Rating(4, my_recipe.id + 1, my_user.id, 3, user_name="bob")
-    memory_repo.add_rating(r_ok)
-    memory_repo.add_rating(r_other)
+    assert recipe_ingredients[0].recipe_id == 38
 
-    result = memory_repo.get_ratings_for_recipe(my_recipe.id)
-    assert r_ok in result
-    assert all(r.recipe_id == my_recipe.id for r in result)
+def test_add_multiple_recipe_ingredients(memory_repository):
+    ings = [
+        RecipeIngredient(recipe_id=1, quantity="4",   ingredient="blueberries",      position=1),
+        RecipeIngredient(recipe_id=1, quantity="1/4", ingredient="granulated sugar", position=2),
+    ]
+    memory_repository.add_multiple_recipe_ingredients(ings)
+    result = memory_repository.get_recipe_ingredients()
+    assert result == ings
+    assert len(result) == 2
 
+# RecipeInstruction tests
+def test_add_recipe_instruction(memory_repository, my_recipe_instruction):
+    memory_repository.add_recipe_instruction(my_recipe_instruction)
+    result = memory_repository.get_recipe_instruction(38, my_recipe_instruction.position)
+    assert result == my_recipe_instruction
 
-def test_add_and_get_favourites(memory_repository, my_user, my_recipe):
-    fav = Favourite(my_user.username, my_recipe.id)
-    memory_repository.add_favourite(fav)
+def test_get_recipe_instruction(memory_repository, my_recipe_instruction):
+    memory_repository.add_recipe_instruction(my_recipe_instruction)
+    found = memory_repository.get_recipe_instruction(38, my_recipe_instruction.position)
+    assert found == my_recipe_instruction
 
-    favourites = memory_repository.get_favourites_for_user(my_user.username)
-    assert favourites == [my_recipe.id]
-    assert memory_repository.is_favourite(my_user.username, my_recipe.id)
+def test_get_recipe_instructions(memory_repository, my_recipe_instruction):
+    memory_repository.add_recipe_instruction(my_recipe_instruction)
+    recipe_instructions = memory_repository.get_recipe_instructions()
+    assert recipe_instructions[0].recipe_id == 38
 
-def test_add_duplicate_favourite_only_once(memory_repository, my_user, my_recipe):
-    fav = Favourite(my_user.username, my_recipe.id)
-    memory_repository.add_favourite(fav)
-    memory_repository.add_favourite(fav)  # attempt duplicate
-
-    favourites = memory_repository.get_favourites_for_user(my_user.username)
-    assert favourites == [my_recipe.id]
-    assert len(favourites) == 1
-
-def test_remove_favourite(memory_repository, my_user, my_recipe):
-    fav = Favourite(my_user.username, my_recipe.id)
-    memory_repository.add_favourite(fav)
-
-    memory_repository.remove_favourite(fav)
-    assert memory_repository.get_favourites_for_user(my_user.username) == []
-    assert not memory_repository.is_favourite(my_user.username, my_recipe.id)
-
-def test_get_favourites_for_user_empty(memory_repository, my_user):
-    favourites = memory_repository.get_favourites_for_user(my_user.username)
-    assert favourites == []
-
-def test_is_favourite_false_for_nonexistent(memory_repository, my_user, my_recipe):
-    assert not memory_repository.is_favourite(my_user.username, my_recipe.id)
+def test_add_multiple_recipe_instructions(memory_repository):
+    instrs = [
+        RecipeInstruction(recipe_id=1, step="Chop onions.", position=1),
+        RecipeInstruction(recipe_id=1, step="Sauté until soft.", position=2),
+    ]
+    memory_repository.add_multiple_recipe_instructions(instrs)
+    result = memory_repository.get_recipe_instructions()
+    assert result == instrs
+    assert len(result) == 2

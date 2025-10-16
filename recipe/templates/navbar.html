@@ -17,8 +17,10 @@
     <div class="welcome-user">
         {% if 'user_name' in session %}
             <span>Hello, {{ session['user_name'] }}</span>
+            <a href="{{ url_for('user_profile_bp.profile') }}">
+        {%  else %}
+            <a href="{{ url_for('authentication_bp.login')}}">
         {% endif %}
-        <a href="{{ url_for('user_profile_bp.profile') }}">
             <img src="../static/images/icons/profile-icon.png" class="profile" alt="profile icon">
         </a>
 

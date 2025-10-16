@@ -5,7 +5,7 @@ from recipe.adapters.repository import AbstractRepository
 from recipe.adapters.datareader.CSVdatareader import CSVDataReader
 
 
-def populate(data_path: Path, repo: AbstractRepository, database_mode: bool, testing: bool):
+def populate(data_path: Path, repo: AbstractRepository, testing: bool):
     # Get the absolute path to the data directory
     dir_name = os.path.abspath(data_path)
 
@@ -26,13 +26,10 @@ def populate(data_path: Path, repo: AbstractRepository, database_mode: bool, tes
     repo.add_multiple_categories(categories)
     repo.add_multiple_recipes(recipes)
 
-    if database_mode:
-        print("Populating additional tables...")
+    recipe_images = reader.dataset_of_recipe_images
+    recipe_ingredients = reader.dataset_of_recipe_ingredients
+    recipe_instructions = reader.dataset_of_recipe_instructions
 
-        recipe_images = reader.dataset_of_recipe_images
-        recipe_ingredients = reader.dataset_of_recipe_ingredients
-        recipe_instructions = reader.dataset_of_recipe_instructions
-
-        repo.add_multiple_recipe_images(recipe_images)
-        repo.add_multiple_recipe_ingredients(recipe_ingredients)
-        repo.add_multiple_recipe_instructions(recipe_instructions)
+    repo.add_multiple_recipe_images(recipe_images)
+    repo.add_multiple_recipe_ingredients(recipe_ingredients)
+    repo.add_multiple_recipe_instructions(recipe_instructions)

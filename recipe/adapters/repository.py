@@ -28,6 +28,11 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_author_by_id(self, author_id: int):
+        """Gets an Author from the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_authors(self) -> list[Author]:
         """Returns a list of all Authors in the repository."""
         raise NotImplementedError
@@ -53,6 +58,11 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_category_by_id(self, category_id: int):
+        """Gets a Category from the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_categories(self) -> List[Category]:
         """Returns a list of all Categories in the repository."""
         raise NotImplementedError
@@ -72,22 +82,19 @@ class AbstractRepository(abc.ABC):
     # region Favourites data Methods to manage Favourites
     # Methods to manage Favourites
     @abc.abstractmethod
-    def add_favourite(self, user: User, recipe: Recipe):
-        """Adds a Recipe to the User's list of favourite Recipes."""
+    def add_favourite(self, favourite: Favourite):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove_favourite(self, user: User, recipe: Recipe):
-        """Removes a Recipe from the User's list of favourite Recipes."""
+    def remove_favourite(self, user_id: int, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_favourite_for_user(self, page: int, page_size: int, user: User) -> list[Recipe]:
-        """Returns a list of the User's favourite Recipes."""
+    def get_favourites_for_user(self, user_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def is_favourite(self, user: User, recipe: Recipe) -> bool:
+    def get_new_favourite_id(self) -> int:
         raise NotImplementedError
 
     # endregion
@@ -97,6 +104,16 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def add_nutrition(self, nutrition: Nutrition):
         """Adds a Nutrition to the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_nutrition_by_id(self, nutrition_id: int):
+        """Gets a Nutrition from the repository."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_nutritions(self) -> List[Nutrition]:
+        """Returns a list of all Nutritions in the repository."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -153,37 +170,35 @@ class AbstractRepository(abc.ABC):
     # region Review_data Methods to manage Reviews
     # Methods to manage Reviews
     @abc.abstractmethod
-    def add_review(self, user: User, review: Review):
-        """Adds a Review to the repository."""
+    def add_review(self, review: Review):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_reviews(self) -> list[Review]:
-        """
-        Returns a list of all Reviews in the repository
-        """
+    def remove_review(self, user_id: int, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_user_reviews(self) -> list[Review]:
-        """
-        Returns a list of Reviews submitted by the specified User
-        """
+    def get_reviews_for_user(self, user_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_reviews(self) -> list[Review]:
-        """
-        Returns a list of Reviews for the specified Recipe, sorted by sort_method.
-        """
+    def get_reviews_for_recipe(self, recipe_id: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_review_by_id(self, review_id: int) -> Review | None:
-        """
-        Returns the Review with the specified review_id from the repository.
-        If there is no Review with the given review_id, this method returns None.
-        """
+    def get_new_review_id(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_reviews_and_recipes_for_user(self, user_id):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_reviews_with_usernames_for_recipe(self, recipe_id):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_average_rating(self, user_id: int):
         raise NotImplementedError
 
     # endregion
@@ -204,12 +219,24 @@ class AbstractRepository(abc.ABC):
         """
         raise NotImplementedError
 
+    # @abc.abstractmethod
+    # def get_user_by_name(self, username: str) -> User | None:
+    #     """
+    #     Returns the User with the provided username from the repository.
+    #     If there is no User with the given username, this method returns None.
+    #     """
+    #     raise NotImplementedError
+
     @abc.abstractmethod
-    def get_user_by_name(self, username: str) -> User | None:
+    def get_user(self, username: str) -> User | None:
         """
         Returns the User with the provided username from the repository.
         If there is no User with the given username, this method returns None.
         """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_new_user_id(self) -> int:
         raise NotImplementedError
 
     # endregion
@@ -219,12 +246,16 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
-        """Adds multiple Images to the repository."""
+    def get_recipe_image(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_images(self, recipe_id: int) -> List[RecipeImage]:
+    def get_recipe_images(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_images(self, recipe_images: List[RecipeImage]):
+        """Adds multiple Images to the repository."""
         raise NotImplementedError
 
     # endregion
@@ -234,12 +265,16 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
-        """Adds multiple RecipeIngredients to the repository."""
+    def get_recipe_ingredient(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_ingredients(self, recipe_id: int) -> List[RecipeIngredient]:
+    def get_recipe_ingredients(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_ingredients(self, recipe_ingredients: List[RecipeIngredient]):
+        """Adds multiple RecipeIngredients to the repository."""
         raise NotImplementedError
 
     # endregion
@@ -249,10 +284,14 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
-        """Adds multiple RecipeInstructions to the repository."""
+    def get_recipe_instruction(self, recipe_id: int, position: int):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_recipe_instructions(self, recipe_id: int) -> List[RecipeInstruction]:
+    def get_recipe_instructions(self) -> List[RecipeImage]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_multiple_recipe_instructions(self, recipe_instructions: List[RecipeInstruction]):
+        """Adds multiple RecipeInstructions to the repository."""
         raise NotImplementedError

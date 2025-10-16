@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from recipe.domainmodel.review import Review
 
 class User:
-    def __init__(self, username: str, password: str, user_id: int = None):
+    def __init__(self, user_id: int, username: str, password: str):
         self.__id = user_id
         self.__username = username
         self.__password = password
@@ -75,11 +75,13 @@ class User:
             raise ValueError("Recipe not found in user_profile's favourites")
 
     def add_review(self, review: "Review") -> None:
+        from recipe.domainmodel.review import Review
         if not isinstance(review, Review):
             raise TypeError("Expected a Review instance")
         self.__reviews.append(review)
 
     def remove_review(self, review: "Review") -> None:
+        from recipe.domainmodel.review import Review
         if review in self.__reviews:
             self.__reviews.remove(review)
         else:
