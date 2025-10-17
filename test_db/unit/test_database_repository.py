@@ -94,6 +94,41 @@ def test_repository_can_add_multiple_categories(session_factory):
 
 # Favourites tests
 # TODO finish these
+def test_repository_can_add_favourite(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    fav = Favourite(1, my_user.id, my_recipe.id, datetime.now())
+    repo.add_favourite(fav)
+
+    favourites = repo.get_favourites_for_user(my_user.id)
+    assert len(favourites) == 1
+    assert favourites[0].recipe_id == my_recipe.id
+
+def test_repository_prevents_duplicate_favourite(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    fav1 = Favourite(1, my_user.id, my_recipe.id, datetime(2024, 1, 1))
+    fav2 = Favourite(2, my_user.id, my_recipe.id, datetime(2024, 1, 2))
+
+    repo.add_favourite(fav1)
+    repo.add_favourite(fav2)
+
+    favourites = repo.get_favourites_for_user(my_user.id)
+    assert len(favourites) == 1
+
+def test_repository_can_remove_favourite(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    fav = Favourite(1, my_user.id, my_recipe.id, datetime(2024, 1, 1))
+    repo.add_favourite(fav)
+
+    repo.remove_favourite(my_user.id, my_recipe.id)
+    favourites = repo.get_favourites_for_user(my_user.id)
+    assert favourites == []
+
+def test_repository_can_generate_new_favourite_id(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+    fav_id = repo.get_new_favourite_id()
+    assert isinstance(fav_id, int)
+    assert fav_id >= 1
+
 
 # Nutrition tests
 def test_repository_can_add_nutrition(session_factory, my_nutrition):
@@ -195,9 +230,59 @@ def test_add_multiple_recipes(session_factory):
 
 # Review tests
 # TODO finish these off
+def test_repository_can_add_review(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    review = Review(1, my_user.id,  datetime(2024, 1, 1), my_recipe.id, 5, "wowsogood")
+    repo.add_review(review)
+
+    reviews = repo.get_reviews_for_recipe(my_recipe.id)
+    assert len(reviews) == 1
+    assert reviews[0].comment == "wowsogood"
+
+def test_repository_can_remove_review(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    review = Review(1, my_user.id,  datetime(2024, 1, 1), my_recipe.id, 5, "wowsogood")
+    repo.add_review(review)
+    repo.remove_review(my_user.id, 1)
+
+    reviews = repo.get_reviews_for_recipe(my_recipe.id)
+    assert len(reviews) == 0
+
+def test_repository_can_get_reviews_for_user(session_factory, my_user, my_recipe):
+    repo = SqlAlchemyRepository(session_factory)
+    review = Review(1, my_user.id,  datetime(2024, 1, 1), my_recipe.id, 5, "wowsogood")
+    repo.add_review(review)
+
+    reviews = repo.get_reviews_for_user(my_user.id)
+    assert len(reviews) == 1
+    assert reviews[0].rating == 5
+
 
 # User tests
 # TODO finish these off
+def test_repository_can_add_user(session_factory, my_user):
+    repo = SqlAlchemyRepository(session_factory)
+    repo.add_user(my_user)
+    found = repo.get_user_by_id(my_user.id)
+    assert found == my_user
+
+def test_repository_can_get_user_by_id(session_factory, my_user):
+    repo = SqlAlchemyRepository(session_factory)
+    repo.add_user(my_user)
+    found = repo.get_user_by_id(my_user.id)
+    assert found.id == my_user.id
+
+def test_repository_returns_none_for_nonexistent_user(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+    found = repo.get_user_by_id(9999)
+    assert found is None
+
+def test_repository_can_retrieve_user(session_factory, my_user):
+    repo = SqlAlchemyRepository(session_factory)
+    repo.add_user(my_user)
+    user = repo.get_user(my_user.username)
+    assert user.username == my_user.username
+
 
 # RecipeImage tests
 def test_can_add_recipe_image(session_factory, my_recipe_image):

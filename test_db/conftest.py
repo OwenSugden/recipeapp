@@ -170,3 +170,7 @@ def my_recipe_instructions():
         RecipeInstruction(38, step.strip(), idx)
         for idx, step in enumerate(steps, start=1)
     ]
+
+@pytest.fixture
+def my_user():
+    return User(1, "tests user", generate_password_hash("password123"))
