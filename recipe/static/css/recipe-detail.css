@@ -115,7 +115,9 @@
       flex-direction: column;
       gap: 24px;
   }
-  .nutritional-info { min-width: 0; }
+  .nutritional-info {
+      min-width: 0;
+  }
 }
 
 img {
@@ -184,4 +186,91 @@ img:hover{
 
 .back-button a:hover {
     color: var(--light-text);
+}
+
+.recipe-details {
+    justify-content: space-between;
+    text-align: left;
+}
+.nutritional-info {
+    align-self: flex-start;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.user-icon {
+    font-family: Daydream;
+    width: 48px;
+    height: 48px;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.review-left {
+  flex: 3; /* wide column */
+  display: flex;
+  flex-direction: column;
+}
+
+.review-meta p {
+  margin: 0;
+}
+
+.review-comment {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.delete-review-btn {
+  margin-top: 0.5rem;
+  align-self: flex-start;
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-review-btn:hover {
+  background-color: #a93226;
+}
+
+.review-rating {
+  flex: 1; /* narrower column */
+  text-align: right;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .review-item {
+    flex-direction: column;
+  }
+  .review-rating {
+    text-align: left;
+    margin-top: 0.5rem;
+  }
 }
