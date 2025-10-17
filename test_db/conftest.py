@@ -110,7 +110,7 @@ def my_category():
 
 @pytest.fixture
 def my_favourite(my_user, my_recipe):
-    return Favourite(1, my_user, my_recipe, datetime(2024, 1, 1))
+    return Favourite(1, my_user.id, my_recipe.id, datetime(2024, 1, 1))
 
 @pytest.fixture
 def my_nutrition():
@@ -174,3 +174,8 @@ def my_recipe_instructions():
 @pytest.fixture
 def my_user():
     return User(1, "tests user", generate_password_hash("password123"))
+
+
+@pytest.fixture
+def my_review(my_user, my_recipe):
+    return Review(1, my_user.id, datetime(2024, 1, 1), my_recipe.id, 5, "Food is good")
