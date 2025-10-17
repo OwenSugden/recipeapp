@@ -44,12 +44,12 @@ def test_add_and_get_review_recipe_detail(in_memory_repo, my_user, my_recipe):
     assert len(reviews) == 1
     assert reviews[0].comment == "yummy"
 
-def test_average_rating_recipe_detail(in_memory_repo, my_user, my_recipe):
+def test_average_rating_recipe_detail_same_user(in_memory_repo, my_user, my_recipe):
     recipe_detail_services.add_review(in_memory_repo, my_user.id, my_recipe.id, 3, "trash")
     recipe_detail_services.add_review(in_memory_repo, my_user.id, my_recipe.id, 1, "mid")
 
     avg = recipe_detail_services.get_average_rating(in_memory_repo, my_recipe.id)
-    assert avg == 2.0
+    assert avg == 3.0
 
 # Authentication services tests
 # TODO finish this
