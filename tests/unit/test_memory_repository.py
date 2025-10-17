@@ -330,7 +330,7 @@ def test_get_reviews_with_usernames(memory_repository, my_user, my_recipe):
     assert results[0][1] == my_user.username
 
 
-def test_average_rating(memory_repository, my_user, my_recipe):
+def test_average_rating_same_user(memory_repository, my_user, my_recipe):
     r1 = Review(memory_repository.get_new_review_id(),
                 user_id=my_user.id, recipe_id=my_recipe.id,
                 rating=4, comment="god", date=datetime.now())
@@ -343,7 +343,7 @@ def test_average_rating(memory_repository, my_user, my_recipe):
     memory_repository.add_review(r2)
 
     avg = memory_repository.get_average_rating(my_recipe.id)
-    assert avg == 3.0
+    assert avg == 4.0
 
 
 # RecipeImage tests
