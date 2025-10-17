@@ -1,7 +1,6 @@
 from datetime import datetime
-
 from tests.conftest import *
-
+from datetime import datetime
 from recipe.domainmodel.recipe import Author
 from recipe.domainmodel.category import Category
 from recipe.domainmodel.favourite import Favourite
@@ -12,6 +11,7 @@ from recipe.domainmodel.recipe import RecipeIngredient
 from recipe.domainmodel.recipe import RecipeInstruction
 from recipe.domainmodel.review import Review
 from recipe.domainmodel.user import User
+
 
 
 # MemoryRepository tests
@@ -217,11 +217,134 @@ def test_add_multiple_recipes(memory_repository, my_author, my_category, my_nutr
     assert result == recipes
     assert len(result) == 2
 
-# Review tests
+# Favourite tests
 # TODO finish this
+def test_add_and_get_favourites(memory_repository, my_user, my_recipe):
+    fav_id = memory_repository.get_new_favourite_id()
+    favourite = Favourite(
+        fav_id,
+        user_id=my_user.id,
+        recipe_id=my_recipe.id,
+        date=datetime.now()
+    )
 
+    memory_repository.add_favourite(favourite)
+    result = memory_repository.get_favourites_for_user(my_user.id)
+
+    assert len(result) == 1
+    assert result[0].recipe_id == my_recipe.id
+    assert result[0].user_id == my_user.id
+
+def test_add_duplicate_favourite(memory_repository, my_user, my_recipe):
+    fav_id = memory_repository.get_new_favourite_id()
+    favourite = Favourite(
+        fav_id,
+        user_id=my_user.id,
+        recipe_id=my_recipe.id,
+        date=datetime.now()
+    )
+    memory_repository.add_favourite(favourite)
+    memory_repository.add_favourite(favourite)
+
+    result = memory_repository.get_favourites_for_user(my_user.id)
+    assert len(result) == 1
+
+def test_remove_favourite(memory_repository, my_user, my_recipe):
+    fav_id = memory_repository.get_new_favourite_id()
+    favourite = Favourite(
+        fav_id,
+        user_id=my_user.id,
+        recipe_id=my_recipe.id,
+        date=datetime.now()
+    )
+
+    memory_repository.add_favourite(favourite)
+    memory_repository.remove_favourite(my_user.id, my_recipe.id)
+
+    result = memory_repository.get_favourites_for_user(my_user.id)
+    assert result == []
 # User tests
 # TODO finish this
+def test_add_and_get_user(memory_repository, my_user):
+    memory_repository.add_user(my_user)
+    retrieved = memory_repository.get_user_by_id(my_user.id)
+
+    assert retrieved == my_user
+    assert retrieved.username == my_user.username
+
+def test_get_user_by_username(memory_repository, my_user):
+    memory_repository.add_user(my_user)
+    retrieved = memory_repository.get_user(my_user.username)
+
+    assert retrieved == my_user
+
+def test_get_new_user_id(memory_repository):
+    id1 = memory_repository.get_new_user_id()
+    id2 = memory_repository.get_new_user_id()
+    assert id2 == id1 + 1
+
+#Review Tests
+# TODO finish this
+
+def test_add_and_get_reviews(memory_repository, my_user, my_recipe):
+    review_id = memory_repository.get_new_review_id()
+    review = Review(review_id, user_id=my_user.id,
+                    recipe_id=my_recipe.id,
+                    rating=5,
+                    comment="coolio!",
+                    date=datetime.now())
+
+    memory_repository.add_review(review)
+    reviews = memory_repository.get_reviews_for_recipe(my_recipe.id)
+
+    assert len(reviews) == 1
+    assert reviews[0].comment == "coolio!"
+
+def test_remove_review(memory_repository, my_user, my_recipe):
+    review_id = memory_repository.get_new_review_id()
+    review = Review(review_id, user_id=my_user.id,
+                    recipe_id=my_recipe.id,
+                    rating=4, comment="snake!",
+                    date=datetime.now())
+
+    memory_repository.add_review(review)
+    memory_repository.remove_review(my_user.id, review_id)
+
+    reviews = memory_repository.get_reviews_for_user(my_user.id)
+    assert reviews is None or len(reviews) == 0
+
+
+def test_get_reviews_with_usernames(memory_repository, my_user, my_recipe):
+    memory_repository.add_user(my_user)
+    review_id = memory_repository.get_new_review_id()
+    review = Review(review_id, user_id=my_user.id,
+                    recipe_id=my_recipe.id,
+                    rating=3,
+                    comment="Ok",
+                    date=datetime.now())
+
+    memory_repository.add_review(review)
+    results = memory_repository.get_reviews_with_usernames_for_recipe(my_recipe.id)
+
+    assert len(results) == 1
+    assert results[0][1] == my_user.username
+
+
+def test_average_rating(memory_repository, my_user, my_recipe):
+    r1 = Review(memory_repository.get_new_review_id(),
+                user_id=my_user.id, recipe_id=my_recipe.id,
+                rating=4, comment="god", date=datetime.now())
+
+    r2 = Review(memory_repository.get_new_review_id(), user_id=my_user.id,
+                recipe_id=my_recipe.id, rating=2,
+                comment="bad", date=datetime.now())
+
+    memory_repository.add_review(r1)
+    memory_repository.add_review(r2)
+
+    avg = memory_repository.get_average_rating(my_recipe.id)
+    assert avg == 3.0
+
 
 # RecipeImage tests
 def test_add_recipe_image(memory_repository, my_recipe_image):
