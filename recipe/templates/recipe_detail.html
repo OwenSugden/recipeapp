@@ -20,7 +20,10 @@
             {% else %}
                 <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back to home</a>
             {% endif %}
+        {% else %}
+            <a href="{{ url_for('home_bp.home') }}" class="back-link">← Back</a>
         {% endif %}
+
     </div>
         <h1>{{ recipe.name }}</h1>
 
@@ -64,9 +67,9 @@
             </div>
         </div>
 
-        <div class="nutritional-info">
+        <div class="nutritional-info" id="nutrition">
             {% if recipe.id in recipe_ids %}
-            <form method="POST" action="{{ url_for('recipe_detail_bp.remove_favourite', recipe_id=recipe.id) }}">
+            <form method="POST" action="{{ url_for('recipe_detail_bp.remove_favourite', recipe_id=recipe.id) }}#nutrition">
                 <input type="hidden" name="return_to" value="{{ request.full_path }}">
                 <button type="submit" class="fav-btn active">
                     <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Remove from favourites">
@@ -74,7 +77,7 @@
             </form>
                 <p class="fav-btn">Remove from Favourites</p>
             {% else %}
-            <form method="POST" action="{{ url_for('recipe_detail_bp.add_favourite', recipe_id=recipe.id) }}">
+            <form method="POST" action="{{ url_for('recipe_detail_bp.add_favourite', recipe_id=recipe.id) }}#nutrition">
                 <input type="hidden" name="return_to" value="{{ request.full_path }}">
                 <button type="submit" class="fav-btn">
                     <img src="{{ url_for('static', filename='images/icons/heart.png') }}" alt="Add to favourites">
@@ -99,13 +102,13 @@
         </div>
       </div>
 
-        <div class="reviews">
+        <div class="reviews" id="review">
             <h2>Leave a Review</h2>
             {% if not reviews_with_names %}
                 <p>No reviews have been made</p>
             {% endif %}
 
-            <form action="{{ url_for('recipe_detail_bp.add_review', recipe_id=recipe.id) }}" method="post">
+            <form action="{{ url_for('recipe_detail_bp.add_review', recipe_id=recipe.id) }}#review" method="post">
                 <input type="hidden" name="return_to" value="{{ request.full_path }}">
                 <div class="review">
                     <div class="ratings">
@@ -116,36 +119,46 @@
                     <div class="comments">
                         <textarea name="comment" rows="3" cols="50" placeholder="Leave a comment"></textarea><br>
                     </div>
-                <button type="submit">Rate</button>
+                <button type="submit">Submit</button>
                 </div>
             </form>
 
             {% if reviews_with_names %}
-                <h2>Previous Reviews:</h2>
+                <h2>Reviews:</h2>
                 <div class="reviews-list">
                     <ul>
                         {% for review, username in reviews_with_names %}
-                            <li>
-                                <p>Review made by: {{ username }}</p>
-                                <p>{{ review.date.strftime('%Y-%m-%d') }} at {{ review.date.strftime('%H:%M') }}</p>
-                                <div class="review">
-                                    <div class="review-rating">
-                                        Rating: {{ review.rating }}/5
-                                    </div>
-                                    <div class="review-comment">
-                                        {{ review.comment }}
+                            <li class="review-item">
+                                <div class="user-icon" style="background-color: hsl({{ loop.index * 50 % 360 }}, 70%, 50%);">
+                                    {{ username[0]|upper }}
+                                </div>
+
+                                    <div class="review-left">
+                                        <div class="review-meta">
+                                            <p>
+                                                <strong>{{ username }}</strong>
+                                                <span class="review-date">{{ review.date.strftime('%Y-%m-%d') }} at {{ review.date.strftime('%H:%M') }}</span>
+                                            </p>
+                                        </div>
+
+                                        <div class="review-comment">
+                                            {{ review.comment }}
+                                        </div>
+
+                                        {% if session.get('user_id') == review.user_id %}
+                                        <form method="POST" action="{{ url_for('recipe_detail_bp.remove_review', recipe_id=recipe.id) }}#review">
+                                            <input type="hidden" name="review_id" value="{{ review.id }}">
+                                            <input type="hidden" name="return_to" value="{{ request.full_path }}">
+                                            <button type="submit" class="delete-review-btn">Delete Review</button>
+                                        </form>
+                                        {% endif %}
                                     </div>
 
-                                    {% if session.get('user_id') == review.user_id %}
-                                    <form method="POST" action="{{ url_for('recipe_detail_bp.remove_review', recipe_id=recipe.id) }}">
-                                        <input type="hidden" name="review_id" value="{{ review.id }}">
-                                        <input type="hidden" name="return_to" value="{{ request.full_path }}">
-                                        <button type="submit">Delete Review</button>
-                                    </form>
-                                    {% endif %}
-
+                                <div class="review-rating">
+                                    <strong>{{ review.rating }}/5</strong>
                                 </div>
                             </li>
+
                         {% endfor %}
                     </ul>
                 </div>
