@@ -186,8 +186,7 @@ class MemoryRepository(AbstractRepository):
         # If this user_id doesn't exist yet, create a new list for it
         if user_id not in self.__reviews:
             self.__reviews[user_id] = []
-
-        self.__reviews[user_id].append(review)
+            self.__reviews[user_id].append(review)
 
     def remove_review(self, user_id: int, review_id: int):
         reviews_list = self.__reviews.get(user_id)

@@ -322,7 +322,12 @@ class SqlAlchemyRepository(AbstractRepository, ABC):
     # region Review data Methods to manage Reviews
     def add_review(self, review: Review):
         with self._session_cm as scm:
-            scm.session.add(review)
+            with scm.session.no_autoflush:
+                # Check if review already exists
+                existing_review = scm.session.query(Review).filter(Review._Review__user_id == review.user_id).first()
+                if not existing_review:
+                    scm.session.add(review)
+
             scm.commit()
 
     def remove_review(self, user_id: int, review_id: int):
