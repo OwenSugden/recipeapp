@@ -1,5 +1,5 @@
 import pytest
-from test_db.conftest import *
+from tests_db.conftest import *
 
 from recipe.domainmodel.author import Author
 from recipe.domainmodel.category import Category
