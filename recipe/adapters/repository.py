@@ -1,5 +1,4 @@
 import abc
-from tkinter import Image
 from typing import List, Optional
 
 from recipe.domainmodel.author import Author

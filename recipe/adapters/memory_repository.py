@@ -4,7 +4,6 @@ import ast
 
 from datetime import datetime
 from bisect import insort_left
-from tkinter import Image
 from typing import List
 from pathlib import Path
 
